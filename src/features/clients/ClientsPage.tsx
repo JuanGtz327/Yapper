@@ -1,4 +1,4 @@
-import { ArrowUpRight, Plus, Search, Settings, Trash2 } from 'lucide-react'
+import { ArrowUpRight, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import { Empty } from '../../components/ui/Empty.tsx'
 import type { Client } from '../../types.ts'
 
@@ -57,7 +57,7 @@ export function ClientsPage({
                   aria-label={`Editar ${client.name}`}
                   type="button"
                 >
-                  <Settings size={16} />
+                  <Pencil size={16} />
                 </button>
                 <button
                   className="icon-button danger"

@@ -1,4 +1,4 @@
-import { Boxes, Plus, Search, Settings, Trash2 } from 'lucide-react'
+import { Boxes, DollarSign, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import { Empty } from '../../components/ui/Empty.tsx'
 import { formatMoney } from '../../lib/format.ts'
 import type { Product } from '../../types.ts'
@@ -25,6 +25,12 @@ export function ProductsPage({
   const visible = products.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase()),
   )
+
+  const totalInventoryValue = products.reduce(
+    (sum, product) => sum + product.price * product.stock,
+    0,
+  )
+
   return (
     <section className="page-section">
       <div className="section-intro">
@@ -37,6 +43,11 @@ export function ProductsPage({
           <Plus size={17} aria-hidden="true" />
           Añadir producto
         </button>
+      </div>
+      <div className="inventory-summary">
+        <DollarSign size={18} aria-hidden="true" />
+        <span>Valor total del inventario</span>
+        <strong>{formatMoney(totalInventoryValue, currency)}</strong>
       </div>
       <div className="toolbar">
         <label className="search-box">
@@ -58,6 +69,7 @@ export function ProductsPage({
               <th>Categoría</th>
               <th>Precio</th>
               <th>Existencias</th>
+              <th>Valor</th>
               <th aria-label="Acciones" />
             </tr>
           </thead>
@@ -83,6 +95,9 @@ export function ProductsPage({
                     {product.stock} {product.unit}s
                   </span>
                 </td>
+                <td className="table-emphasis">
+                  {formatMoney(product.price * product.stock, currency)}
+                </td>
                 <td className="row-actions">
                   <button
                     className="icon-button"
@@ -90,7 +105,7 @@ export function ProductsPage({
                     aria-label={`Editar ${product.name}`}
                     type="button"
                   >
-                    <Settings size={16} aria-hidden="true" />
+                    <Pencil size={16} aria-hidden="true" />
                   </button>
                   <button
                     className="icon-button danger"

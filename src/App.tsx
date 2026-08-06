@@ -97,7 +97,6 @@ function DashboardApp() {
           menuOpen={mobileMenuOpen}
           hamburgerRef={hamburgerRef}
           onOpenMenu={() => setMobileMenuOpen(true)}
-          onOpenModal={openModalForAction}
         />
         {dataLoading && (
           <div className="data-notice">
