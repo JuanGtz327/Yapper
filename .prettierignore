@@ -1,0 +1,7 @@
+dist
+node_modules
+package-lock.json
+src/types/supabase.ts
+.opencode/node_modules
+.agents
+supabase/.temp

@@ -1,0 +1,15 @@
+import type { User } from '@supabase/supabase-js'
+
+function uid(user: User | null): string {
+  return user?.id ?? 'demo'
+}
+
+export const qk = {
+  products: (user: User | null) => ['users', uid(user), 'products'] as const,
+  clients: (user: User | null) => ['users', uid(user), 'clients'] as const,
+  orders: (user: User | null) => ['users', uid(user), 'orders'] as const,
+  settings: (user: User | null) => ['users', uid(user), 'settings'] as const,
+  sales: (user: User | null, period: '7d' | '6m') =>
+    ['users', uid(user), 'sales', period] as const,
+  publicCatalog: (slug: string) => ['publicCatalog', slug] as const,
+}
