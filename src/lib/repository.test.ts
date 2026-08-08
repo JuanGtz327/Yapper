@@ -59,10 +59,16 @@ describe('Repositorio de clientes', () => {
 
   describe('createClient', () => {
     it('debería crear un cliente y devolverlo con id generado', async () => {
-      const eqMock = vi.fn().mockResolvedValue({ data: mockClientRow, error: null })
-      const singleMock = vi.fn().mockResolvedValue({ data: mockClientRow, error: null })
+      const eqMock = vi
+        .fn()
+        .mockResolvedValue({ data: mockClientRow, error: null })
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: mockClientRow, error: null })
       const selectMock = vi.fn().mockReturnValue({ single: singleMock })
-      const insertMock = vi.fn().mockReturnValue({ select: selectMock, eq: eqMock })
+      const insertMock = vi
+        .fn()
+        .mockReturnValue({ select: selectMock, eq: eqMock })
 
       supabaseFromMock.mockReturnValue({
         insert: insertMock,
@@ -82,7 +88,9 @@ describe('Repositorio de clientes', () => {
     })
 
     it('debería llamar a supabase.from con la tabla correcta', async () => {
-      const singleMock = vi.fn().mockResolvedValue({ data: mockClientRow, error: null })
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: mockClientRow, error: null })
       const selectMock = vi.fn().mockReturnValue({ single: singleMock })
       const insertMock = vi.fn().mockReturnValue({ select: selectMock })
 
@@ -97,7 +105,9 @@ describe('Repositorio de clientes', () => {
     })
 
     it('debería insertar los datos correctos del cliente', async () => {
-      const singleMock = vi.fn().mockResolvedValue({ data: mockClientRow, error: null })
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: mockClientRow, error: null })
       const selectMock = vi.fn().mockReturnValue({ single: singleMock })
       const insertMock = vi.fn().mockReturnValue({ select: selectMock })
 
@@ -118,7 +128,9 @@ describe('Repositorio de clientes', () => {
 
     it('debería usar "Sin zona" cuando address es vacío', async () => {
       const rowWithEmptyAddress = { ...mockClientRow, address: '' }
-      const singleMock = vi.fn().mockResolvedValue({ data: rowWithEmptyAddress, error: null })
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: rowWithEmptyAddress, error: null })
       const selectMock = vi.fn().mockReturnValue({ single: singleMock })
       const insertMock = vi.fn().mockReturnValue({ select: selectMock })
 
@@ -127,14 +139,19 @@ describe('Repositorio de clientes', () => {
       })
 
       const { createClient } = await import('./repository.ts')
-      const result = await createClient(mockUser, { ...mockClientInput, zone: '' })
+      const result = await createClient(mockUser, {
+        ...mockClientInput,
+        zone: '',
+      })
 
       expect(result.zone).toBe('Sin zona')
     })
 
     it('debería generar iniciales a partir del nombre', async () => {
       const rowWithName = { ...mockClientRow, name: 'Carlos Alberto Pérez' }
-      const singleMock = vi.fn().mockResolvedValue({ data: rowWithName, error: null })
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: rowWithName, error: null })
       const selectMock = vi.fn().mockReturnValue({ single: singleMock })
       const insertMock = vi.fn().mockReturnValue({ select: selectMock })
 
@@ -288,22 +305,72 @@ describe('Repositorio de productos', () => {
   describe('loadProducts', () => {
     it('debería cargar productos con variantes y option values', async () => {
       const mockProducts = [
-        { id: 'p1', name: 'Playera', category_id: 'cat1', published: true, public_description: '', image_url: null },
+        {
+          id: 'p1',
+          name: 'Playera',
+          category_id: 'cat1',
+          published: true,
+          public_description: '',
+          image_url: null,
+        },
       ]
       const mockVariants = [
-        { id: 'v1', product_id: 'p1', sku: 'PLA-001', name: 'Negro', inventory_cost: 80, sale_price: 150, stock: 25 },
+        {
+          id: 'v1',
+          product_id: 'p1',
+          sku: 'PLA-001',
+          name: 'Negro',
+          inventory_cost: 80,
+          sale_price: 150,
+          stock: 25,
+        },
       ]
       const mockOptionValues = [
-        { variant_id: 'v1', option_values: { name: 'Negro', option_types: { name: 'Color' } } },
+        {
+          variant_id: 'v1',
+          option_values: { name: 'Negro', option_types: { name: 'Color' } },
+        },
       ]
-      const mockCategories = [
-        { id: 'cat1', name: 'Ropa' },
-      ]
+      const mockCategories = [{ id: 'cat1', name: 'Ropa' }]
 
-      const selectFn1 = vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: mockProducts, error: null }) }) })
-      const selectFn2 = vi.fn().mockReturnValue({ in: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: mockVariants, error: null }) }) }) })
-      const selectFn3 = vi.fn().mockReturnValue({ in: vi.fn().mockResolvedValue({ data: mockOptionValues, error: null }) })
-      const selectFn4 = vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: mockCategories, error: null }) })
+      const selectFn1 = vi
+        .fn()
+        .mockReturnValue({
+          eq: vi
+            .fn()
+            .mockReturnValue({
+              order: vi
+                .fn()
+                .mockResolvedValue({ data: mockProducts, error: null }),
+            }),
+        })
+      const selectFn2 = vi
+        .fn()
+        .mockReturnValue({
+          in: vi
+            .fn()
+            .mockReturnValue({
+              eq: vi
+                .fn()
+                .mockReturnValue({
+                  order: vi
+                    .fn()
+                    .mockResolvedValue({ data: mockVariants, error: null }),
+                }),
+            }),
+        })
+      const selectFn3 = vi
+        .fn()
+        .mockReturnValue({
+          in: vi
+            .fn()
+            .mockResolvedValue({ data: mockOptionValues, error: null }),
+        })
+      const selectFn4 = vi
+        .fn()
+        .mockReturnValue({
+          eq: vi.fn().mockResolvedValue({ data: mockCategories, error: null }),
+        })
 
       const fns = [selectFn1, selectFn2, selectFn3, selectFn4]
       let i = 0
@@ -318,7 +385,9 @@ describe('Repositorio de productos', () => {
       expect(result[0].category).toBe('Ropa')
       expect(result[0].variants).toHaveLength(1)
       expect(result[0].variants[0].sku).toBe('PLA-001')
-      expect(result[0].variants[0].optionValues).toEqual([{ optionType: 'Color', value: 'Negro' }])
+      expect(result[0].variants[0].optionValues).toEqual([
+        { optionType: 'Color', value: 'Negro' },
+      ])
     })
 
     it('debería devolver array vacío cuando no hay productos', async () => {
@@ -339,13 +408,46 @@ describe('Repositorio de productos', () => {
 
     it('debería usar "General" cuando category_id es null', async () => {
       const mockProducts = [
-        { id: 'p1', name: 'Playera', category_id: null, published: true, public_description: '', image_url: null },
+        {
+          id: 'p1',
+          name: 'Playera',
+          category_id: null,
+          published: true,
+          public_description: '',
+          image_url: null,
+        },
       ]
 
-      const selectFn1 = vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: mockProducts, error: null }) }) })
-      const selectFn2 = vi.fn().mockReturnValue({ in: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }) })
+      const selectFn1 = vi
+        .fn()
+        .mockReturnValue({
+          eq: vi
+            .fn()
+            .mockReturnValue({
+              order: vi
+                .fn()
+                .mockResolvedValue({ data: mockProducts, error: null }),
+            }),
+        })
+      const selectFn2 = vi
+        .fn()
+        .mockReturnValue({
+          in: vi
+            .fn()
+            .mockReturnValue({
+              eq: vi
+                .fn()
+                .mockReturnValue({
+                  order: vi.fn().mockResolvedValue({ data: [], error: null }),
+                }),
+            }),
+        })
       // variantIds is empty → 3rd from() (variant_option_values) is skipped, so 3rd fn is categories
-      const selectFn3 = vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: [], error: null }) })
+      const selectFn3 = vi
+        .fn()
+        .mockReturnValue({
+          eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+        })
 
       const fns = [selectFn1, selectFn2, selectFn3]
       let i = 0
@@ -363,7 +465,12 @@ describe('Repositorio de productos', () => {
       supabaseFromMock.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
+            order: vi
+              .fn()
+              .mockResolvedValue({
+                data: null,
+                error: { message: 'DB error' },
+              }),
           }),
         }),
       })
@@ -414,7 +521,9 @@ describe('Repositorio de productos', () => {
       })
 
       const { deleteProduct } = await import('./repository.ts')
-      await expect(deleteProduct('product-with-orders')).resolves.toBeUndefined()
+      await expect(
+        deleteProduct('product-with-orders'),
+      ).resolves.toBeUndefined()
     })
   })
 })
@@ -449,7 +558,10 @@ describe('Repositorio de pedidos', () => {
     })
 
     it('debería lanzar error cuando el RPC falla', async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: 'Insufficient stock' } })
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: 'Insufficient stock' },
+      })
       const { createOrder } = await import('./repository.ts')
 
       await expect(
@@ -458,20 +570,80 @@ describe('Repositorio de pedidos', () => {
     })
   })
 
+  describe('updateOrder', () => {
+    it('debería llamar a update_order RPC con las líneas normalizadas', async () => {
+      mockRpc.mockResolvedValue({ data: null, error: null })
+      const { updateOrder } = await import('./repository.ts')
+
+      await updateOrder(
+        'order-123',
+        'client-1',
+        [{ variantId: 'v1', quantity: 3 }],
+        'pending',
+        'Mariana González',
+      )
+
+      expect(mockRpc).toHaveBeenCalledWith('update_order', {
+        p_order_id: 'order-123',
+        p_client_id: 'client-1',
+        p_items: [{ variant_id: 'v1', quantity: 3 }],
+        p_payment_status: 'pending',
+        p_client_name: 'Mariana González',
+      })
+    })
+
+    it('debería propagar los errores del RPC', async () => {
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: 'Insufficient stock' },
+      })
+      const { updateOrder } = await import('./repository.ts')
+
+      await expect(
+        updateOrder(
+          'order-123',
+          'client-1',
+          [{ variantId: 'v1', quantity: 3 }],
+          'paid',
+        ),
+      ).rejects.toThrow('Insufficient stock')
+    })
+  })
+
   describe('loadOrders', () => {
     it('debería cargar pedidos con item lines', async () => {
       const mockOrders = [
-        { id: 'ord-1', client_id: 'c1', status: 'pending', payment_status: 'paid', total: 300, created_at: '2026-01-15T10:30:00Z', order_number: 'PED-001' },
+        {
+          id: 'ord-1',
+          client_id: 'c1',
+          status: 'pending',
+          payment_status: 'paid',
+          total: 300,
+          created_at: '2026-01-15T10:30:00Z',
+          order_number: 'PED-001',
+        },
       ]
       const mockItems = [
-        { order_id: 'ord-1', variant_id: 'v1', quantity: 2, sku_snapshot: 'PLA-001', product_name_snapshot: 'Playera', variant_label_snapshot: 'Negro', unit_price: 150, unit_cost_snapshot: 80, line_total: 300 },
+        {
+          order_id: 'ord-1',
+          variant_id: 'v1',
+          quantity: 2,
+          sku_snapshot: 'PLA-001',
+          product_name_snapshot: 'Playera',
+          variant_label_snapshot: 'Negro',
+          unit_price: 150,
+          unit_cost_snapshot: 80,
+          line_total: 300,
+        },
       ]
 
       supabaseFromMock
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue({ data: mockOrders, error: null }),
+              order: vi
+                .fn()
+                .mockResolvedValue({ data: mockOrders, error: null }),
             }),
           }),
         })
@@ -495,14 +667,24 @@ describe('Repositorio de pedidos', () => {
 
     it('debería mapear status delivered a Entregado', async () => {
       const mockOrders = [
-        { id: 'ord-1', client_id: 'c1', status: 'delivered', payment_status: 'paid', total: 300, created_at: '2026-01-15T10:30:00Z', order_number: 'PED-001' },
+        {
+          id: 'ord-1',
+          client_id: 'c1',
+          status: 'delivered',
+          payment_status: 'paid',
+          total: 300,
+          created_at: '2026-01-15T10:30:00Z',
+          order_number: 'PED-001',
+        },
       ]
 
       supabaseFromMock
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue({ data: mockOrders, error: null }),
+              order: vi
+                .fn()
+                .mockResolvedValue({ data: mockOrders, error: null }),
             }),
           }),
         })
@@ -520,14 +702,24 @@ describe('Repositorio de pedidos', () => {
 
     it('debería mapear status cancelled a Cancelado', async () => {
       const mockOrders = [
-        { id: 'ord-1', client_id: 'c1', status: 'cancelled', payment_status: 'pending', total: 300, created_at: '2026-01-15T10:30:00Z', order_number: 'PED-001' },
+        {
+          id: 'ord-1',
+          client_id: 'c1',
+          status: 'cancelled',
+          payment_status: 'pending',
+          total: 300,
+          created_at: '2026-01-15T10:30:00Z',
+          order_number: 'PED-001',
+        },
       ]
 
       supabaseFromMock
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue({ data: mockOrders, error: null }),
+              order: vi
+                .fn()
+                .mockResolvedValue({ data: mockOrders, error: null }),
             }),
           }),
         })
@@ -546,14 +738,24 @@ describe('Repositorio de pedidos', () => {
 
     it('debería generar ID cuando order_number es null', async () => {
       const mockOrders = [
-        { id: 'ord-123456', client_id: 'c1', status: 'pending', payment_status: 'paid', total: 300, created_at: '2026-01-15T10:30:00Z', order_number: null },
+        {
+          id: 'ord-123456',
+          client_id: 'c1',
+          status: 'pending',
+          payment_status: 'paid',
+          total: 300,
+          created_at: '2026-01-15T10:30:00Z',
+          order_number: null,
+        },
       ]
 
       supabaseFromMock
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue({ data: mockOrders, error: null }),
+              order: vi
+                .fn()
+                .mockResolvedValue({ data: mockOrders, error: null }),
             }),
           }),
         })
@@ -600,7 +802,15 @@ describe('Repositorio de catálogo público', () => {
           whatsapp_number: '5512345678',
           public_intro: 'Hola',
           products: [
-            { id: 'p1', name: 'Playera', category: 'Ropa', price: 150, publicDescription: 'Desc', imageUrl: null, color: 'sky' },
+            {
+              id: 'p1',
+              name: 'Playera',
+              category: 'Ropa',
+              price: 150,
+              publicDescription: 'Desc',
+              imageUrl: null,
+              color: 'sky',
+            },
           ],
         },
       ],
@@ -610,7 +820,9 @@ describe('Repositorio de catálogo público', () => {
     const { loadPublicCatalog } = await import('./repository.ts')
     const result = await loadPublicCatalog('mi-negocio')
 
-    expect(mockRpc).toHaveBeenCalledWith('get_public_catalog', { p_slug: 'mi-negocio' })
+    expect(mockRpc).toHaveBeenCalledWith('get_public_catalog', {
+      p_slug: 'mi-negocio',
+    })
     expect(result).not.toBeNull()
     expect(result!.businessName).toBe('Mi Negocio')
     expect(result!.products).toHaveLength(1)
@@ -642,6 +854,8 @@ describe('Repositorio de catálogo público', () => {
 
     const { loadPublicCatalog } = await import('./repository.ts')
 
-    await expect(loadPublicCatalog('mi-negocio')).rejects.toThrow('column p.price does not exist')
+    await expect(loadPublicCatalog('mi-negocio')).rejects.toThrow(
+      'column p.price does not exist',
+    )
   })
 })

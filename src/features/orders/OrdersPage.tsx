@@ -1,13 +1,11 @@
 import {
+  useEffect,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
-  type SyntheticEvent,
 } from 'react'
-import { Plus, X } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import type { Order, Product } from '../../types.ts'
-import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
-import { Button } from '../../components/ui/Button.tsx'
 import { OrderTicketModal } from './OrderTicketModal.tsx'
 
 export function OrdersPage({
@@ -15,6 +13,7 @@ export function OrdersPage({
   products,
   currency,
   onAdd,
+  onEdit,
   onStatusChange,
   onPaymentChange,
   onCancel,
@@ -23,11 +22,19 @@ export function OrdersPage({
   products: Product[]
   currency: string
   onAdd: () => void
+  onEdit?: (order: Order) => void
   onStatusChange: (order: Order, status: 'pending' | 'delivered') => void
   onPaymentChange: (order: Order, payment: 'pending' | 'paid') => void
   onCancel: (order: Order) => void
 }) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  useEffect(() => {
+    if (!selectedOrder) return
+    const updatedOrder = orders.find((order) => order.id === selectedOrder.id)
+    if (updatedOrder && updatedOrder !== selectedOrder) {
+      setSelectedOrder(updatedOrder)
+    }
+  }, [orders, selectedOrder])
   const now = new Date()
   const active = orders.filter((order) => order.status !== 'Cancelado')
   const thisMonth = active.filter((order) => {
@@ -50,7 +57,6 @@ export function OrdersPage({
       openOrder(order)
     }
   }
-  const stopRowInteraction = (event: SyntheticEvent) => event.stopPropagation()
   return (
     <section className="page-section">
       <div className="section-intro">
@@ -105,7 +111,6 @@ export function OrdersPage({
               <th>Total</th>
               <th>Entrega</th>
               <th>Pago</th>
-              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -128,60 +133,32 @@ export function OrdersPage({
                 </td>
                 <td>
                   {order.status === 'Cancelado' ? (
-                    <span className="badge warning">Cancelado</span>
+                    <span className="badge danger">Cancelado</span>
                   ) : (
-                    <CustomSelect
-                      ariaLabel={`Entrega de ${order.id}`}
-                      className="status-select"
-                      value={
-                        order.status === 'Entregado' ? 'delivered' : 'pending'
+                    <span
+                      className={
+                        order.status === 'Entregado'
+                          ? 'badge success'
+                          : 'badge warning'
                       }
-                      options={[
-                        { value: 'pending', label: 'Pendiente' },
-                        { value: 'delivered', label: 'Entregado' },
-                      ]}
-                      onChange={(val) => {
-                        onStatusChange(
-                          order,
-                          val as 'pending' | 'delivered',
-                        )
-                      }}
-                    />
+                    >
+                      {order.status}
+                    </span>
                   )}
                 </td>
                 <td>
                   {order.status === 'Cancelado' ? (
-                    <span className="badge warning">Cancelado</span>
+                    <span className="badge danger">Cancelado</span>
                   ) : (
-                    <CustomSelect
-                      ariaLabel={`Pago de ${order.id}`}
-                      className="status-select"
-                      value={order.payment === 'Pagado' ? 'paid' : 'pending'}
-                      options={[
-                        { value: 'paid', label: 'Pagado' },
-                        { value: 'pending', label: 'Pendiente' },
-                      ]}
-                      onChange={(val) => {
-                        onPaymentChange(
-                          order,
-                          val as 'pending' | 'paid',
-                        )
-                      }}
-                    />
-                  )}
-                </td>
-                <td>
-                  {order.status !== 'Cancelado' && (
-                    <Button
-                      variant="danger"
-                      icon={<X size={16} aria-hidden="true" />}
-                      onClick={(event) => {
-                        stopRowInteraction(event)
-                        onCancel(order)
-                      }}
-                      aria-label={`Cancelar ${order.id}`}
-                      type="button"
-                    />
+                    <span
+                      className={
+                        order.payment === 'Pagado'
+                          ? 'badge success'
+                          : 'badge warning'
+                      }
+                    >
+                      {order.payment}
+                    </span>
                   )}
                 </td>
               </tr>
@@ -217,7 +194,7 @@ export function OrdersPage({
               <span
                 className={
                   order.status === 'Cancelado'
-                    ? 'badge warning'
+                    ? 'badge danger'
                     : order.status === 'Entregado'
                       ? 'badge success'
                       : 'badge warning'
@@ -234,66 +211,13 @@ export function OrdersPage({
               <span>{order.items} productos</span>
               <strong>{formatMoney(order.total, currency)}</strong>
             </div>
-            <div className="order-card-actions">
-              {order.status === 'Cancelado' ? (
-                <>
-                  <span className="badge warning">Entrega cancelada</span>
-                  <span className="badge warning">Pago cancelado</span>
-                </>
-              ) : (
-                <>
-                  <label>
-                    Entrega
-                    <CustomSelect
-                      ariaLabel={`Entrega de ${order.id}`}
-                      className="status-select"
-                      value={
-                        order.status === 'Entregado' ? 'delivered' : 'pending'
-                      }
-                      options={[
-                        { value: 'pending', label: 'Pendiente' },
-                        { value: 'delivered', label: 'Entregado' },
-                      ]}
-                      onChange={(val) => {
-                        onStatusChange(
-                          order,
-                          val as 'pending' | 'delivered',
-                        )
-                      }}
-                    />
-                  </label>
-                  <label>
-                    Pago
-                    <CustomSelect
-                      ariaLabel={`Pago de ${order.id}`}
-                      className="status-select"
-                      value={order.payment === 'Pagado' ? 'paid' : 'pending'}
-                      options={[
-                        { value: 'paid', label: 'Pagado' },
-                        { value: 'pending', label: 'Pendiente' },
-                      ]}
-                      onChange={(val) => {
-                        onPaymentChange(
-                          order,
-                          val as 'pending' | 'paid',
-                        )
-                      }}
-                    />
-                  </label>
-                </>
-              )}
-              {order.status !== 'Cancelado' && (
-                <Button
-                  variant="danger"
-                  icon={<X size={16} aria-hidden="true" />}
-                  onClick={(event) => {
-                    stopRowInteraction(event)
-                    onCancel(order)
-                  }}
-                  aria-label={`Cancelar ${order.id}`}
-                  type="button"
-                />
-              )}
+            <div className="order-card-statuses">
+              <span>
+                Entrega <strong>{order.status}</strong>
+              </span>
+              <span>
+                Pago <strong>{order.payment}</strong>
+              </span>
             </div>
           </article>
         ))}
@@ -304,6 +228,9 @@ export function OrdersPage({
           products={products}
           currency={currency}
           onClose={() => setSelectedOrder(null)}
+          onEdit={onEdit}
+          onStatusChange={onStatusChange}
+          onPaymentChange={onPaymentChange}
           onCancel={onCancel}
         />
       )}

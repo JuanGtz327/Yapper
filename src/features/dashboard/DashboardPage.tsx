@@ -52,7 +52,7 @@ export function DashboardPage({
           positive
         />
         <Stat
-          label="Pedidos pendientes"
+          label="Pedidos pendientes de entrega"
           value={String(pending)}
           detail="Revisa sus entregas"
         />

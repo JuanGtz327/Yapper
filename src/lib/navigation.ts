@@ -15,7 +15,7 @@ export type Page =
   | 'Estadísticas'
   | 'Ajustes'
 
-export type Modal = 'client' | 'order' | 'categories' | 'optionTypes' | null
+export type Modal = 'client' | 'categories' | 'optionTypes' | null
 
 export const navItems = [
   { label: 'Inicio', icon: BarChart3 },

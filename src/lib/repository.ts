@@ -85,9 +85,7 @@ export const defaultSettings: BusinessSettings = {
 export async function loadProducts(user: User): Promise<Product[]> {
   const { data: productRows, error: productError } = await supabase
     .from('products')
-    .select(
-      'id, name, category_id, published, public_description, image_url',
-    )
+    .select('id, name, category_id, published, public_description, image_url')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
   if (productError) throw productError
@@ -399,10 +397,15 @@ export async function createProductWithVariants(
     throw error
   }
 
-  const category =
-    product.categoryId
-      ? (await supabase.from('categories').select('name').eq('id', product.categoryId).maybeSingle()).data?.name ?? 'General'
-      : 'General'
+  const category = product.categoryId
+    ? ((
+        await supabase
+          .from('categories')
+          .select('name')
+          .eq('id', product.categoryId)
+          .maybeSingle()
+      ).data?.name ?? 'General')
+    : 'General'
 
   return { ...newProduct, category, variants: createdVariants }
 }
@@ -567,6 +570,26 @@ export async function createOrder(
   })
   if (error) throw error
   return data as string
+}
+
+export async function updateOrder(
+  orderId: string,
+  clientId: string,
+  items: OrderItemInput[],
+  paymentStatus: 'pending' | 'paid',
+  clientName: string = '',
+) {
+  const { error } = await supabase.rpc('update_order', {
+    p_order_id: orderId,
+    p_client_id: clientId,
+    p_items: items.map((item) => ({
+      variant_id: item.variantId,
+      quantity: item.quantity,
+    })),
+    p_payment_status: paymentStatus,
+    p_client_name: clientName,
+  })
+  if (error) throw error
 }
 
 export async function loadOrders(

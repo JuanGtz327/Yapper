@@ -1,4 +1,5 @@
-import { X } from 'lucide-react'
+import { Pencil, X } from 'lucide-react'
+import type { MouseEvent } from 'react'
 import type { Order, Product } from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
@@ -8,12 +9,18 @@ export function OrderTicketModal({
   products,
   currency,
   onClose,
+  onEdit,
+  onStatusChange,
+  onPaymentChange,
   onCancel,
 }: {
   order: Order
   products: Product[]
   currency: string
   onClose: () => void
+  onEdit?: (order: Order) => void
+  onStatusChange: (order: Order, status: 'pending' | 'delivered') => void
+  onPaymentChange: (order: Order, payment: 'pending' | 'paid') => void
   onCancel: (order: Order) => void
 }) {
   const lines = order.itemLines ?? []
@@ -71,27 +78,13 @@ export function OrderTicketModal({
           <div>
             <dt>Entrega</dt>
             <dd>
-              <span
-                className={
-                  order.status === 'Entregado'
-                    ? 'badge success'
-                    : 'badge warning'
-                }
-              >
-                {order.status}
-              </span>
+              <StatusBadge value={order.status} />
             </dd>
           </div>
           <div>
             <dt>Pago</dt>
             <dd>
-              <span
-                className={
-                  order.payment === 'Pagado' ? 'badge success' : 'badge warning'
-                }
-              >
-                {order.payment}
-              </span>
+              <StatusBadge value={order.payment} />
             </dd>
           </div>
         </dl>
@@ -145,21 +138,130 @@ export function OrderTicketModal({
           <strong>{formatMoney(total, currency)}</strong>
         </div>
         {order.status !== 'Cancelado' && (
-          <div className="modal-actions">
-            <button
-              className="cancel-button danger-action"
-              onClick={() => {
-                onCancel(order)
-                onClose()
-              }}
-              type="button"
-            >
-              <X size={16} aria-hidden="true" />
-              Cancelar pedido
-            </button>
-          </div>
+          <section
+            className="order-detail-actions"
+            aria-label="Acciones del pedido"
+          >
+            <div className="order-status-controls">
+              <fieldset>
+                <legend>Estado de entrega</legend>
+                <div
+                  className="segmented-control"
+                  role="group"
+                  aria-label={`Estado de entrega de ${order.id}`}
+                >
+                  <StatusButton
+                    active={order.status === 'Pendiente'}
+                    label="Pendiente"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onStatusChange(order, 'pending')
+                    }}
+                  />
+                  <StatusButton
+                    active={order.status === 'Entregado'}
+                    label="Entregado"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onStatusChange(order, 'delivered')
+                    }}
+                  />
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Estado del pago</legend>
+                <div
+                  className="segmented-control"
+                  role="group"
+                  aria-label={`Estado de pago de ${order.id}`}
+                >
+                  <StatusButton
+                    active={order.payment === 'Pendiente'}
+                    label="Pendiente"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onPaymentChange(order, 'pending')
+                    }}
+                  />
+                  <StatusButton
+                    active={order.payment === 'Pagado'}
+                    label="Pagado"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onPaymentChange(order, 'paid')
+                    }}
+                  />
+                </div>
+              </fieldset>
+            </div>
+            <div className="modal-actions order-actions-footer">
+              {onEdit && (
+                <button
+                  className="primary-button"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    onEdit(order)
+                    onClose()
+                  }}
+                  type="button"
+                >
+                  <Pencil size={16} aria-hidden="true" />
+                  Editar pedido
+                </button>
+              )}
+              <button
+                className="cancel-button danger-action"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onCancel(order)
+                  onClose()
+                }}
+                type="button"
+              >
+                <X size={16} aria-hidden="true" />
+                Cancelar pedido
+              </button>
+            </div>
+          </section>
         )}
       </div>
     </ModalFrame>
+  )
+}
+
+function StatusBadge({ value }: { value: string }) {
+  return (
+    <span
+      className={
+        value === 'Pagado' || value === 'Entregado'
+          ? 'badge success'
+          : value === 'Cancelado'
+            ? 'badge danger'
+            : 'badge warning'
+      }
+    >
+      {value}
+    </span>
+  )
+}
+
+function StatusButton({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean
+  label: string
+  onClick: (event: MouseEvent<HTMLButtonElement>) => void
+}) {
+  return (
+    <button
+      className={`segmented-control-button${active ? ' is-active' : ''}`}
+      aria-pressed={active}
+      onClick={onClick}
+      type="button"
+    >
+      {label}
+    </button>
   )
 }

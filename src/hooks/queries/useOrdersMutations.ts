@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { User } from '@supabase/supabase-js'
 import {
   createOrder,
+  updateOrder,
   cancelOrder,
   updateOrderStatus,
   updateOrderPayment,
@@ -124,6 +125,106 @@ export function useOrdersMutations(user: User | null) {
     },
   })
 
+  const update = useMutation({
+    mutationFn: ({
+      order,
+      clientId,
+      items,
+      payment,
+    }: {
+      order: Order
+      clientId: string
+      items: Array<{ variantId: string; quantity: number }>
+      payment: 'pending' | 'paid'
+    }) => {
+      if (!order.databaseId) {
+        const clients = qc.getQueryData<Client[]>(qk.clients(user)) ?? []
+        const products = qc.getQueryData<Product[]>(qk.products(user)) ?? []
+        const client = clients.find((item) => item.id === clientId)
+        const oldLines = order.itemLines ?? []
+        const oldByVariant = new Map(
+          oldLines.map((item) => [item.variantId, item]),
+        )
+        const newByVariant = new Map(
+          items.map((item) => [item.variantId, item]),
+        )
+        qc.setQueryData<Product[]>(qk.products(user), (current) =>
+          (current ?? []).map((product) => ({
+            ...product,
+            variants: product.variants.map((variant) => ({
+              ...variant,
+              stock:
+                variant.stock +
+                (oldByVariant.get(variant.id)?.quantity ?? 0) -
+                (newByVariant.get(variant.id)?.quantity ?? 0),
+            })),
+          })),
+        )
+        const total = items.reduce((sum, item) => {
+          const old = oldByVariant.get(item.variantId)
+          const variant = products
+            .flatMap((product) => product.variants)
+            .find((entry) => entry.id === item.variantId)
+          return (
+            sum + (old?.unitPrice ?? variant?.salePrice ?? 0) * item.quantity
+          )
+        }, 0)
+        qc.setQueryData<Client[]>(qk.clients(user), (current) =>
+          (current ?? []).map((item) =>
+            item.id === order.clientId && item.id !== clientId
+              ? { ...item, orders: Math.max(0, item.orders - 1) }
+              : item.id === clientId && item.id !== order.clientId
+                ? { ...item, orders: item.orders + 1 }
+                : item,
+          ),
+        )
+        qc.setQueryData<Order[]>(qk.orders(user), (current) =>
+          (current ?? []).map((item) =>
+            item.id === order.id
+              ? {
+                  ...item,
+                  clientId,
+                  client: client?.name ?? 'Cliente sin nombre',
+                  clientNameSnapshot: client?.name,
+                  payment: payment === 'paid' ? 'Pagado' : 'Pendiente',
+                  items: items.reduce((sum, line) => sum + line.quantity, 0),
+                  total,
+                  itemLines: items.map((line) => ({
+                    ...line,
+                    ...oldByVariant.get(line.variantId),
+                    variantId: line.variantId,
+                    quantity: line.quantity,
+                    lineTotal:
+                      (oldByVariant.get(line.variantId)?.unitPrice ??
+                        products
+                          .flatMap((product) => product.variants)
+                          .find((variant) => variant.id === line.variantId)
+                          ?.salePrice ??
+                        0) * line.quantity,
+                  })),
+                }
+              : item,
+          ),
+        )
+        return Promise.resolve()
+      }
+      const clients = qc.getQueryData<Client[]>(qk.clients(user)) ?? []
+      const client = clients.find((item) => item.id === clientId)
+      return updateOrder(
+        order.databaseId,
+        clientId,
+        items,
+        payment,
+        client?.name ?? '',
+      )
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: qk.orders(user) })
+      void qc.invalidateQueries({ queryKey: qk.products(user) })
+      void qc.invalidateQueries({ queryKey: qk.sales(user, '7d') })
+    },
+  })
+
   const updateStatus = useMutation({
     mutationFn: ({
       order,
@@ -193,5 +294,5 @@ export function useOrdersMutations(user: User | null) {
     },
   })
 
-  return { create, cancel, updateStatus, updatePayment }
+  return { create, update, cancel, updateStatus, updatePayment }
 }

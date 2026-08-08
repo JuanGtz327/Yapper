@@ -103,9 +103,7 @@ export function useDashboardData(user: User | null) {
           return false
         }
         if (!Number.isInteger(stock) || stock < 0) {
-          toast.error(
-            'Las existencias deben ser un número entero no negativo.',
-          )
+          toast.error('Las existencias deben ser un número entero no negativo.')
           return false
         }
       }
@@ -188,9 +186,7 @@ export function useDashboardData(user: User | null) {
           await clientMutations.create.mutateAsync(newClient)
         }
         toast.success(
-          editing
-            ? toastMessages.client.updated
-            : toastMessages.client.created,
+          editing ? toastMessages.client.updated : toastMessages.client.created,
         )
         return true
       } catch {
@@ -309,6 +305,36 @@ export function useDashboardData(user: User | null) {
     [orderMutations, toast],
   )
 
+  const updateExistingOrder = useCallback(
+    async (
+      order: Order,
+      clientId: string,
+      items: OrderItemInput[],
+      payment: 'pending' | 'paid',
+    ): Promise<boolean> => {
+      const client = clients.find((item) => item.id === clientId)
+      if (!client) throw new Error('Selecciona un cliente')
+      try {
+        await orderMutations.update.mutateAsync({
+          order,
+          clientId,
+          items,
+          payment,
+        })
+        toast.success('Pedido actualizado correctamente.')
+        return true
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : 'No pudimos actualizar el pedido.',
+        )
+        return false
+      }
+    },
+    [clients, orderMutations, toast],
+  )
+
   const updateBusinessSettings = useCallback(
     async (next: BusinessSettings) => {
       const businessName = next.businessName.trim()
@@ -350,9 +376,7 @@ export function useDashboardData(user: User | null) {
         await settingsMutation.mutateAsync(validated)
         toast.success(toastMessages.settings.saved)
       } catch {
-        toast.error(
-          'No pudimos guardar la configuración. Inténtalo de nuevo.',
-        )
+        toast.error('No pudimos guardar la configuración. Inténtalo de nuevo.')
       }
     },
     [settingsMutation, toast],
@@ -376,6 +400,7 @@ export function useDashboardData(user: User | null) {
     addOrder,
     changeOrderStatus,
     changeOrderPayment,
+    updateExistingOrder,
     updateBusinessSettings,
   }
 }

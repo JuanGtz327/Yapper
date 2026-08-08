@@ -3,12 +3,13 @@ import { useQueryClient } from '@tanstack/react-query'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/ReactToastify.css'
 import './App.css'
-import type { Client, Product } from './types.ts'
+import type { Client, Order, Product } from './types.ts'
 import { AuthScreen } from './features/auth/AuthScreen.tsx'
 import { DashboardPage } from './features/dashboard/DashboardPage.tsx'
 import { ProductsPage } from './features/products/ProductsPage.tsx'
 import { ClientsPage } from './features/clients/ClientsPage.tsx'
 import { OrdersPage } from './features/orders/OrdersPage.tsx'
+import { OrderCreatePage } from './features/orders/OrderCreatePage.tsx'
 import { CatalogPage } from './features/catalog/CatalogPage.tsx'
 import { StatsPage } from './features/stats/StatsPage.tsx'
 import { SettingsPage } from './features/settings/SettingsPage.tsx'
@@ -19,7 +20,6 @@ import { AppSidebar } from './components/layout/AppSidebar.tsx'
 import { Topbar } from './components/layout/Topbar.tsx'
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer.tsx'
 import { ClientModal } from './features/clients/ClientModal.tsx'
-import { OrderModal } from './features/orders/OrderModal.tsx'
 import { CategoryManagerModal } from './features/products/CategoryManagerModal.tsx'
 import { OptionTypeManagerModal } from './features/products/OptionTypeManagerModal.tsx'
 import { ConfirmModal } from './components/ui/ConfirmModal.tsx'
@@ -53,6 +53,9 @@ function DashboardApp() {
     mode: 'create' | 'edit'
     product: Product | null
   } | null>(null)
+  const [orderEditor, setOrderEditor] = useState<Order | null | undefined>(
+    undefined,
+  )
   const [search, setSearch] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const hamburgerRef = useRef<HTMLButtonElement>(null)
@@ -76,6 +79,7 @@ function DashboardApp() {
     addOrder: addOrderAction,
     changeOrderStatus,
     changeOrderPayment,
+    updateExistingOrder,
     updateBusinessSettings,
   } = useDashboardData(user)
 
@@ -84,14 +88,12 @@ function DashboardApp() {
   const navigateToPage = (nextPage: Page) => {
     setPage(nextPage)
     setProductEditor(null)
+    setOrderEditor(undefined)
     setMobileMenuOpen(false)
   }
 
-  const openModalForAction = (
-    type: 'client' | 'order',
-    editing?: Client,
-  ) => {
-    setEditingClient(type === 'client' ? (editing as Client | null) : null)
+  const openModalForAction = (type: 'client', editing?: Client) => {
+    setEditingClient(editing ?? null)
     setModal(type)
   }
 
@@ -101,6 +103,8 @@ function DashboardApp() {
       product: product ?? null,
     })
   }
+
+  const openOrderEditor = (order?: Order) => setOrderEditor(order ?? null)
 
   const handleProductSubmit = async (draft: ProductDraft): Promise<boolean> => {
     if (productEditor?.mode === 'edit' && productEditor.product) {
@@ -277,15 +281,31 @@ function DashboardApp() {
             onRemove={removeClient}
           />
         )}
-        {page === 'Pedidos' && (
+        {page === 'Pedidos' && orderEditor === undefined && (
           <OrdersPage
             orders={orders}
             products={products}
             currency={settings.currency}
-            onAdd={() => setModal('order')}
+            onAdd={() => openOrderEditor()}
+            onEdit={openOrderEditor}
             onStatusChange={changeOrderStatus}
             onPaymentChange={changeOrderPayment}
             onCancel={(order) => changeOrderStatus(order, 'cancelled')}
+          />
+        )}
+        {page === 'Pedidos' && orderEditor !== undefined && (
+          <OrderCreatePage
+            initial={orderEditor}
+            clients={clients}
+            products={products}
+            currency={settings.currency}
+            onClose={() => setOrderEditor(undefined)}
+            onSubmit={async (clientId, items, payment) => {
+              if (!orderEditor) {
+                return addOrderAction(clientId, items, payment)
+              }
+              return updateExistingOrder(orderEditor, clientId, items, payment)
+            }}
           />
         )}
         {page === 'Tienda' && (
@@ -326,19 +346,6 @@ function DashboardApp() {
             if (await addClientAction(event, editingClient)) {
               setModal(null)
               setEditingClient(null)
-            }
-          }}
-        />
-      )}
-      {modal === 'order' && (
-        <OrderModal
-          clients={clients}
-          products={products}
-          currency={settings.currency}
-          onClose={() => setModal(null)}
-          onSubmit={async (clientId, items, payment) => {
-            if (await addOrderAction(clientId, items, payment)) {
-              setModal(null)
             }
           }}
         />

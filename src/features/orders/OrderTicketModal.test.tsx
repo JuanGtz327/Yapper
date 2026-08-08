@@ -82,6 +82,9 @@ const defaultProps = {
   products: mockProducts,
   currency: 'MXN',
   onClose: vi.fn(),
+  onEdit: vi.fn(),
+  onStatusChange: vi.fn(),
+  onPaymentChange: vi.fn(),
   onCancel: vi.fn(),
 }
 
@@ -109,13 +112,13 @@ describe('OrderTicketModal', () => {
     it('debería mostrar el estado de entrega', () => {
       render(<OrderTicketModal {...defaultProps} />)
       expect(screen.getByText('Entrega')).toBeInTheDocument()
-      expect(screen.getByText('Pendiente')).toBeInTheDocument()
+      expect(screen.getAllByText('Pendiente').length).toBeGreaterThan(0)
     })
 
     it('debería mostrar el estado de pago', () => {
       render(<OrderTicketModal {...defaultProps} />)
       expect(screen.getByText('Pago')).toBeInTheDocument()
-      expect(screen.getByText('Pagado')).toBeInTheDocument()
+      expect(screen.getAllByText('Pagado').length).toBeGreaterThan(0)
     })
   })
 
@@ -220,10 +223,7 @@ describe('OrderTicketModal', () => {
         itemLines: [{ variantId: 'v999', quantity: 1 }],
       })
       render(
-        <OrderTicketModal
-          {...defaultProps}
-          order={orderWithMissingProduct}
-        />,
+        <OrderTicketModal {...defaultProps} order={orderWithMissingProduct} />,
       )
       expect(screen.getByText('Producto no disponible')).toBeInTheDocument()
     })
@@ -301,22 +301,52 @@ describe('OrderTicketModal', () => {
     it('no debería mostrar botón de cancelar para pedidos cancelados', () => {
       const order = createMockOrder({ status: 'Cancelado' })
       render(<OrderTicketModal {...defaultProps} order={order} />)
-      expect(
-        screen.queryByText('Cancelar pedido'),
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Cancelar pedido')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Acciones del detalle', () => {
+    it('debería ofrecer editar pedido desde el detalle', () => {
+      const onEdit = vi.fn()
+      render(<OrderTicketModal {...defaultProps} onEdit={onEdit} />)
+      fireEvent.click(screen.getByText('Editar pedido'))
+      expect(onEdit).toHaveBeenCalledWith(
+        expect.objectContaining({ id: '#PED-001' }),
+      )
+    })
+
+    it('debería actualizar estados usando controles segmentados', () => {
+      const onStatusChange = vi.fn()
+      const onPaymentChange = vi.fn()
+      render(
+        <OrderTicketModal
+          {...defaultProps}
+          onStatusChange={onStatusChange}
+          onPaymentChange={onPaymentChange}
+        />,
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Entregado' }))
+      const pendingButtons = screen.getAllByRole('button', {
+        name: 'Pendiente',
+      })
+      fireEvent.click(pendingButtons[pendingButtons.length - 1])
+      expect(onStatusChange).toHaveBeenCalledWith(
+        defaultProps.order,
+        'delivered',
+      )
+      expect(onPaymentChange).toHaveBeenCalledWith(
+        defaultProps.order,
+        'pending',
+      )
     })
   })
 
   describe('Pedido sin líneas', () => {
     it('debería mostrar mensaje cuando no hay productos detallados', () => {
       const orderWithoutLines = createMockOrder({ itemLines: [] })
-      render(
-        <OrderTicketModal {...defaultProps} order={orderWithoutLines} />,
-      )
+      render(<OrderTicketModal {...defaultProps} order={orderWithoutLines} />)
       expect(
-        screen.getByText(
-          'No hay productos detallados para este pedido.',
-        ),
+        screen.getByText('No hay productos detallados para este pedido.'),
       ).toBeInTheDocument()
     })
 
@@ -325,9 +355,7 @@ describe('OrderTicketModal', () => {
         itemLines: [],
         total: 1000,
       })
-      render(
-        <OrderTicketModal {...defaultProps} order={orderWithoutLines} />,
-      )
+      render(<OrderTicketModal {...defaultProps} order={orderWithoutLines} />)
       expect(screen.getByText('$1,000.00')).toBeInTheDocument()
     })
   })

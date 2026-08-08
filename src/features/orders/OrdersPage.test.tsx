@@ -15,9 +15,7 @@ const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
   total: 300,
   status: 'Pendiente',
   payment: 'Pagado',
-  itemLines: [
-    { variantId: 'v1', quantity: 2 },
-  ],
+  itemLines: [{ variantId: 'v1', quantity: 2 }],
   ...overrides,
 })
 
@@ -119,8 +117,16 @@ describe('OrdersPage', () => {
 
     it('debería excluir órdenes de meses anteriores del total "Este mes"', () => {
       const orders = [
-        createMockOrder({ id: '#PED-001', total: 300, createdAt: '2026-08-15T10:00:00Z' }),
-        createMockOrder({ id: '#PED-002', total: 500, createdAt: '2026-01-10T10:00:00Z' }),
+        createMockOrder({
+          id: '#PED-001',
+          total: 300,
+          createdAt: '2026-08-15T10:00:00Z',
+        }),
+        createMockOrder({
+          id: '#PED-002',
+          total: 500,
+          createdAt: '2026-01-10T10:00:00Z',
+        }),
       ]
       render(<OrdersPage {...defaultProps} orders={orders} />)
       const summary = screen.getByText('Este mes').parentElement
@@ -198,40 +204,48 @@ describe('OrdersPage', () => {
       expect(onAdd).toHaveBeenCalledTimes(1)
     })
 
-    it('debería llamar a onStatusChange al cambiar el estado de entrega', async () => {
+    it('debería cambiar el estado de entrega desde el detalle', async () => {
       const user = userEvent.setup()
       const onStatusChange = vi.fn()
       render(<OrdersPage {...defaultProps} onStatusChange={onStatusChange} />)
-      const triggers = screen.getAllByRole('button', { name: /entrega de #PED-001/i })
-      await user.click(triggers[0])
-      await user.click(screen.getByRole('option', { name: 'Entregado' }))
+      await user.click(screen.getAllByText('#PED-001')[0])
+      await user.click(screen.getByRole('button', { name: 'Entregado' }))
       expect(onStatusChange).toHaveBeenCalledWith(
         expect.objectContaining({ id: '#PED-001' }),
         'delivered',
       )
     })
 
-    it('debería llamar a onPaymentChange al cambiar el estado de pago', async () => {
+    it('debería cambiar el estado de pago desde el detalle', async () => {
       const user = userEvent.setup()
       const onPaymentChange = vi.fn()
       render(<OrdersPage {...defaultProps} onPaymentChange={onPaymentChange} />)
-      const triggers = screen.getAllByRole('button', { name: /pago de #PED-001/i })
-      await user.click(triggers[0])
-      await user.click(screen.getByRole('option', { name: 'Pendiente' }))
+      await user.click(screen.getAllByText('#PED-001')[0])
+      const pendingButtons = screen.getAllByRole('button', {
+        name: 'Pendiente',
+      })
+      await user.click(pendingButtons[pendingButtons.length - 1])
       expect(onPaymentChange).toHaveBeenCalledWith(
         expect.objectContaining({ id: '#PED-001' }),
         'pending',
       )
     })
 
-    it('debería llamar a onCancel al hacer clic en cancelar', () => {
+    it('debería llamar a onCancel desde el detalle', () => {
       const onCancel = vi.fn()
       render(<OrdersPage {...defaultProps} onCancel={onCancel} />)
-      const cancelButtons = screen.getAllByLabelText('Cancelar #PED-001')
-      fireEvent.click(cancelButtons[0])
+      fireEvent.click(screen.getAllByText('#PED-001')[0])
+      fireEvent.click(screen.getByText('Cancelar pedido'))
       expect(onCancel).toHaveBeenCalledWith(
         expect.objectContaining({ id: '#PED-001' }),
       )
+    })
+
+    it('no debería incluir una columna de acciones en la tabla', () => {
+      render(<OrdersPage {...defaultProps} />)
+      expect(
+        screen.queryByRole('columnheader', { name: 'Acciones' }),
+      ).not.toBeInTheDocument()
     })
 
     it('no debería mostrar botón de cancelar para pedidos cancelados', () => {
