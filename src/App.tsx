@@ -255,7 +255,6 @@ function DashboardApp() {
             onAdd={() => openProductEditor()}
             onManageCategories={() => setModal('categories')}
             onEdit={(product) => openProductEditor(product)}
-            onRemove={removeProduct}
           />
         )}
         {productEditor && (
@@ -268,6 +267,7 @@ function DashboardApp() {
             }}
             onVariantsChanged={handleVariantsChanged}
             onClose={() => setProductEditor(null)}
+            onRemove={removeProduct}
             onSubmit={handleProductSubmit}
           />
         )}

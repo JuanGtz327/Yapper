@@ -165,7 +165,9 @@ describe('ProductsPage', () => {
         createMockProduct({ id: 'p1', name: 'Playera Básica' }),
         createMockProduct({ id: 'p2', name: 'Pantalón Vaquero' }),
       ]
-      render(<ProductsPage {...defaultProps} products={products} search="playera" />)
+      render(
+        <ProductsPage {...defaultProps} products={products} search="playera" />,
+      )
       expect(screen.getByText('Playera Básica')).toBeInTheDocument()
       expect(screen.queryByText('Pantalón Vaquero')).not.toBeInTheDocument()
     })
@@ -175,7 +177,9 @@ describe('ProductsPage', () => {
         createMockProduct({ id: 'p1', name: 'Playera Básica' }),
         createMockProduct({ id: 'p2', name: 'Pantalón Vaquero' }),
       ]
-      render(<ProductsPage {...defaultProps} products={products} search="playera" />)
+      render(
+        <ProductsPage {...defaultProps} products={products} search="playera" />,
+      )
       expect(screen.getByText('1 producto')).toBeInTheDocument()
     })
 
@@ -184,7 +188,9 @@ describe('ProductsPage', () => {
         createMockProduct({ id: 'p1', name: 'Playera Básica' }),
         createMockProduct({ id: 'p2', name: 'Playera Deportiva' }),
       ]
-      render(<ProductsPage {...defaultProps} products={products} search="playera" />)
+      render(
+        <ProductsPage {...defaultProps} products={products} search="playera" />,
+      )
       expect(screen.getByText('2 productos')).toBeInTheDocument()
     })
 
@@ -207,24 +213,22 @@ describe('ProductsPage', () => {
 
     it('debería llamar a onManageCategories al hacer clic en "Categorías"', () => {
       const onManageCategories = vi.fn()
-      render(<ProductsPage {...defaultProps} onManageCategories={onManageCategories} />)
+      render(
+        <ProductsPage
+          {...defaultProps}
+          onManageCategories={onManageCategories}
+        />,
+      )
       fireEvent.click(screen.getByText('Categorías'))
       expect(onManageCategories).toHaveBeenCalledTimes(1)
     })
 
-    it('debería llamar a onEdit al hacer clic en el botón de editar', () => {
+    it('debería abrir el producto al hacer clic en una fila', () => {
       const onEdit = vi.fn()
       const product = createMockProduct()
       render(<ProductsPage {...defaultProps} onEdit={onEdit} />)
-      fireEvent.click(screen.getByLabelText('Editar Playera Básica'))
+      fireEvent.click(screen.getAllByRole('row')[1])
       expect(onEdit).toHaveBeenCalledWith(product)
-    })
-
-    it('debería llamar a onRemove al hacer clic en el botón de eliminar', () => {
-      const onRemove = vi.fn()
-      render(<ProductsPage {...defaultProps} onRemove={onRemove} />)
-      fireEvent.click(screen.getByLabelText('Eliminar Playera Básica'))
-      expect(onRemove).toHaveBeenCalledWith('p1')
     })
   })
 
@@ -322,7 +326,9 @@ describe('ProductsPage', () => {
           },
         ],
       })
-      render(<ProductsPage {...defaultProps} products={[product]} threshold={5} />)
+      render(
+        <ProductsPage {...defaultProps} products={[product]} threshold={5} />,
+      )
       const stockBadge = screen.getByText('3')
       expect(stockBadge).toHaveClass('low')
     })
@@ -342,7 +348,9 @@ describe('ProductsPage', () => {
           },
         ],
       })
-      render(<ProductsPage {...defaultProps} products={[product]} threshold={5} />)
+      render(
+        <ProductsPage {...defaultProps} products={[product]} threshold={5} />,
+      )
       const stockBadge = screen.getByText('10')
       expect(stockBadge).toHaveClass('stock')
       expect(stockBadge).not.toHaveClass('low')

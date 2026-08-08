@@ -1,7 +1,6 @@
-import { useState } from 'react'
-import { Boxes, DollarSign, Pencil, Plus, Search, Tag, Trash2 } from 'lucide-react'
+import { useState, type KeyboardEvent } from 'react'
+import { Boxes, DollarSign, Plus, Search, Tag } from 'lucide-react'
 import { Empty } from '../../components/ui/Empty.tsx'
-import { Button } from '../../components/ui/Button.tsx'
 import { formatMoney } from '../../lib/format.ts'
 import type { Product } from '../../types.ts'
 
@@ -20,7 +19,18 @@ function flattenProducts(products: Product[]): VariantRow[] {
     const variants =
       product.variants.length > 0
         ? product.variants
-        : [{ id: `${product.id}-empty`, productId: product.id, sku: '', name: '', inventoryCost: 0, salePrice: 0, stock: 0, optionValues: [] }]
+        : [
+            {
+              id: `${product.id}-empty`,
+              productId: product.id,
+              sku: '',
+              name: '',
+              inventoryCost: 0,
+              salePrice: 0,
+              stock: 0,
+              optionValues: [],
+            },
+          ]
     for (let i = 0; i < variants.length; i++) {
       rows.push({
         product,
@@ -49,7 +59,6 @@ export function ProductsPage({
   onAdd,
   onManageCategories,
   onEdit,
-  onRemove,
 }: {
   products: Product[]
   threshold: number
@@ -59,7 +68,6 @@ export function ProductsPage({
   onAdd: () => void
   onManageCategories: () => void
   onEdit: (product: Product) => void
-  onRemove: (id: string) => void
 }) {
   const [hoveredProductId, setHoveredProductId] = useState<string | null>(null)
   const filtered = products.filter((product) =>
@@ -90,7 +98,11 @@ export function ProductsPage({
           <p>Administra precios, existencias y categorías.</p>
         </div>
         <div className="section-actions">
-          <button className="secondary-button" onClick={onManageCategories} type="button">
+          <button
+            className="secondary-button"
+            onClick={onManageCategories}
+            type="button"
+          >
             <Tag size={16} aria-hidden="true" />
             Categorías
           </button>
@@ -103,7 +115,7 @@ export function ProductsPage({
       <div className="inventory-summary">
         <DollarSign size={18} aria-hidden="true" />
         <span>Inversión: {formatMoney(totalInvestment, currency)}</span>
-        <span>Venta: {formatMoney(totalSaleValue, currency)}</span>
+        <span>Inventario: {formatMoney(totalSaleValue, currency)}</span>
         <strong>Ganancia: {formatMoney(totalProfit, currency)}</strong>
       </div>
       <div className="toolbar">
@@ -132,7 +144,6 @@ export function ProductsPage({
               <th>Existencias</th>
               <th>Valor</th>
               <th>Ganancia</th>
-              <th className="col-right" aria-label="Acciones" />
             </tr>
           </thead>
           <tbody>
@@ -146,12 +157,21 @@ export function ProductsPage({
               return (
                 <tr
                   key={`${row.product.id}-${row.variant?.id ?? idx}`}
+                  tabIndex={0}
+                  aria-label={`Abrir ${row.product.name}`}
                   className={[
                     row.productIndex % 2 === 1 ? 'zebra-stripe' : '',
                     hoveredProductId === row.product.id ? 'row-hover' : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
+                  onClick={() => onEdit(row.product)}
+                  onKeyDown={(event: KeyboardEvent<HTMLTableRowElement>) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      onEdit(row.product)
+                    }
+                  }}
                   onMouseEnter={() => setHoveredProductId(row.product.id)}
                   onMouseLeave={() => setHoveredProductId(null)}
                 >
@@ -163,7 +183,9 @@ export function ProductsPage({
                         </div>
                         <strong>{row.product.name}</strong>
                       </td>
-                      <td className="col-left" rowSpan={row.rowSpan}>{row.product.category}</td>
+                      <td className="col-left" rowSpan={row.rowSpan}>
+                        {row.product.category}
+                      </td>
                     </>
                   )}
                   <td>
@@ -187,26 +209,6 @@ export function ProductsPage({
                   <td className="table-emphasis">
                     {formatMoney(profit, currency)}
                   </td>
-                  {row.isFirst && (
-                    <td className="row-actions col-right" rowSpan={row.rowSpan}>
-                      <div className="row-actions-inner">
-                        <Button
-                          variant="primary"
-                          icon={<Pencil size={16} aria-hidden="true" />}
-                          onClick={() => onEdit(row.product)}
-                          aria-label={`Editar ${row.product.name}`}
-                          type="button"
-                        />
-                        <Button
-                          variant="danger"
-                          icon={<Trash2 size={17} aria-hidden="true" />}
-                          onClick={() => onRemove(row.product.id)}
-                          aria-label={`Eliminar ${row.product.name}`}
-                          type="button"
-                        />
-                      </div>
-                    </td>
-                  )}
                 </tr>
               )
             })}

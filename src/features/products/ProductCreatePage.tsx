@@ -81,6 +81,7 @@ export function ProductCreatePage({
   onCategoryCreated,
   onVariantsChanged,
   onClose,
+  onRemove,
   onSubmit,
 }: {
   initial: Product | null
@@ -89,6 +90,7 @@ export function ProductCreatePage({
   onCategoryCreated: () => void
   onVariantsChanged: () => void
   onClose: () => void
+  onRemove?: (id: string) => void
   onSubmit: (draft: ProductDraft) => Promise<boolean>
 }) {
   const [draft, setDraft] = useState<ProductDraft>(
@@ -124,7 +126,7 @@ export function ProductCreatePage({
 
   const editingVariantOriginalOptionValues =
     editingVariantIdx !== null && initial
-      ? initial.variants[editingVariantIdx]?.optionValues ?? []
+      ? (initial.variants[editingVariantIdx]?.optionValues ?? [])
       : []
 
   const editingVariantFromDraft =
@@ -212,11 +214,20 @@ export function ProductCreatePage({
           </p>
         </div>
         <div className="section-actions">
-          <button
-            className="secondary-button"
-            onClick={onClose}
-            type="button"
-          >
+          {initial && onRemove && (
+            <Button
+              variant="danger"
+              icon={<Trash2 size={16} aria-hidden="true" />}
+              onClick={() => {
+                onRemove(initial.id)
+                onClose()
+              }}
+              type="button"
+            >
+              Eliminar producto
+            </Button>
+          )}
+          <button className="secondary-button" onClick={onClose} type="button">
             <ArrowLeft size={16} aria-hidden="true" />
             Volver
           </button>
@@ -287,8 +298,8 @@ export function ProductCreatePage({
                     <div className="variant-info">
                       <strong>{variant.sku}</strong>
                       <span className="variant-meta">
-                        {variant.name && `${variant.name} · `}
-                        ${variant.salePrice} · {variant.stock} uds
+                        {variant.name && `${variant.name} · `}$
+                        {variant.salePrice} · {variant.stock} uds
                       </span>
                     </div>
                     <div className="variant-actions">
@@ -347,9 +358,7 @@ export function ProductCreatePage({
                 }
                 maxLength={240}
                 placeholder="Breve descripción para tu catálogo."
-                className={
-                  errors.publicDescription ? 'input-error' : ''
-                }
+                className={errors.publicDescription ? 'input-error' : ''}
               />
               <FieldError errors={errors} name="publicDescription" />
             </label>
@@ -371,11 +380,7 @@ export function ProductCreatePage({
 
           {/* ── ACTIONS ─────────────────────────────────────── */}
           <div className="modal-actions">
-            <button
-              className="cancel-button"
-              onClick={onClose}
-              type="button"
-            >
+            <button className="cancel-button" onClick={onClose} type="button">
               Cancelar
             </button>
             <button
@@ -436,12 +441,10 @@ export function ProductCreatePage({
               Variantes: <strong>{draft.variants.length}</strong>
             </li>
             <li>
-              Publicado:{' '}
-              <strong>{draft.published ? 'Sí' : 'No'}</strong>
+              Publicado: <strong>{draft.published ? 'Sí' : 'No'}</strong>
             </li>
             <li>
-              SKU principal:{' '}
-              <strong>{draft.variants[0]?.sku || '—'}</strong>
+              SKU principal: <strong>{draft.variants[0]?.sku || '—'}</strong>
             </li>
           </ul>
         </aside>
