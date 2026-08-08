@@ -2156,13 +2156,13 @@ td:first-child {
   height: 3px !important;
 }
 .Toastify__progress-bar--success {
-  background: #579078 !important;
+  background: var(--plum) !important;
 }
 .Toastify__progress-bar--error {
   background: #aa6259 !important;
 }
 .Toastify__toast--success {
-  border-left: 3px solid #579078 !important;
+  border-left: 3px solid var(--plum) !important;
 }
 .Toastify__toast--error {
   border-left: 3px solid #aa6259 !important;
