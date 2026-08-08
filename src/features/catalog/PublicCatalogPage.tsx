@@ -52,38 +52,45 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
         <p>{catalog.publicIntro || 'Conoce nuestros productos disponibles.'}</p>
       </section>
       <section className="public-products" aria-label="Productos publicados">
-        {catalog.products.map((product) => {
-          const imageUrl = safeImageUrl(product.imageUrl)
-          return (
-            <article className="public-product" key={product.id}>
-              {imageUrl ? (
-                <img
-                  src={imageUrl}
-                  alt={`${product.name} — ${product.category}`}
-                />
-              ) : (
-                <div className={`catalog-image ${product.color}`}>
-                  <Boxes size={52} aria-hidden="true" />
-                </div>
-              )}
-              <div className="public-product-body">
-                <span>{product.category}</span>
-                <h2>{product.name}</h2>
-                <p>{product.publicDescription}</p>
-                <strong>{formatMoney(product.price, catalog.currency)}</strong>
-                {normalizeMexicanWhatsApp(catalog.whatsappNumber) && (
-                  <a
-                    className="whatsapp-button"
-                    href={`https://wa.me/${normalizeMexicanWhatsApp(catalog.whatsappNumber)}?text=${encodeURIComponent(`Hola, ${catalog.businessName}. Me interesa ${product.name}. Vi su catálogo público.`)}`}
-                  >
-                    <MessageCircle size={17} />
-                    Preguntar por WhatsApp
-                  </a>
+        {catalog.products.length === 0 ? (
+          <div className="empty-state">
+            Aún no hay productos publicados. Vuelve pronto para conocer
+            nuestros productos.
+          </div>
+        ) : (
+          catalog.products.map((product) => {
+            const imageUrl = safeImageUrl(product.imageUrl)
+            return (
+              <article className="public-product" key={product.id}>
+                {imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt={`${product.name} — ${product.category}`}
+                  />
+                ) : (
+                  <div className={`catalog-image ${product.color}`}>
+                    <Boxes size={52} aria-hidden="true" />
+                  </div>
                 )}
-              </div>
-            </article>
-          )
-        })}
+                <div className="public-product-body">
+                  <span>{product.category}</span>
+                  <h2>{product.name}</h2>
+                  <p>{product.publicDescription}</p>
+                  <strong>{formatMoney(product.price, catalog.currency)}</strong>
+                  {normalizeMexicanWhatsApp(catalog.whatsappNumber) && (
+                    <a
+                      className="whatsapp-button"
+                      href={`https://wa.me/${normalizeMexicanWhatsApp(catalog.whatsappNumber)}?text=${encodeURIComponent(`Hola, ${catalog.businessName}. Me interesa ${product.name}. Vi su catálogo público.`)}`}
+                    >
+                      <MessageCircle size={17} />
+                      Preguntar por WhatsApp
+                    </a>
+                  )}
+                </div>
+              </article>
+            )
+          })
+        )}
       </section>
     </main>
   )
