@@ -270,11 +270,12 @@ describe('OrdersPage', () => {
   })
 
   describe('Pedidos cancelados', () => {
-    it('debería deshabilitar el select de pago para pedidos cancelados', () => {
+    it('no debería mostrar el select de pago para pedidos cancelados', () => {
       const order = createMockOrder({ status: 'Cancelado' })
       render(<OrdersPage {...defaultProps} orders={[order]} />)
-      const selects = screen.getAllByLabelText('Pago de #PED-001')
-      expect(selects[0]).toBeDisabled()
+      expect(
+        screen.queryByLabelText('Pago de #PED-001'),
+      ).not.toBeInTheDocument()
     })
 
     it('debería mostrar badge de Cancelado en la tarjeta', () => {
@@ -282,6 +283,31 @@ describe('OrdersPage', () => {
       render(<OrdersPage {...defaultProps} orders={[order]} />)
       const badges = screen.getAllByText('Cancelado')
       expect(badges.length).toBeGreaterThan(0)
+    })
+
+    it('no debería contar pedidos cancelados como pendientes en el resumen', () => {
+      const orders = [
+        createMockOrder({ id: '#PED-001', status: 'Pendiente' }),
+        createMockOrder({ id: '#PED-002', status: 'Cancelado' }),
+        createMockOrder({ id: '#PED-003', status: 'Pendiente' }),
+      ]
+      render(<OrdersPage {...defaultProps} orders={orders} />)
+      const pendientes = screen.getByText('Pendientes').parentElement
+      expect(pendientes?.querySelector('strong')).toHaveTextContent('2')
+    })
+
+    it('no debería mostrar el select de pago en la tarjeta para pedidos cancelados', () => {
+      const order = createMockOrder({ status: 'Cancelado' })
+      render(<OrdersPage {...defaultProps} orders={[order]} />)
+      const cardSelects = screen.queryAllByLabelText('Pago de #PED-001')
+      expect(cardSelects).toHaveLength(0)
+    })
+
+    it('no debería mostrar el select de entrega en la tarjeta para pedidos cancelados', () => {
+      const order = createMockOrder({ status: 'Cancelado' })
+      render(<OrdersPage {...defaultProps} orders={[order]} />)
+      const cardSelects = screen.queryAllByLabelText('Entrega de #PED-001')
+      expect(cardSelects).toHaveLength(0)
     })
   })
 

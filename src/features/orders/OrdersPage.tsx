@@ -150,24 +150,27 @@ export function OrdersPage({
                   )}
                 </td>
                 <td>
-                  <select
-                    aria-label={`Pago de ${order.id}`}
-                    className="status-select"
-                    disabled={order.status === 'Cancelado'}
-                    value={order.payment === 'Pagado' ? 'paid' : 'pending'}
-                    onClick={stopRowInteraction}
-                    onKeyDown={stopRowInteraction}
-                    onChange={(event) => {
-                      stopRowInteraction(event)
-                      onPaymentChange(
-                        order,
-                        event.target.value as 'pending' | 'paid',
-                      )
-                    }}
-                  >
-                    <option value="paid">Pagado</option>
-                    <option value="pending">Pendiente</option>
-                  </select>
+                  {order.status === 'Cancelado' ? (
+                    <span className="badge warning">Cancelado</span>
+                  ) : (
+                    <select
+                      aria-label={`Pago de ${order.id}`}
+                      className="status-select"
+                      value={order.payment === 'Pagado' ? 'paid' : 'pending'}
+                      onClick={stopRowInteraction}
+                      onKeyDown={stopRowInteraction}
+                      onChange={(event) => {
+                        stopRowInteraction(event)
+                        onPaymentChange(
+                          order,
+                          event.target.value as 'pending' | 'paid',
+                        )
+                      }}
+                    >
+                      <option value="paid">Pagado</option>
+                      <option value="pending">Pendiente</option>
+                    </select>
+                  )}
                 </td>
                 <td>
                   {order.status !== 'Cancelado' && (
@@ -235,48 +238,55 @@ export function OrdersPage({
               <strong>{formatMoney(order.total, currency)}</strong>
             </div>
             <div className="order-card-actions">
-              <label>
-                Entrega
-                <select
-                  aria-label={`Entrega de ${order.id}`}
-                  className="status-select"
-                  disabled={order.status === 'Cancelado'}
-                  value={order.status === 'Entregado' ? 'delivered' : 'pending'}
-                  onClick={stopRowInteraction}
-                  onKeyDown={stopRowInteraction}
-                  onChange={(event) => {
-                    stopRowInteraction(event)
-                    onStatusChange(
-                      order,
-                      event.target.value as 'pending' | 'delivered',
-                    )
-                  }}
-                >
-                  <option value="pending">Pendiente</option>
-                  <option value="delivered">Entregado</option>
-                </select>
-              </label>
-              <label>
-                Pago
-                <select
-                  aria-label={`Pago de ${order.id}`}
-                  className="status-select"
-                  disabled={order.status === 'Cancelado'}
-                  value={order.payment === 'Pagado' ? 'paid' : 'pending'}
-                  onClick={stopRowInteraction}
-                  onKeyDown={stopRowInteraction}
-                  onChange={(event) => {
-                    stopRowInteraction(event)
-                    onPaymentChange(
-                      order,
-                      event.target.value as 'pending' | 'paid',
-                    )
-                  }}
-                >
-                  <option value="paid">Pagado</option>
-                  <option value="pending">Pendiente</option>
-                </select>
-              </label>
+              {order.status === 'Cancelado' ? (
+                <>
+                  <span className="badge warning">Entrega cancelada</span>
+                  <span className="badge warning">Pago cancelado</span>
+                </>
+              ) : (
+                <>
+                  <label>
+                    Entrega
+                    <select
+                      aria-label={`Entrega de ${order.id}`}
+                      className="status-select"
+                      value={order.status === 'Entregado' ? 'delivered' : 'pending'}
+                      onClick={stopRowInteraction}
+                      onKeyDown={stopRowInteraction}
+                      onChange={(event) => {
+                        stopRowInteraction(event)
+                        onStatusChange(
+                          order,
+                          event.target.value as 'pending' | 'delivered',
+                        )
+                      }}
+                    >
+                      <option value="pending">Pendiente</option>
+                      <option value="delivered">Entregado</option>
+                    </select>
+                  </label>
+                  <label>
+                    Pago
+                    <select
+                      aria-label={`Pago de ${order.id}`}
+                      className="status-select"
+                      value={order.payment === 'Pagado' ? 'paid' : 'pending'}
+                      onClick={stopRowInteraction}
+                      onKeyDown={stopRowInteraction}
+                      onChange={(event) => {
+                        stopRowInteraction(event)
+                        onPaymentChange(
+                          order,
+                          event.target.value as 'pending' | 'paid',
+                        )
+                      }}
+                    >
+                      <option value="paid">Pagado</option>
+                      <option value="pending">Pendiente</option>
+                    </select>
+                  </label>
+                </>
+              )}
               {order.status !== 'Cancelado' && (
                 <button
                   className="icon-button danger"
