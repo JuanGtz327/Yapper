@@ -13,15 +13,15 @@ import { CatalogPage } from './features/catalog/CatalogPage.tsx'
 import { StatsPage } from './features/stats/StatsPage.tsx'
 import { SettingsPage } from './features/settings/SettingsPage.tsx'
 import { PublicCatalogPage } from './features/catalog/PublicCatalogPage.tsx'
+import { ProductCreatePage } from './features/products/ProductCreatePage.tsx'
 import { Spinner } from './components/ui/Spinner.tsx'
 import { AppSidebar } from './components/layout/AppSidebar.tsx'
 import { Topbar } from './components/layout/Topbar.tsx'
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer.tsx'
-import { ProductModal } from './features/products/ProductModal.tsx'
-import { CategoryManagerModal } from './features/products/CategoryManagerModal.tsx'
-import { OptionTypeManagerModal } from './features/products/OptionTypeManagerModal.tsx'
 import { ClientModal } from './features/clients/ClientModal.tsx'
 import { OrderModal } from './features/orders/OrderModal.tsx'
+import { CategoryManagerModal } from './features/products/CategoryManagerModal.tsx'
+import { OptionTypeManagerModal } from './features/products/OptionTypeManagerModal.tsx'
 import { ConfirmModal } from './components/ui/ConfirmModal.tsx'
 import { isSupabaseConfigured } from './lib/supabase.ts'
 import { qk } from './lib/queryKeys.ts'
@@ -29,6 +29,14 @@ import type { Page, Modal } from './lib/navigation.ts'
 import { getPublicCatalogSlug } from './lib/routing.ts'
 import { useAuth } from './hooks/useAuth.ts'
 import { useDashboardData } from './hooks/useDashboardData.ts'
+import { useProductsMutations } from './hooks/queries/useProductsMutations.ts'
+import {
+  createVariant,
+  updateVariant,
+  deleteVariant,
+} from './lib/repository.ts'
+import { useToast, toastMessages } from './hooks/useToast.ts'
+import type { ProductDraft } from './features/products/validateProductDraft.ts'
 
 const publicSlug = getPublicCatalogSlug(window.location.pathname)
 
@@ -40,13 +48,17 @@ function DashboardApp() {
   const qc = useQueryClient()
   const [page, setPage] = useState<Page>('Inicio')
   const [modal, setModal] = useState<Modal>(null)
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [editingClient, setEditingClient] = useState<Client | null>(null)
+  const [productEditor, setProductEditor] = useState<{
+    mode: 'create' | 'edit'
+    product: Product | null
+  } | null>(null)
   const [search, setSearch] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const hamburgerRef = useRef<HTMLButtonElement>(null)
 
   const { user, authLoading, signOut } = useAuth()
+  const toast = useToast()
   const {
     products,
     clients,
@@ -58,7 +70,6 @@ function DashboardApp() {
     dataLoading,
     confirmState,
     clearConfirm,
-    addProduct: addProductAction,
     addClient: addClientAction,
     removeProduct,
     removeClient,
@@ -68,18 +79,123 @@ function DashboardApp() {
     updateBusinessSettings,
   } = useDashboardData(user)
 
+  const productMutations = useProductsMutations(user)
+
   const navigateToPage = (nextPage: Page) => {
     setPage(nextPage)
     setMobileMenuOpen(false)
   }
 
   const openModalForAction = (
-    type: 'product' | 'client' | 'order',
-    editing?: Product | Client,
+    type: 'client' | 'order',
+    editing?: Client,
   ) => {
-    setEditingProduct(type === 'product' ? (editing as Product | null) : null)
     setEditingClient(type === 'client' ? (editing as Client | null) : null)
     setModal(type)
+  }
+
+  const openProductEditor = (product?: Product) => {
+    setProductEditor({
+      mode: product ? 'edit' : 'create',
+      product: product ?? null,
+    })
+  }
+
+  const handleProductSubmit = async (draft: ProductDraft): Promise<boolean> => {
+    if (productEditor?.mode === 'edit' && productEditor.product) {
+      try {
+        await productMutations.update.mutateAsync({
+          ...productEditor.product,
+          name: draft.name,
+          categoryId: draft.categoryId,
+          published: draft.published,
+          publicDescription: draft.publicDescription,
+          imageUrl: draft.imageUrl || null,
+        })
+        // Handle variant CRUD: update existing, create new, delete removed
+        const existingVariants = productEditor.product.variants
+
+        // Delete variants not in draft
+        for (const existing of existingVariants) {
+          if (!draft.variants.some((v) => v.id === existing.id)) {
+            await deleteVariant(existing.id)
+          }
+        }
+
+        // Update or create variants
+        for (const v of draft.variants) {
+          if (v.id && !v.id.startsWith('pending-')) {
+            await updateVariant(v.id, {
+              sku: v.sku,
+              name: v.name,
+              inventoryCost: v.inventoryCost,
+              salePrice: v.salePrice,
+              stock: v.stock,
+              optionValueIds: v.optionValueIds,
+            })
+          } else {
+            await createVariant(productEditor.product.id, {
+              sku: v.sku,
+              name: v.name,
+              inventoryCost: v.inventoryCost,
+              salePrice: v.salePrice,
+              stock: v.stock,
+              optionValueIds: v.optionValueIds,
+            })
+          }
+        }
+        toast.success(toastMessages.product.updated)
+        void qc.invalidateQueries({ queryKey: qk.products(user) })
+        setProductEditor(null)
+        return true
+      } catch {
+        toast.error('No pudimos guardar el producto. Inténtalo de nuevo.')
+        return false
+      }
+    }
+
+    // Create mode
+    try {
+      await productMutations.createWithVariants.mutateAsync({
+        product: {
+          name: draft.name,
+          categoryId: draft.categoryId,
+          published: draft.published,
+          publicDescription: draft.publicDescription,
+          imageUrl: draft.imageUrl || null,
+        },
+        variants: draft.variants.map((v) => ({
+          sku: v.sku,
+          name: v.name,
+          inventoryCost: v.inventoryCost,
+          salePrice: v.salePrice,
+          stock: v.stock,
+          optionValueIds: v.optionValueIds,
+        })),
+      })
+      toast.success(toastMessages.product.created)
+      setProductEditor(null)
+      return true
+    } catch {
+      toast.error('No pudimos guardar el producto. Inténtalo de nuevo.')
+      return false
+    }
+  }
+
+  const handleVariantsChanged = () => {
+    void qc.invalidateQueries({ queryKey: qk.products(user) }).then(() => {
+      if (productEditor?.product) {
+        const freshProducts = qc.getQueryData<Product[]>(qk.products(user))
+        if (freshProducts) {
+          const freshProduct = freshProducts.find(
+            (p) => p.id === productEditor.product!.id,
+          )
+          if (freshProduct) {
+            setProductEditor({ ...productEditor, product: freshProduct })
+          }
+        }
+      }
+    })
   }
 
   if (authLoading)
@@ -125,17 +241,30 @@ function DashboardApp() {
             onNavigate={navigateToPage}
           />
         )}
-        {page === 'Almacén' && (
+        {page === 'Almacén' && !productEditor && (
           <ProductsPage
             products={products}
             threshold={settings.lowStockThreshold}
             currency={settings.currency}
             search={search}
             setSearch={setSearch}
-            onAdd={() => openModalForAction('product')}
+            onAdd={() => openProductEditor()}
             onManageCategories={() => setModal('categories')}
-            onEdit={(product) => openModalForAction('product', product)}
+            onEdit={(product) => openProductEditor(product)}
             onRemove={removeProduct}
+          />
+        )}
+        {productEditor && (
+          <ProductCreatePage
+            initial={productEditor.product}
+            categories={categories}
+            optionTypes={optionTypes}
+            onCategoryCreated={() => {
+              void qc.invalidateQueries({ queryKey: qk.categories(user) })
+            }}
+            onVariantsChanged={handleVariantsChanged}
+            onClose={() => setProductEditor(null)}
+            onSubmit={handleProductSubmit}
           />
         )}
         {page === 'Clientes' && (
@@ -184,37 +313,6 @@ function DashboardApp() {
           onSelect={navigateToPage}
           onClose={() => setMobileMenuOpen(false)}
           hamburgerRef={hamburgerRef}
-        />
-      )}
-      {modal === 'product' && (
-        <ProductModal
-          initial={editingProduct}
-          categories={categories}
-          optionTypes={optionTypes}
-          onCategoryCreated={() => {
-            void qc.invalidateQueries({ queryKey: qk.categories(user) })
-          }}
-          onVariantsChanged={() => {
-            void qc.invalidateQueries({ queryKey: qk.products(user) }).then(() => {
-              const freshProducts = qc.getQueryData<Product[]>(qk.products(user))
-              if (freshProducts && editingProduct) {
-                const freshProduct = freshProducts.find((p) => p.id === editingProduct.id)
-                if (freshProduct) {
-                  setEditingProduct(freshProduct)
-                }
-              }
-            })
-          }}
-          onClose={() => {
-            setModal(null)
-            setEditingProduct(null)
-          }}
-          onSubmit={async (event) => {
-            if (await addProductAction(event, editingProduct)) {
-              setModal(null)
-              setEditingProduct(null)
-            }
-          }}
         />
       )}
       {modal === 'client' && (

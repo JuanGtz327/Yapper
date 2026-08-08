@@ -341,6 +341,72 @@ export async function createProduct(
   }
 }
 
+export type VariantInput = {
+  sku: string
+  name: string
+  inventoryCost: number
+  salePrice: number
+  stock: number
+  optionValueIds: string[]
+}
+
+export async function createProductWithVariants(
+  user: User,
+  product: {
+    name: string
+    categoryId: string | null
+    published: boolean
+    publicDescription: string
+    imageUrl: string | null
+  },
+  variants: VariantInput[],
+): Promise<Product> {
+  const newProduct = await createProduct(user, {
+    name: product.name,
+    category: 'General',
+    categoryId: product.categoryId,
+    published: product.published,
+    publicDescription: product.publicDescription,
+    imageUrl: product.imageUrl,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    variants: [],
+  })
+
+  const createdVariants: Variant[] = []
+  try {
+    for (const v of variants) {
+      const variantId = await createVariant(newProduct.id, {
+        sku: v.sku,
+        name: v.name,
+        inventoryCost: v.inventoryCost,
+        salePrice: v.salePrice,
+        stock: v.stock,
+        optionValueIds: v.optionValueIds,
+      })
+      createdVariants.push({
+        id: variantId,
+        productId: newProduct.id,
+        sku: v.sku,
+        name: v.name,
+        inventoryCost: v.inventoryCost,
+        salePrice: v.salePrice,
+        stock: v.stock,
+        optionValues: [],
+      })
+    }
+  } catch (error) {
+    await deleteProduct(newProduct.id).catch(() => {})
+    throw error
+  }
+
+  const category =
+    product.categoryId
+      ? (await supabase.from('categories').select('name').eq('id', product.categoryId).maybeSingle()).data?.name ?? 'General'
+      : 'General'
+
+  return { ...newProduct, category, variants: createdVariants }
+}
+
 export async function updateProduct(product: Product) {
   const { error } = await supabase.rpc('update_product_atomic', {
     p_product_id: product.id,

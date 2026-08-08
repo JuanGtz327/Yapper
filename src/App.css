@@ -2186,3 +2186,121 @@ td:first-child {
 .Toastify__toast--error {
   border-left: 3px solid #aa6259 !important;
 }
+
+/* ── PRODUCT CREATE PAGE ─────────────────────────────────── */
+.product-section {
+  border: 1px solid #e8e4e6;
+  border-radius: 10px;
+  padding: 16px;
+  background: #fdfcfc;
+}
+.product-section legend {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.product-section legend .field-help {
+  font-weight: 400;
+}
+.product-section .field-error {
+  display: block;
+  color: #aa6259;
+  font-size: 11px;
+  margin-top: 2px;
+}
+.input-error {
+  border-color: #aa6259 !important;
+}
+.variant-edit-form {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+.variant-edit-fields {
+  display: grid;
+  gap: 12px;
+}
+.variant-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.product-preview-panel {
+  align-self: start;
+}
+.product-preview-panel h3 {
+  color: var(--ink);
+  font-size: 16px;
+  margin-top: 7px;
+}
+.product-preview-card {
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.product-preview-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+.product-preview-placeholder {
+  width: 100%;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #f3f1ef;
+  color: var(--muted);
+  font-size: 12px;
+}
+.product-preview-placeholder svg {
+  color: #c9bfca;
+}
+.product-preview-body {
+  padding: 14px;
+  display: grid;
+  gap: 4px;
+}
+.product-preview-category {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--plum);
+}
+.product-preview-name {
+  font-size: 15px;
+  color: var(--ink);
+}
+.product-preview-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 2px;
+}
+.product-preview-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+.product-preview-summary {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.product-preview-summary strong {
+  color: var(--ink);
+}
