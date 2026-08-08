@@ -546,6 +546,7 @@ export async function loadOrders(
       dateStyle: 'medium',
       timeStyle: 'short',
     }).format(new Date(row.created_at)),
+    createdAt: row.created_at,
     items: itemCounts[row.id] || 0,
     itemLines: itemRows
       .filter((item) => item.order_id === row.id)

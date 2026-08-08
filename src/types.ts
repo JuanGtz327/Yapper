@@ -47,6 +47,7 @@ export type Order = {
   clientId?: string
   client: string
   date: string
+  createdAt?: string
   items: number
   total: number
   status: 'Pendiente' | 'Entregado' | 'Cancelado'

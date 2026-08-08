@@ -185,6 +185,7 @@ export function OrderModal({
                       type="number"
                       min="1"
                       max={selectedOpt?.variant.stock ?? 1}
+                      step="1"
                     />
                     <span className="line-total">
                       {money.format(

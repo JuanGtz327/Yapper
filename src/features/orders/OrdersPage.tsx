@@ -26,7 +26,16 @@ export function OrdersPage({
   onCancel: (order: Order) => void
 }) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const now = new Date()
   const active = orders.filter((order) => order.status !== 'Cancelado')
+  const thisMonth = active.filter((order) => {
+    if (!order.createdAt) return true
+    const orderDate = new Date(order.createdAt)
+    return (
+      orderDate.getFullYear() === now.getFullYear() &&
+      orderDate.getMonth() === now.getMonth()
+    )
+  })
   const openOrder = (order: Order) => setSelectedOrder(order)
   const handleRowKeyDown = (
     event: ReactKeyboardEvent<HTMLTableRowElement>,
@@ -58,7 +67,7 @@ export function OrdersPage({
           <span>Este mes</span>
           <strong>
             {formatMoney(
-              active.reduce((sum, order) => sum + order.total, 0),
+              thisMonth.reduce((sum, order) => sum + order.total, 0),
               currency,
             )}
           </strong>

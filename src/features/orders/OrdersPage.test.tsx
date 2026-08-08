@@ -8,7 +8,8 @@ const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
   databaseId: 'db-1',
   clientId: 'c1',
   client: 'Juan Pérez',
-  date: '15 ene 2026, 10:30',
+  date: '15 ago 2026, 10:30',
+  createdAt: '2026-08-15T10:30:00Z',
   items: 2,
   total: 300,
   status: 'Pendiente',
@@ -110,6 +111,26 @@ describe('OrdersPage', () => {
       const pendientes = screen.getByText('Pendientes').parentElement
       expect(pendientes?.querySelector('strong')).toHaveTextContent('2')
     })
+
+    it('debería excluir órdenes de meses anteriores del total "Este mes"', () => {
+      const orders = [
+        createMockOrder({ id: '#PED-001', total: 300, createdAt: '2026-08-15T10:00:00Z' }),
+        createMockOrder({ id: '#PED-002', total: 500, createdAt: '2026-01-10T10:00:00Z' }),
+      ]
+      render(<OrdersPage {...defaultProps} orders={orders} />)
+      const summary = screen.getByText('Este mes').parentElement
+      expect(summary?.querySelector('strong')).toHaveTextContent('$300')
+    })
+
+    it('debería incluir todas las órdenes cuando createdAt es undefined', () => {
+      const orders = [
+        createMockOrder({ id: '#PED-001', total: 300, createdAt: undefined }),
+        createMockOrder({ id: '#PED-002', total: 500, createdAt: undefined }),
+      ]
+      render(<OrdersPage {...defaultProps} orders={orders} />)
+      const summary = screen.getByText('Este mes').parentElement
+      expect(summary?.querySelector('strong')).toHaveTextContent('$800')
+    })
   })
 
   describe('Tabla de pedidos', () => {
@@ -127,7 +148,7 @@ describe('OrdersPage', () => {
 
     it('debería mostrar la fecha', () => {
       render(<OrdersPage {...defaultProps} />)
-      const dates = screen.getAllByText('15 ene 2026, 10:30')
+      const dates = screen.getAllByText('15 ago 2026, 10:30')
       expect(dates.length).toBeGreaterThanOrEqual(1)
     })
 

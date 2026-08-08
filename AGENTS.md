@@ -19,7 +19,7 @@
 
 ## Agents
 
-- `testing-expert`: Ejecuta todas las pruebas (`npm run test:run`), verifica cobertura de tests por cada funcionalidad nueva, y corre lint + typecheck. Usa el subagente `testing-expert` para validar que todo funcione.
+- `testing-expert`: Ejecuta todas las pruebas (`npm run test:run`), verifica cobertura de tests por cada funcionalidad nueva, y corre lint + typecheck. **Prioriza tests de lógica de negocio del lado del back** (utilidades puras, hooks de mutación, repositorio, orquestación) sobre tests de frontend (componentes UI). Usa el subagente `testing-expert` para validar que todo funcione.
 - `code-reviewer`: Revisión exhaustiva de código (correctitud, seguridad, tipado, convenciones, rendimiento). **Siempre** delega la validación de tests al `testing-expert` antes de emitir veredicto. No aprueba cambios con tests fallidos o tests faltantes.
 
 ## Conventions
