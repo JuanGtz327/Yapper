@@ -2163,9 +2163,8 @@ td:first-child {
 }
 .Toastify__toast--success {
   border-left: 3px solid var(--plum) !important;
-}
-.Toastify__toast--success .Toastify__icon {
-  color: var(--plum) !important;
+  --toastify-icon-color-success: var(--plum) !important;
+  --toastify-color-success: var(--plum) !important;
 }
 .Toastify__toast--error {
   border-left: 3px solid #aa6259 !important;
