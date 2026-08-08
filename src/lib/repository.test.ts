@@ -372,6 +372,51 @@ describe('Repositorio de productos', () => {
       await expect(loadProducts(mockUser)).rejects.toThrow('DB error')
     })
   })
+
+  describe('deleteProduct', () => {
+    it('debería eliminar el producto por id', async () => {
+      const eqMock = vi.fn().mockResolvedValue({ data: null, error: null })
+      const deleteMock = vi.fn().mockReturnValue({ eq: eqMock })
+
+      supabaseFromMock.mockReturnValue({
+        delete: deleteMock,
+      })
+
+      const { deleteProduct } = await import('./repository.ts')
+      await deleteProduct('product-abc')
+
+      expect(supabaseFromMock).toHaveBeenCalledWith('products')
+      expect(deleteMock).toHaveBeenCalled()
+      expect(eqMock).toHaveBeenCalledWith('id', 'product-abc')
+    })
+
+    it('debería propagar errores cuando la eliminación falla', async () => {
+      const eqMock = vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: 'Foreign key violation' },
+      })
+      const deleteMock = vi.fn().mockReturnValue({ eq: eqMock })
+
+      supabaseFromMock.mockReturnValue({
+        delete: deleteMock,
+      })
+
+      const { deleteProduct } = await import('./repository.ts')
+      await expect(deleteProduct('p1')).rejects.toThrow('Foreign key violation')
+    })
+
+    it('debería resolver sin error cuando la eliminación es exitosa', async () => {
+      const eqMock = vi.fn().mockResolvedValue({ data: null, error: null })
+      const deleteMock = vi.fn().mockReturnValue({ eq: eqMock })
+
+      supabaseFromMock.mockReturnValue({
+        delete: deleteMock,
+      })
+
+      const { deleteProduct } = await import('./repository.ts')
+      await expect(deleteProduct('product-with-orders')).resolves.toBeUndefined()
+    })
+  })
 })
 
 describe('Repositorio de pedidos', () => {
