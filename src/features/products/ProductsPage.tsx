@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Boxes, DollarSign, Pencil, Plus, Search, Tag, Trash2 } from 'lucide-react'
 import { Empty } from '../../components/ui/Empty.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { formatMoney } from '../../lib/format.ts'
 import type { Product } from '../../types.ts'
 
@@ -8,10 +10,12 @@ type VariantRow = {
   variant: Product['variants'][number] | null
   isFirst: boolean
   rowSpan: number
+  productIndex: number
 }
 
 function flattenProducts(products: Product[]): VariantRow[] {
   const rows: VariantRow[] = []
+  let productIndex = 0
   for (const product of products) {
     const variants =
       product.variants.length > 0
@@ -23,8 +27,10 @@ function flattenProducts(products: Product[]): VariantRow[] {
         variant: variants[i],
         isFirst: i === 0,
         rowSpan: i === 0 ? variants.length : 0,
+        productIndex,
       })
     }
+    productIndex++
   }
   return rows
 }
@@ -55,6 +61,7 @@ export function ProductsPage({
   onEdit: (product: Product) => void
   onRemove: (id: string) => void
 }) {
+  const [hoveredProductId, setHoveredProductId] = useState<string | null>(null)
   const filtered = products.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase()),
   )
@@ -117,15 +124,15 @@ export function ProductsPage({
         <table>
           <thead>
             <tr>
-              <th>Producto</th>
-              <th>Categoría</th>
+              <th className="col-left">Producto</th>
+              <th className="col-left">Categoría</th>
               <th>SKU</th>
               <th>Costo</th>
               <th>Precio</th>
               <th>Existencias</th>
               <th>Valor</th>
               <th>Ganancia</th>
-              <th aria-label="Acciones" />
+              <th className="col-right" aria-label="Acciones" />
             </tr>
           </thead>
           <tbody>
@@ -137,16 +144,26 @@ export function ProductsPage({
               const profit = stock * (price - cost)
               const label = row.variant ? variantLabel(row.variant) : ''
               return (
-                <tr key={`${row.product.id}-${row.variant?.id ?? idx}`}>
+                <tr
+                  key={`${row.product.id}-${row.variant?.id ?? idx}`}
+                  className={[
+                    row.productIndex % 2 === 1 ? 'zebra-stripe' : '',
+                    hoveredProductId === row.product.id ? 'row-hover' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onMouseEnter={() => setHoveredProductId(row.product.id)}
+                  onMouseLeave={() => setHoveredProductId(null)}
+                >
                   {row.isFirst && (
                     <>
-                      <td rowSpan={row.rowSpan}>
+                      <td className="col-left" rowSpan={row.rowSpan}>
                         <div className={`product-dot ${row.product.color}`}>
                           <Boxes size={18} aria-hidden="true" />
                         </div>
                         <strong>{row.product.name}</strong>
                       </td>
-                      <td rowSpan={row.rowSpan}>{row.product.category}</td>
+                      <td className="col-left" rowSpan={row.rowSpan}>{row.product.category}</td>
                     </>
                   )}
                   <td>
@@ -171,23 +188,23 @@ export function ProductsPage({
                     {formatMoney(profit, currency)}
                   </td>
                   {row.isFirst && (
-                    <td className="row-actions" rowSpan={row.rowSpan}>
-                      <button
-                        className="icon-button"
-                        onClick={() => onEdit(row.product)}
-                        aria-label={`Editar ${row.product.name}`}
-                        type="button"
-                      >
-                        <Pencil size={16} aria-hidden="true" />
-                      </button>
-                      <button
-                        className="icon-button danger"
-                        onClick={() => onRemove(row.product.id)}
-                        aria-label={`Eliminar ${row.product.name}`}
-                        type="button"
-                      >
-                        <Trash2 size={17} aria-hidden="true" />
-                      </button>
+                    <td className="row-actions col-right" rowSpan={row.rowSpan}>
+                      <div className="row-actions-inner">
+                        <Button
+                          variant="primary"
+                          icon={<Pencil size={16} aria-hidden="true" />}
+                          onClick={() => onEdit(row.product)}
+                          aria-label={`Editar ${row.product.name}`}
+                          type="button"
+                        />
+                        <Button
+                          variant="danger"
+                          icon={<Trash2 size={17} aria-hidden="true" />}
+                          onClick={() => onRemove(row.product.id)}
+                          aria-label={`Eliminar ${row.product.name}`}
+                          type="button"
+                        />
+                      </div>
                     </td>
                   )}
                 </tr>

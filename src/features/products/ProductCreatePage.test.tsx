@@ -65,6 +65,7 @@ const defaultProps = {
 describe('ProductCreatePage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    Element.prototype.scrollIntoView = vi.fn()
   })
 
   describe('Renderizado - Nuevo producto', () => {
@@ -280,9 +281,10 @@ describe('ProductCreatePage', () => {
       render(<ProductCreatePage {...defaultProps} />)
       await user.click(screen.getByRole('button', { name: 'Añadir variante' }))
       await user.click(screen.getByText('Agregar opción'))
-      // Should have 2 selects: type and value
-      const selects = screen.getAllByRole('combobox')
-      expect(selects.length).toBeGreaterThanOrEqual(2)
+      const typeSelect = screen.getByRole('button', { name: /tipo/i })
+      const valueSelect = screen.getByRole('button', { name: /valor/i })
+      expect(typeSelect).toBeInTheDocument()
+      expect(valueSelect).toBeInTheDocument()
     })
 
     it('debería habilitar select de valor al elegir tipo', async () => {
@@ -292,15 +294,16 @@ describe('ProductCreatePage', () => {
       await user.click(screen.getByText('Agregar opción'))
 
       const modal = screen.getByRole('dialog')
-      const selects = modal.querySelectorAll('select')
-      const typeSelect = selects[0]
-      const valueSelect = selects[1]
+      const triggers = modal.querySelectorAll('.custom-select-trigger')
+      const typeSelect = triggers[0] as HTMLButtonElement
+      const valueSelect = triggers[1] as HTMLButtonElement
 
       // Value select should be disabled initially
       expect(valueSelect).toBeDisabled()
 
       // Select a type
-      fireEvent.change(typeSelect, { target: { value: 'ot1' } })
+      await user.click(typeSelect)
+      await user.click(screen.getByRole('option', { name: 'Color' }))
 
       // Value select should now be enabled
       expect(valueSelect).not.toBeDisabled()

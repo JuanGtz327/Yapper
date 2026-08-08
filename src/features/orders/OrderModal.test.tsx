@@ -1,5 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { OrderModal } from './OrderModal'
 import type { Client, Product } from '../../types.ts'
 
@@ -66,6 +67,10 @@ const defaultProps = {
 }
 
 describe('OrderModal', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn()
+  })
+
   describe('Renderizado', () => {
     it('debería mostrar el título "Crear pedido"', () => {
       render(<OrderModal {...defaultProps} />)
@@ -77,10 +82,15 @@ describe('OrderModal', () => {
       expect(screen.getByText('Cliente')).toBeInTheDocument()
     })
 
-    it('debería mostrar los clientes disponibles', () => {
+    it('debería mostrar los clientes disponibles', async () => {
+      const user = userEvent.setup()
       render(<OrderModal {...defaultProps} />)
-      expect(screen.getByText('Juan Pérez')).toBeInTheDocument()
-      expect(screen.getByText('María García')).toBeInTheDocument()
+      const dialog = screen.getByRole('dialog')
+      const clientLabel = within(dialog).getByText('Cliente').closest('label')!
+      const trigger = clientLabel.querySelector('.custom-select-trigger')!
+      await user.click(trigger)
+      expect(screen.getByRole('option', { name: 'Juan Pérez' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'María García' })).toBeInTheDocument()
     })
 
     it('debería mostrar el select de estado de pago', () => {
@@ -88,10 +98,13 @@ describe('OrderModal', () => {
       expect(screen.getByText('Estado del pago')).toBeInTheDocument()
     })
 
-    it('debería mostrar las opciones de pago', () => {
+    it('debería mostrar las opciones de pago', async () => {
+      const user = userEvent.setup()
       render(<OrderModal {...defaultProps} />)
-      expect(screen.getByText('Pagado')).toBeInTheDocument()
-      expect(screen.getByText('Pendiente de pago')).toBeInTheDocument()
+      const trigger = screen.getByRole('button', { name: /estado del pago/i })
+      await user.click(trigger)
+      expect(screen.getByRole('option', { name: 'Pagado' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Pendiente de pago' })).toBeInTheDocument()
     })
 
     it('debería mostrar el total del pedido', () => {
@@ -139,26 +152,34 @@ describe('OrderModal', () => {
   })
 
   describe('Selección de cliente', () => {
-    it('debería permitir cambiar el cliente seleccionado', () => {
+    it('debería permitir cambiar el cliente seleccionado', async () => {
+      const user = userEvent.setup()
       render(<OrderModal {...defaultProps} />)
-      const select = screen.getByRole('combobox', { name: /cliente/i })
-      fireEvent.change(select, { target: { value: 'c2' } })
-      expect((select as HTMLSelectElement).value).toBe('c2')
+      const dialog = screen.getByRole('dialog')
+      const clientLabel = within(dialog).getByText('Cliente').closest('label')!
+      const trigger = clientLabel.querySelector('.custom-select-trigger')!
+      await user.click(trigger)
+      await user.click(screen.getByRole('option', { name: 'María García' }))
+      expect(trigger).toHaveTextContent('María García')
     })
   })
 
   describe('Selección de pago', () => {
     it('debería tener "Pagado" como valor por defecto', () => {
       render(<OrderModal {...defaultProps} />)
-      const select = screen.getByRole('combobox', { name: /estado del pago/i })
-      expect((select as HTMLSelectElement).value).toBe('paid')
+      const trigger = screen.getByRole('button', { name: /estado del pago/i })
+      expect(trigger).toHaveTextContent('Pagado')
     })
 
-    it('debería permitir cambiar a Pendiente de pago', () => {
+    it('debería permitir cambiar a Pendiente de pago', async () => {
+      const user = userEvent.setup()
       render(<OrderModal {...defaultProps} />)
-      const select = screen.getByRole('combobox', { name: /estado del pago/i })
-      fireEvent.change(select, { target: { value: 'pending' } })
-      expect((select as HTMLSelectElement).value).toBe('pending')
+      const dialog = screen.getByRole('dialog')
+      const paymentLabel = within(dialog).getByText('Estado del pago').closest('label')!
+      const trigger = paymentLabel.querySelector('.custom-select-trigger')!
+      await user.click(trigger)
+      await user.click(screen.getByRole('option', { name: 'Pendiente de pago' }))
+      expect(trigger).toHaveTextContent('Pendiente de pago')
     })
   })
 

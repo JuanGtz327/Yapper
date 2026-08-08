@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { Stat } from '../../components/ui/Stat.tsx'
+import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { formatMoney } from '../../lib/format.ts'
 import { useSalesQuery } from '../../hooks/queries/useSales.ts'
 
@@ -30,14 +31,15 @@ export function StatsPage({
         </div>
         <label className="period-control">
           <span className="visually-hidden">Periodo de estadísticas</span>
-          <select
+          <CustomSelect
             className="status-select"
             value={period}
-            onChange={(event) => setPeriod(event.target.value as '7d' | '6m')}
-          >
-            <option value="7d">Últimos 7 días</option>
-            <option value="6m">Últimos 6 meses</option>
-          </select>
+            onChange={(val) => setPeriod(val as '7d' | '6m')}
+            options={[
+              { value: '7d', label: 'Últimos 7 días' },
+              { value: '6m', label: 'Últimos 6 meses' },
+            ]}
+          />
         </label>
       </div>
       {isLoading && (

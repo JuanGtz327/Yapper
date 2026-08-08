@@ -37,6 +37,7 @@ const defaultProps = {
 describe('SettingsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    Element.prototype.scrollIntoView = vi.fn()
   })
 
   describe('Renderizado', () => {
@@ -85,8 +86,8 @@ describe('SettingsPage', () => {
 
     it('debería mostrar la moneda actual', () => {
       render(<SettingsPage {...defaultProps} />)
-      const select = screen.getByLabelText('Moneda predeterminada')
-      expect(select).toHaveValue('MXN')
+      const trigger = screen.getByRole('button', { name: /moneda predeterminada/i })
+      expect(trigger).toHaveTextContent('Peso mexicano (MXN)')
     })
 
     it('debería mostrar el umbral de stock bajo', () => {
@@ -140,9 +141,10 @@ describe('SettingsPage', () => {
     it('debería actualizar la moneda al cambiar', async () => {
       const user = userEvent.setup()
       render(<SettingsPage {...defaultProps} />)
-      const select = screen.getByLabelText('Moneda predeterminada')
-      await user.selectOptions(select, 'USD')
-      expect(select).toHaveValue('USD')
+      const trigger = screen.getByRole('button', { name: /moneda predeterminada/i })
+      await user.click(trigger)
+      await user.click(screen.getByRole('option', { name: 'Dólar estadounidense (USD)' }))
+      expect(trigger).toHaveTextContent('Dólar estadounidense (USD)')
     })
 
     it('debería actualizar el umbral de stock', async () => {

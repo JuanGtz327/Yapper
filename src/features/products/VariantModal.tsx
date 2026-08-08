@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Check, Plus, X } from 'lucide-react'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 import type { VariantDraft } from './validateProductDraft.ts'
 
@@ -179,36 +180,29 @@ export function VariantModal({
               const valuesForType = type?.values ?? []
               return (
                 <div key={idx} className="option-selection-row">
-                  <select
+                  <CustomSelect
                     value={sel.typeId}
-                    onChange={(e) =>
-                      updateSelection(idx, {
-                        typeId: e.target.value,
-                        valueId: '',
-                      })
+                    onChange={(val) =>
+                      updateSelection(idx, { typeId: val, valueId: '' })
                     }
-                  >
-                    <option value="">Tipo...</option>
-                    {optionTypes.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
+                    options={optionTypes.map((t) => ({
+                      value: t.id,
+                      label: t.name,
+                    }))}
+                    placeholder="Tipo..."
+                  />
+                  <CustomSelect
                     value={sel.valueId}
-                    onChange={(e) =>
-                      updateSelection(idx, { valueId: e.target.value })
+                    onChange={(val) =>
+                      updateSelection(idx, { valueId: val })
                     }
+                    options={valuesForType.map((v) => ({
+                      value: v.id,
+                      label: v.name,
+                    }))}
+                    placeholder="Valor..."
                     disabled={!sel.typeId}
-                  >
-                    <option value="">Valor...</option>
-                    {valuesForType.map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                   <button
                     className="icon-button danger"
                     onClick={() => removeSelection(idx)}

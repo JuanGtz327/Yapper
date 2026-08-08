@@ -1,5 +1,6 @@
 import { ArrowUpRight, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import { Empty } from '../../components/ui/Empty.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import type { Client } from '../../types.ts'
 
 export function ClientsPage({
@@ -51,22 +52,20 @@ export function ClientsPage({
             <div className="client-card-top">
               <div className="avatar">{client.initials}</div>
               <div className="row-actions">
-                <button
-                  className="icon-button"
+                <Button
+                  variant="primary"
+                  icon={<Pencil size={16} />}
                   onClick={() => onEdit(client)}
                   aria-label={`Editar ${client.name}`}
                   type="button"
-                >
-                  <Pencil size={16} />
-                </button>
-                <button
-                  className="icon-button danger"
+                />
+                <Button
+                  variant="danger"
+                  icon={<Trash2 size={16} />}
                   onClick={() => onRemove(client.id)}
                   aria-label={`Eliminar ${client.name}`}
                   type="button"
-                >
-                  <Trash2 size={16} />
-                </button>
+                />
               </div>
             </div>
             <h3>{client.name}</h3>

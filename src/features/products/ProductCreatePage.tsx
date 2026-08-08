@@ -4,6 +4,8 @@ import type { Product } from '../../types.ts'
 import { CategoryManagerModal } from './CategoryManagerModal.tsx'
 import { VariantModal } from './VariantModal.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
+import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 import {
   validateProductDraft,
@@ -209,30 +211,27 @@ export function ProductCreatePage({
             <label className="category-row">
               Categoría
               <div className="category-selector">
-                <select
+                <CustomSelect
                   value={draft.categoryId ?? ''}
-                  onChange={(e) =>
-                    setDraft({
-                      ...draft,
-                      categoryId: e.target.value || null,
-                    })
+                  onChange={(val) =>
+                    setDraft({ ...draft, categoryId: val || null })
                   }
-                >
-                  <option value="">Sin categoría</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  className="icon-button"
+                  options={[
+                    { value: '', label: 'Sin categoría' },
+                    ...categories.map((cat) => ({
+                      value: cat.id,
+                      label: cat.name,
+                    })),
+                  ]}
+                  placeholder="Sin categoría"
+                />
+                <Button
+                  variant="primary"
+                  icon={<Plus size={16} />}
                   onClick={() => setCategoryManagerOpen(true)}
                   type="button"
                   aria-label="Gestionar categorías"
-                >
-                  <Plus size={16} />
-                </button>
+                />
               </div>
             </label>
           </fieldset>
@@ -260,22 +259,20 @@ export function ProductCreatePage({
                       </span>
                     </div>
                     <div className="variant-actions">
-                      <button
-                        className="icon-button"
+                      <Button
+                        variant="primary"
+                        icon={<Pencil size={15} />}
                         onClick={() => openEditVariant(idx)}
                         type="button"
                         aria-label={`Editar variante ${variant.sku}`}
-                      >
-                        <Pencil size={15} />
-                      </button>
-                      <button
-                        className="icon-button danger"
+                      />
+                      <Button
+                        variant="danger"
+                        icon={<Trash2 size={15} />}
                         onClick={() => confirmRemoveVariant(idx)}
                         type="button"
                         aria-label={`Eliminar variante ${variant.sku}`}
-                      >
-                        <Trash2 size={15} />
-                      </button>
+                      />
                     </div>
                   </li>
                 ))}
@@ -286,7 +283,7 @@ export function ProductCreatePage({
               </p>
             )}
             <button
-              className="secondary-button"
+              className="secondary-button variant-add-btn"
               onClick={openAddVariant}
               type="button"
             >
@@ -308,7 +305,7 @@ export function ProductCreatePage({
               />
               Mostrar en mi catálogo público
             </label>
-            <label>
+            <label className="public-description-gap">
               Descripción pública
               <textarea
                 value={draft.publicDescription}

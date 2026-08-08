@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { Check, Settings, Palette } from 'lucide-react'
 import type { BusinessSettings } from '../../types.ts'
+import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 
 export function SettingsPage({
@@ -95,16 +96,15 @@ export function SettingsPage({
           </label>
           <label>
             Moneda predeterminada
-            <select
+            <CustomSelect
               value={draft.currency}
-              onChange={(event) =>
-                setDraft({ ...draft, currency: event.target.value })
-              }
-            >
-              <option value="MXN">Peso mexicano (MXN)</option>
-              <option value="USD">Dólar estadounidense (USD)</option>
-              <option value="CAD">Dólar canadiense (CAD)</option>
-            </select>
+              onChange={(val) => setDraft({ ...draft, currency: val })}
+              options={[
+                { value: 'MXN', label: 'Peso mexicano (MXN)' },
+                { value: 'USD', label: 'Dólar estadounidense (USD)' },
+                { value: 'CAD', label: 'Dólar canadiense (CAD)' },
+              ]}
+            />
           </label>
           <label>
             Umbral de stock bajo
@@ -207,7 +207,7 @@ export function SettingsPage({
           <h3>Opciones de producto</h3>
           <p>Administra tipos como Color, Talla o Capacidad y sus valores.</p>
           <button
-            className="secondary-button"
+            className="secondary-button option-type-btn"
             onClick={onOpenOptionTypes}
             type="button"
           >

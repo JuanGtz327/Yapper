@@ -3,6 +3,7 @@ import { Check, Plus, X } from 'lucide-react'
 import type { Client, OrderItemInput, Product, Variant } from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Empty } from '../../components/ui/Empty.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 
@@ -133,16 +134,15 @@ export function OrderModal({
           <>
             <label>
               Cliente
-              <select
+              <CustomSelect
                 value={clientId}
-                onChange={(event) => setClientId(event.target.value)}
-              >
-                {clients.map((client) => (
-                  <option key={client.id} value={client.id}>
-                    {client.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setClientId(val)}
+                options={clients.map((client) => ({
+                  value: client.id,
+                  label: client.name,
+                }))}
+                placeholder="Seleccionar cliente..."
+              />
             </label>
             <div className="order-lines">
               <div className="line-heading">
@@ -158,22 +158,17 @@ export function OrderModal({
                     className="order-line"
                     key={`${line.variantId}-${index}`}
                   >
-                    <select
+                    <CustomSelect
                       value={line.variantId}
-                      onChange={(event) =>
-                        updateLine(index, { variantId: event.target.value })
+                      onChange={(val) =>
+                        updateLine(index, { variantId: val })
                       }
-                    >
-                      {variantOptions.map((opt) => (
-                        <option
-                          disabled={opt.variant.stock === 0}
-                          key={opt.variant.id}
-                          value={opt.variant.id}
-                        >
-                          {formatVariantLabel(opt)}
-                        </option>
-                      ))}
-                    </select>
+                      options={variantOptions.map((opt) => ({
+                        value: opt.variant.id,
+                        label: formatVariantLabel(opt),
+                      }))}
+                      placeholder="Producto..."
+                    />
                     <input
                       aria-label="Cantidad"
                       value={line.quantity}
@@ -229,15 +224,16 @@ export function OrderModal({
             </div>
             <label>
               Estado del pago
-              <select
+              <CustomSelect
                 value={payment}
-                onChange={(event) =>
-                  setPayment(event.target.value as 'pending' | 'paid')
+                onChange={(val) =>
+                  setPayment(val as 'pending' | 'paid')
                 }
-              >
-                <option value="paid">Pagado</option>
-                <option value="pending">Pendiente de pago</option>
-              </select>
+                options={[
+                  { value: 'paid', label: 'Pagado' },
+                  { value: 'pending', label: 'Pendiente de pago' },
+                ]}
+              />
             </label>
             <div className="order-total">
               <span>Total del pedido</span>

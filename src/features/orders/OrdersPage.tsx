@@ -6,6 +6,8 @@ import {
 import { Plus, X } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import type { Order, Product } from '../../types.ts'
+import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { OrderTicketModal } from './OrderTicketModal.tsx'
 
 export function OrdersPage({
@@ -107,9 +109,9 @@ export function OrdersPage({
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {orders.map((order, idx) => (
               <tr
-                className="order-row"
+                className={`order-row${idx % 2 === 1 ? ' zebra-stripe' : ''}`}
                 tabIndex={0}
                 key={order.id}
                 onClick={() => openOrder(order)}
@@ -128,63 +130,58 @@ export function OrdersPage({
                   {order.status === 'Cancelado' ? (
                     <span className="badge warning">Cancelado</span>
                   ) : (
-                    <select
-                      aria-label={`Entrega de ${order.id}`}
+                    <CustomSelect
+                      ariaLabel={`Entrega de ${order.id}`}
                       className="status-select"
                       value={
                         order.status === 'Entregado' ? 'delivered' : 'pending'
                       }
-                      onClick={stopRowInteraction}
-                      onKeyDown={stopRowInteraction}
-                      onChange={(event) => {
-                        stopRowInteraction(event)
+                      options={[
+                        { value: 'pending', label: 'Pendiente' },
+                        { value: 'delivered', label: 'Entregado' },
+                      ]}
+                      onChange={(val) => {
                         onStatusChange(
                           order,
-                          event.target.value as 'pending' | 'delivered',
+                          val as 'pending' | 'delivered',
                         )
                       }}
-                    >
-                      <option value="pending">Pendiente</option>
-                      <option value="delivered">Entregado</option>
-                    </select>
+                    />
                   )}
                 </td>
                 <td>
                   {order.status === 'Cancelado' ? (
                     <span className="badge warning">Cancelado</span>
                   ) : (
-                    <select
-                      aria-label={`Pago de ${order.id}`}
+                    <CustomSelect
+                      ariaLabel={`Pago de ${order.id}`}
                       className="status-select"
                       value={order.payment === 'Pagado' ? 'paid' : 'pending'}
-                      onClick={stopRowInteraction}
-                      onKeyDown={stopRowInteraction}
-                      onChange={(event) => {
-                        stopRowInteraction(event)
+                      options={[
+                        { value: 'paid', label: 'Pagado' },
+                        { value: 'pending', label: 'Pendiente' },
+                      ]}
+                      onChange={(val) => {
                         onPaymentChange(
                           order,
-                          event.target.value as 'pending' | 'paid',
+                          val as 'pending' | 'paid',
                         )
                       }}
-                    >
-                      <option value="paid">Pagado</option>
-                      <option value="pending">Pendiente</option>
-                    </select>
+                    />
                   )}
                 </td>
                 <td>
                   {order.status !== 'Cancelado' && (
-                    <button
-                      className="icon-button danger"
+                    <Button
+                      variant="danger"
+                      icon={<X size={16} aria-hidden="true" />}
                       onClick={(event) => {
                         stopRowInteraction(event)
                         onCancel(order)
                       }}
                       aria-label={`Cancelar ${order.id}`}
                       type="button"
-                    >
-                      <X size={16} aria-hidden="true" />
-                    </button>
+                    />
                   )}
                 </td>
               </tr>
@@ -247,58 +244,55 @@ export function OrdersPage({
                 <>
                   <label>
                     Entrega
-                    <select
-                      aria-label={`Entrega de ${order.id}`}
+                    <CustomSelect
+                      ariaLabel={`Entrega de ${order.id}`}
                       className="status-select"
-                      value={order.status === 'Entregado' ? 'delivered' : 'pending'}
-                      onClick={stopRowInteraction}
-                      onKeyDown={stopRowInteraction}
-                      onChange={(event) => {
-                        stopRowInteraction(event)
+                      value={
+                        order.status === 'Entregado' ? 'delivered' : 'pending'
+                      }
+                      options={[
+                        { value: 'pending', label: 'Pendiente' },
+                        { value: 'delivered', label: 'Entregado' },
+                      ]}
+                      onChange={(val) => {
                         onStatusChange(
                           order,
-                          event.target.value as 'pending' | 'delivered',
+                          val as 'pending' | 'delivered',
                         )
                       }}
-                    >
-                      <option value="pending">Pendiente</option>
-                      <option value="delivered">Entregado</option>
-                    </select>
+                    />
                   </label>
                   <label>
                     Pago
-                    <select
-                      aria-label={`Pago de ${order.id}`}
+                    <CustomSelect
+                      ariaLabel={`Pago de ${order.id}`}
                       className="status-select"
                       value={order.payment === 'Pagado' ? 'paid' : 'pending'}
-                      onClick={stopRowInteraction}
-                      onKeyDown={stopRowInteraction}
-                      onChange={(event) => {
-                        stopRowInteraction(event)
+                      options={[
+                        { value: 'paid', label: 'Pagado' },
+                        { value: 'pending', label: 'Pendiente' },
+                      ]}
+                      onChange={(val) => {
                         onPaymentChange(
                           order,
-                          event.target.value as 'pending' | 'paid',
+                          val as 'pending' | 'paid',
                         )
                       }}
-                    >
-                      <option value="paid">Pagado</option>
-                      <option value="pending">Pendiente</option>
-                    </select>
+                    />
                   </label>
                 </>
               )}
               {order.status !== 'Cancelado' && (
-                <button
-                  className="icon-button danger"
+                <Button
+                  variant="danger"
+                  icon={<X size={16} aria-hidden="true" />}
                   onClick={(event) => {
                     stopRowInteraction(event)
                     onCancel(order)
                   }}
                   aria-label={`Cancelar ${order.id}`}
                   type="button"
-                >
-                  <X size={16} aria-hidden="true" />
-                </button>
+                />
               )}
             </div>
           </article>

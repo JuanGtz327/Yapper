@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { OrdersPage } from './OrdersPage'
 import type { Order, Product } from '../../types.ts'
 
@@ -55,6 +56,10 @@ const defaultProps = {
 }
 
 describe('OrdersPage', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn()
+  })
+
   describe('Renderizado', () => {
     it('debería renderizar el título de la página', () => {
       render(<OrdersPage {...defaultProps} />)
@@ -193,22 +198,26 @@ describe('OrdersPage', () => {
       expect(onAdd).toHaveBeenCalledTimes(1)
     })
 
-    it('debería llamar a onStatusChange al cambiar el estado de entrega', () => {
+    it('debería llamar a onStatusChange al cambiar el estado de entrega', async () => {
+      const user = userEvent.setup()
       const onStatusChange = vi.fn()
       render(<OrdersPage {...defaultProps} onStatusChange={onStatusChange} />)
-      const selects = screen.getAllByLabelText('Entrega de #PED-001')
-      fireEvent.change(selects[0], { target: { value: 'delivered' } })
+      const triggers = screen.getAllByRole('button', { name: /entrega de #PED-001/i })
+      await user.click(triggers[0])
+      await user.click(screen.getByRole('option', { name: 'Entregado' }))
       expect(onStatusChange).toHaveBeenCalledWith(
         expect.objectContaining({ id: '#PED-001' }),
         'delivered',
       )
     })
 
-    it('debería llamar a onPaymentChange al cambiar el estado de pago', () => {
+    it('debería llamar a onPaymentChange al cambiar el estado de pago', async () => {
+      const user = userEvent.setup()
       const onPaymentChange = vi.fn()
       render(<OrdersPage {...defaultProps} onPaymentChange={onPaymentChange} />)
-      const selects = screen.getAllByLabelText('Pago de #PED-001')
-      fireEvent.change(selects[0], { target: { value: 'pending' } })
+      const triggers = screen.getAllByRole('button', { name: /pago de #PED-001/i })
+      await user.click(triggers[0])
+      await user.click(screen.getByRole('option', { name: 'Pendiente' }))
       expect(onPaymentChange).toHaveBeenCalledWith(
         expect.objectContaining({ id: '#PED-001' }),
         'pending',
