@@ -2,6 +2,8 @@ import { useState, useEffect, type FormEvent } from 'react'
 import { ArrowLeft, Check, Image, Pencil, Plus, Trash2 } from 'lucide-react'
 import type { Product } from '../../types.ts'
 import { CategoryManagerModal } from './CategoryManagerModal.tsx'
+import { VariantModal } from './VariantModal.tsx'
+import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 import {
   validateProductDraft,
@@ -15,15 +17,6 @@ type OptionTypeWithValues = {
   values: Array<{ id: string; name: string }>
 }
 
-const emptyVariant: VariantDraft = {
-  sku: '',
-  name: '',
-  inventoryCost: 0,
-  salePrice: 0,
-  stock: 0,
-  optionValueIds: [],
-}
-
 function newDraft(): ProductDraft {
   return {
     name: '',
@@ -31,7 +24,7 @@ function newDraft(): ProductDraft {
     published: false,
     publicDescription: '',
     imageUrl: '',
-    variants: [{ ...emptyVariant }],
+    variants: [],
   }
 }
 
@@ -42,26 +35,16 @@ function draftFromProduct(product: Product): ProductDraft {
     published: product.published,
     publicDescription: product.publicDescription,
     imageUrl: product.imageUrl ?? '',
-    variants:
-      product.variants.length > 0
-        ? product.variants.map((v) => ({
-            id: v.id,
-            sku: v.sku,
-            name: v.name,
-            inventoryCost: v.inventoryCost,
-            salePrice: v.salePrice,
-            stock: v.stock,
-            optionValueIds: [],
-          }))
-        : [{ ...emptyVariant }],
+    variants: product.variants.map((v) => ({
+      id: v.id,
+      sku: v.sku,
+      name: v.name,
+      inventoryCost: v.inventoryCost,
+      salePrice: v.salePrice,
+      stock: v.stock,
+      optionValueIds: [],
+    })),
   }
-}
-
-function fieldError(
-  errors: Record<string, string>,
-  key: string,
-): string | undefined {
-  return errors[key]
 }
 
 function FieldError({
@@ -99,9 +82,11 @@ export function ProductCreatePage({
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [categoryManagerOpen, setCategoryManagerOpen] = useState(false)
+  const [variantModalOpen, setVariantModalOpen] = useState(false)
   const [editingVariantIdx, setEditingVariantIdx] = useState<number | null>(
     null,
   )
+  const [confirmDeleteIdx, setConfirmDeleteIdx] = useState<number | null>(null)
   const toast = useToast()
 
   useEffect(() => {
@@ -111,35 +96,45 @@ export function ProductCreatePage({
   const selectedCategoryName =
     categories.find((c) => c.id === draft.categoryId)?.name ?? 'Sin categoría'
 
-  const updateVariant = (index: number, patch: Partial<VariantDraft>) => {
-    setDraft((prev) => ({
-      ...prev,
-      variants: prev.variants.map((v, i) =>
-        i === index ? { ...v, ...patch } : v,
-      ),
-    }))
+  const openAddVariant = () => {
+    setEditingVariantIdx(null)
+    setVariantModalOpen(true)
   }
 
-  const addVariant = () => {
-    setDraft((prev) => ({
-      ...prev,
-      variants: [...prev.variants, { ...emptyVariant }],
-    }))
+  const openEditVariant = (index: number) => {
+    setEditingVariantIdx(index)
+    setVariantModalOpen(true)
   }
 
-  const removeVariant = (index: number) => {
-    if (draft.variants.length <= 1) {
-      toast.error('Debe haber al menos una variante.')
-      return
+  const handleSaveVariant = (data: VariantDraft) => {
+    if (editingVariantIdx !== null) {
+      setDraft((prev) => ({
+        ...prev,
+        variants: prev.variants.map((v, i) =>
+          i === editingVariantIdx ? { ...v, ...data } : v,
+        ),
+      }))
+    } else {
+      setDraft((prev) => ({
+        ...prev,
+        variants: [...prev.variants, data],
+      }))
     }
+    setVariantModalOpen(false)
+    setEditingVariantIdx(null)
+  }
+
+  const confirmRemoveVariant = (index: number) => {
+    setConfirmDeleteIdx(index)
+  }
+
+  const removeVariant = () => {
+    if (confirmDeleteIdx === null) return
     setDraft((prev) => ({
       ...prev,
-      variants: prev.variants.filter((_, i) => i !== index),
+      variants: prev.variants.filter((_, i) => i !== confirmDeleteIdx),
     }))
-    if (editingVariantIdx === index) setEditingVariantIdx(null)
-    else if (editingVariantIdx !== null && editingVariantIdx > index) {
-      setEditingVariantIdx(editingVariantIdx - 1)
-    }
+    setConfirmDeleteIdx(null)
   }
 
   const submit = async (event: FormEvent) => {
@@ -207,7 +202,7 @@ export function ProductCreatePage({
                 }}
                 placeholder="Ej. Tupper rectangular 1L"
                 maxLength={120}
-                className={fieldError(errors, 'name') ? 'input-error' : ''}
+                className={errors.name ? 'input-error' : ''}
               />
               <FieldError errors={errors} name="name" />
             </label>
@@ -250,202 +245,49 @@ export function ProductCreatePage({
                 Cada variante define su propio SKU, precio y existencias.
               </span>
             </legend>
-            {fieldError(errors, 'variants') && (
+            {errors.variants && (
               <span className="field-error">{errors.variants}</span>
             )}
-            <ul className="variant-list">
-              {draft.variants.map((variant, idx) => (
-                <li key={idx} className="variant-list-item">
-                  {editingVariantIdx === idx ? (
-                    <div className="variant-edit-form">
-                      <div className="variant-edit-fields">
-                        <label>
-                          SKU
-                          <input
-                            value={variant.sku}
-                            onChange={(e) =>
-                              updateVariant(idx, { sku: e.target.value })
-                            }
-                            placeholder="Ej. TUP-REC-1L-NEG"
-                            className={
-                              fieldError(errors, `variant_${idx}_sku`)
-                                ? 'input-error'
-                                : ''
-                            }
-                          />
-                          <FieldError
-                            errors={errors}
-                            name={`variant_${idx}_sku`}
-                          />
-                        </label>
-                        <label>
-                          Nombre
-                          <input
-                            value={variant.name}
-                            onChange={(e) =>
-                              updateVariant(idx, { name: e.target.value })
-                            }
-                            placeholder="Ej. Negro, 1L"
-                          />
-                        </label>
-                        <div className="form-two">
-                          <label>
-                            Precio de venta
-                            <input
-                              type="number"
-                              min="0"
-                              step="1"
-                              value={variant.salePrice || ''}
-                              onChange={(e) =>
-                                updateVariant(idx, {
-                                  salePrice: Number(e.target.value),
-                                })
-                              }
-                              placeholder="$ 0"
-                              className={
-                                fieldError(errors, `variant_${idx}_salePrice`)
-                                  ? 'input-error'
-                                  : ''
-                              }
-                            />
-                            <FieldError
-                              errors={errors}
-                              name={`variant_${idx}_salePrice`}
-                            />
-                          </label>
-                          <label>
-                            Costo de inventario
-                            <input
-                              type="number"
-                              min="0"
-                              step="1"
-                              value={variant.inventoryCost || ''}
-                              onChange={(e) =>
-                                updateVariant(idx, {
-                                  inventoryCost: Number(e.target.value),
-                                })
-                              }
-                              placeholder="$ 0"
-                            />
-                          </label>
-                        </div>
-                        <label>
-                          Existencias
-                          <input
-                            type="number"
-                            min="0"
-                            step="1"
-                            value={variant.stock || ''}
-                            onChange={(e) =>
-                              updateVariant(idx, {
-                                stock: Number(e.target.value),
-                              })
-                            }
-                            placeholder="0"
-                            className={
-                              fieldError(errors, `variant_${idx}_stock`)
-                                ? 'input-error'
-                                : ''
-                            }
-                          />
-                          <FieldError
-                            errors={errors}
-                            name={`variant_${idx}_stock`}
-                          />
-                        </label>
-                        {optionTypes.length > 0 && (
-                          <fieldset className="variant-options">
-                            <legend>Opciones</legend>
-                            {optionTypes.map((type) => {
-                              const selectedValId =
-                                variant.optionValueIds.find((ovid) =>
-                                  type.values.some((v) => v.id === ovid),
-                                ) ?? ''
-                              return (
-                                <label key={type.id}>
-                                  {type.name}
-                                  <select
-                                    value={selectedValId}
-                                    onChange={(e) => {
-                                      const newVal = e.target.value
-                                      const newIds = variant.optionValueIds.filter(
-                                        (ovid) =>
-                                          !type.values.some(
-                                            (v) => v.id === ovid,
-                                          ),
-                                      )
-                                      if (newVal) newIds.push(newVal)
-                                      updateVariant(idx, {
-                                        optionValueIds: newIds,
-                                      })
-                                    }}
-                                  >
-                                    <option value="">Sin selección</option>
-                                    {type.values.map((val) => (
-                                      <option key={val.id} value={val.id}>
-                                        {val.name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </label>
-                              )
-                            })}
-                          </fieldset>
-                        )}
-                      </div>
-                      <div className="variant-edit-actions">
-                        <button
-                          className="cancel-button"
-                          onClick={() => setEditingVariantIdx(null)}
-                          type="button"
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          className="primary-button"
-                          onClick={() => setEditingVariantIdx(null)}
-                          type="button"
-                        >
-                          <Check size={15} aria-hidden="true" />
-                          Listo
-                        </button>
-                      </div>
+            {draft.variants.length > 0 ? (
+              <ul className="variant-list">
+                {draft.variants.map((variant, idx) => (
+                  <li key={variant.id ?? idx} className="variant-list-item">
+                    <div className="variant-info">
+                      <strong>{variant.sku}</strong>
+                      <span className="variant-meta">
+                        {variant.name && `${variant.name} · `}
+                        ${variant.salePrice} · {variant.stock} uds
+                      </span>
                     </div>
-                  ) : (
-                    <>
-                      <div className="variant-info">
-                        <strong>{variant.sku || 'Sin SKU'}</strong>
-                        <span className="variant-meta">
-                          {variant.name && `${variant.name} · `}
-                          ${variant.salePrice} · {variant.stock} uds
-                        </span>
-                      </div>
-                      <div className="variant-actions">
-                        <button
-                          className="icon-button"
-                          onClick={() => setEditingVariantIdx(idx)}
-                          type="button"
-                          aria-label={`Editar variante ${variant.sku || idx + 1}`}
-                        >
-                          <Pencil size={15} />
-                        </button>
-                        <button
-                          className="icon-button danger"
-                          onClick={() => removeVariant(idx)}
-                          type="button"
-                          aria-label={`Eliminar variante ${variant.sku || idx + 1}`}
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
+                    <div className="variant-actions">
+                      <button
+                        className="icon-button"
+                        onClick={() => openEditVariant(idx)}
+                        type="button"
+                        aria-label={`Editar variante ${variant.sku}`}
+                      >
+                        <Pencil size={15} />
+                      </button>
+                      <button
+                        className="icon-button danger"
+                        onClick={() => confirmRemoveVariant(idx)}
+                        type="button"
+                        aria-label={`Eliminar variante ${variant.sku}`}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="variant-empty-hint">
+                Aún no tienes variantes. Agrega al menos una.
+              </p>
+            )}
             <button
               className="secondary-button"
-              onClick={addVariant}
+              onClick={openAddVariant}
               type="button"
             >
               <Plus size={15} aria-hidden="true" />
@@ -476,7 +318,7 @@ export function ProductCreatePage({
                 maxLength={240}
                 placeholder="Breve descripción para tu catálogo."
                 className={
-                  fieldError(errors, 'publicDescription') ? 'input-error' : ''
+                  errors.publicDescription ? 'input-error' : ''
                 }
               />
               <FieldError errors={errors} name="publicDescription" />
@@ -491,9 +333,7 @@ export function ProductCreatePage({
                   setDraft({ ...draft, imageUrl: e.target.value })
                 }
                 placeholder="https://..."
-                className={
-                  fieldError(errors, 'imageUrl') ? 'input-error' : ''
-                }
+                className={errors.imageUrl ? 'input-error' : ''}
               />
               <FieldError errors={errors} name="imageUrl" />
             </label>
@@ -577,6 +417,23 @@ export function ProductCreatePage({
         </aside>
       </div>
 
+      {/* ── VARIANT MODAL ──────────────────────────────────── */}
+      {variantModalOpen && (
+        <VariantModal
+          variant={
+            editingVariantIdx !== null
+              ? draft.variants[editingVariantIdx]
+              : null
+          }
+          optionTypes={optionTypes}
+          onClose={() => {
+            setVariantModalOpen(false)
+            setEditingVariantIdx(null)
+          }}
+          onSave={handleSaveVariant}
+        />
+      )}
+
       {/* ── CATEGORY MANAGER MODAL ──────────────────────────── */}
       {categoryManagerOpen && (
         <CategoryManagerModal
@@ -587,6 +444,18 @@ export function ProductCreatePage({
           }}
           onCategoryCreated={onCategoryCreated}
           onClose={() => setCategoryManagerOpen(false)}
+        />
+      )}
+
+      {/* ── CONFIRM DELETE ──────────────────────────────────── */}
+      {confirmDeleteIdx !== null && (
+        <ConfirmModal
+          title="Eliminar variante"
+          message={`¿Eliminar la variante ${draft.variants[confirmDeleteIdx]?.sku ?? ''}?`}
+          danger
+          confirmLabel="Eliminar"
+          onConfirm={removeVariant}
+          onClose={() => setConfirmDeleteIdx(null)}
         />
       )}
     </section>

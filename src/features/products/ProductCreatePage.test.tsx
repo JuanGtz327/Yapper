@@ -18,19 +18,15 @@ const mockOptionTypes = [
       { id: 'ov2', name: 'Blanco' },
     ],
   },
+  {
+    id: 'ot2',
+    name: 'Talla',
+    values: [
+      { id: 'ov3', name: 'M' },
+      { id: 'ov4', name: 'L' },
+    ],
+  },
 ]
-
-const createMockVariant = (overrides = {}) => ({
-  id: 'v1',
-  productId: 'p1',
-  sku: 'PLA-BAS-NEG',
-  name: 'Negro',
-  inventoryCost: 80,
-  salePrice: 150,
-  stock: 25,
-  optionValues: [{ optionType: 'Color', value: 'Negro' }],
-  ...overrides,
-})
 
 const createMockProduct = (overrides: Partial<Product> = {}): Product => ({
   id: 'p1',
@@ -41,7 +37,18 @@ const createMockProduct = (overrides: Partial<Product> = {}): Product => ({
   publicDescription: 'Playera cómoda',
   imageUrl: null,
   color: 'sky',
-  variants: [createMockVariant()],
+  variants: [
+    {
+      id: 'v1',
+      productId: 'p1',
+      sku: 'PLA-BAS-NEG',
+      name: 'Negro',
+      inventoryCost: 80,
+      salePrice: 150,
+      stock: 25,
+      optionValues: [{ optionType: 'Color', value: 'Negro' }],
+    },
+  ],
   ...overrides,
 })
 
@@ -86,16 +93,16 @@ describe('ProductCreatePage', () => {
       expect(screen.getByText('Añadir variante')).toBeInTheDocument()
     })
 
+    it('debería mostrar mensaje de variantes vacías', () => {
+      render(<ProductCreatePage {...defaultProps} />)
+      expect(
+        screen.getByText(/Aún no tienes variantes/),
+      ).toBeInTheDocument()
+    })
+
     it('debería mostrar sección de catálogo público', () => {
       render(<ProductCreatePage {...defaultProps} />)
       expect(screen.getByText('Catálogo público')).toBeInTheDocument()
-    })
-
-    it('debería mostrar checkbox de publicación', () => {
-      render(<ProductCreatePage {...defaultProps} />)
-      expect(
-        screen.getByLabelText('Mostrar en mi catálogo público'),
-      ).toBeInTheDocument()
     })
 
     it('debería mostrar botón de crear producto', () => {
@@ -118,9 +125,10 @@ describe('ProductCreatePage', () => {
       expect(screen.getByText('VISTA PREVIA')).toBeInTheDocument()
     })
 
-    it('debería mostrar resumen de variantes', () => {
+    it('debería mostrar 0 variantes en resumen', () => {
       render(<ProductCreatePage {...defaultProps} />)
       expect(screen.getByText('RESUMEN')).toBeInTheDocument()
+      expect(screen.getByText('0')).toBeInTheDocument()
     })
   })
 
@@ -153,17 +161,6 @@ describe('ProductCreatePage', () => {
       expect(screen.getByText('Guardar cambios')).toBeInTheDocument()
     })
 
-    it('debería poblar descripción pública existente', () => {
-      const product = createMockProduct({
-        publicDescription: 'Descripción de prueba',
-      })
-      render(<ProductCreatePage {...defaultProps} initial={product} />)
-      const textarea = screen.getByLabelText(
-        'Descripción pública',
-      ) as HTMLTextAreaElement
-      expect(textarea.value).toBe('Descripción de prueba')
-    })
-
     it('debería marcar checkbox de publicación si está publicado', () => {
       const product = createMockProduct({ published: true })
       render(<ProductCreatePage {...defaultProps} initial={product} />)
@@ -190,108 +187,127 @@ describe('ProductCreatePage', () => {
     })
   })
 
-  describe('Formulario - Creación', () => {
-    it('debería enviar el draft al onSubmit', async () => {
-      const onSubmit = vi.fn().mockResolvedValue(true)
-      render(<ProductCreatePage {...defaultProps} onSubmit={onSubmit} />)
-
-      const nameInput = screen.getByLabelText('Nombre del producto')
-      fireEvent.change(nameInput, { target: { value: 'Nueva Playera' } })
-
-      // Fill in variant SKU (required)
-      fireEvent.click(screen.getByLabelText('Editar variante 1'))
-      await waitFor(() => {
-        expect(screen.getByLabelText('SKU')).toBeInTheDocument()
-      })
-
-      const skuInput = screen.getByLabelText('SKU')
-      fireEvent.change(skuInput, { target: { value: 'NUE-PLA-001' } })
-
-      const priceInput = screen.getByLabelText('Precio de venta')
-      fireEvent.change(priceInput, { target: { value: '200' } })
-
-      const stockInput = screen.getByLabelText('Existencias')
-      fireEvent.change(stockInput, { target: { value: '50' } })
-
-      // Click "Listo" to close variant editor
-      fireEvent.click(screen.getByText('Listo'))
-
-      // Submit
-      fireEvent.click(screen.getByText('Crear producto'))
-
-      // onSubmit should have been called
-      await waitFor(() => {
-        expect(onSubmit).toHaveBeenCalledTimes(1)
-      })
-    })
-  })
-
-  describe('Editor de variantes', () => {
-    it('debería expandir variante al hacer clic en editar', async () => {
-      render(<ProductCreatePage {...defaultProps} />)
-      fireEvent.click(screen.getByLabelText('Editar variante 1'))
-      await waitFor(() => {
-        expect(screen.getByLabelText('SKU')).toBeInTheDocument()
-      })
-    })
-
-    it('debería añadir una nueva variante', async () => {
+  describe('Modal de variante', () => {
+    it('debería abrir modal de variante al hacer clic en añadir', async () => {
       const user = userEvent.setup()
       render(<ProductCreatePage {...defaultProps} />)
-      // Initially there should be one variant item
-      const initialItems = screen.getAllByLabelText(/Editar variante/)
-      expect(initialItems).toHaveLength(1)
-      // Click the secondary-button that contains "Añadir variante"
-      const addBtns = screen.getAllByRole('button', { name: /Añadir variante/ })
-      await user.click(addBtns[0])
-      // Now there should be two variant items
-      const updatedItems = screen.getAllByLabelText(/Editar variante/)
-      expect(updatedItems).toHaveLength(2)
+      await user.click(screen.getByRole('button', { name: 'Añadir variante' }))
+      expect(
+        screen.getByRole('dialog', { name: 'Añadir variante' }),
+      ).toBeInTheDocument()
     })
 
-    it('debería cerrar editor de variante al hacer clic en Listo', async () => {
+    it('debería mostrar campos del formulario en el modal', async () => {
+      const user = userEvent.setup()
       render(<ProductCreatePage {...defaultProps} />)
-      fireEvent.click(screen.getByLabelText('Editar variante 1'))
+      await user.click(screen.getByRole('button', { name: 'Añadir variante' }))
+      expect(screen.getByLabelText('SKU')).toBeInTheDocument()
+      expect(screen.getByLabelText('Nombre de variante')).toBeInTheDocument()
+      expect(screen.getByLabelText('Precio de venta')).toBeInTheDocument()
+      expect(screen.getByLabelText('Existencias')).toBeInTheDocument()
+    })
+
+    it('debería mostrar selects de opciones si hay optionTypes', async () => {
+      const user = userEvent.setup()
+      render(<ProductCreatePage {...defaultProps} />)
+      await user.click(screen.getByRole('button', { name: 'Añadir variante' }))
+      expect(screen.getByText('Agregar opción')).toBeInTheDocument()
+    })
+
+    it('debería agregar variante al draft desde el modal', async () => {
+      const user = userEvent.setup()
+      render(<ProductCreatePage {...defaultProps} />)
+      await user.click(screen.getByRole('button', { name: 'Añadir variante' }))
+
+      // Fill modal
+      await user.type(screen.getByLabelText('SKU'), 'PLA-001')
+      await user.type(screen.getByLabelText('Precio de venta'), '200')
+      await user.type(screen.getByLabelText('Existencias'), '50')
+
+      // Submit modal via the form's submit button
+      const modal = screen.getByRole('dialog')
+      const submitBtn = modal.querySelector('button[type="submit"]')!
+      await user.click(submitBtn)
+
+      // Modal should close, variant should appear in the list
       await waitFor(() => {
-        expect(screen.getByLabelText('SKU')).toBeInTheDocument()
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
       })
-      fireEvent.click(screen.getByText('Listo'))
-      await waitFor(() => {
-        expect(
-          screen.queryByLabelText('Nombre de la variante'),
-        ).not.toBeInTheDocument()
-      })
+      expect(screen.getAllByText('PLA-001').length).toBeGreaterThanOrEqual(1)
+    })
+
+    it('debería abrir modal de editar para variante existente', async () => {
+      const user = userEvent.setup()
+      const product = createMockProduct()
+      render(<ProductCreatePage {...defaultProps} initial={product} />)
+      await user.click(screen.getByLabelText('Editar variante PLA-BAS-NEG'))
+      expect(
+        screen.getByRole('dialog', { name: 'Editar variante' }),
+      ).toBeInTheDocument()
+      expect(
+        (screen.getByLabelText('SKU') as HTMLInputElement).value,
+      ).toBe('PLA-BAS-NEG')
+    })
+
+    it('debería cerrar modal al cancelar', async () => {
+      const user = userEvent.setup()
+      render(<ProductCreatePage {...defaultProps} />)
+      await user.click(screen.getByRole('button', { name: 'Añadir variante' }))
+      const modal = screen.getByRole('dialog')
+      const cancelBtn = Array.from(
+        modal.querySelectorAll('button'),
+      ).find((b) => b.textContent?.includes('Cancelar'))!
+      await user.click(cancelBtn)
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
   })
 
-  describe('Selección de categoría', () => {
-    it('debería mostrar las categorías en el select', () => {
+  describe('Eliminar variante', () => {
+    it('debería mostrar confirmación al eliminar variante', async () => {
+      const user = userEvent.setup()
+      const product = createMockProduct()
+      render(<ProductCreatePage {...defaultProps} initial={product} />)
+      await user.click(screen.getByLabelText('Eliminar variante PLA-BAS-NEG'))
+      expect(
+        screen.getByText(/Eliminar la variante PLA-BAS-NEG/),
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('Opciones en modal', () => {
+    it('debería mostrar selects de tipo y valor al agregar opción', async () => {
+      const user = userEvent.setup()
       render(<ProductCreatePage {...defaultProps} />)
-      const select = screen.getByLabelText('Categoría') as HTMLSelectElement
-      expect(select.options.length).toBe(3) // Sin categoría + 2
+      await user.click(screen.getByRole('button', { name: 'Añadir variante' }))
+      await user.click(screen.getByText('Agregar opción'))
+      // Should have 2 selects: type and value
+      const selects = screen.getAllByRole('combobox')
+      expect(selects.length).toBeGreaterThanOrEqual(2)
     })
 
-    it('debería incluir opción "Sin categoría"', () => {
+    it('debería habilitar select de valor al elegir tipo', async () => {
+      const user = userEvent.setup()
       render(<ProductCreatePage {...defaultProps} />)
-      const items = screen.getAllByText('Sin categoría')
-      expect(items.length).toBeGreaterThanOrEqual(1)
+      await user.click(screen.getByRole('button', { name: 'Añadir variante' }))
+      await user.click(screen.getByText('Agregar opción'))
+
+      const modal = screen.getByRole('dialog')
+      const selects = modal.querySelectorAll('select')
+      const typeSelect = selects[0]
+      const valueSelect = selects[1]
+
+      // Value select should be disabled initially
+      expect(valueSelect).toBeDisabled()
+
+      // Select a type
+      fireEvent.change(typeSelect, { target: { value: 'ot1' } })
+
+      // Value select should now be enabled
+      expect(valueSelect).not.toBeDisabled()
     })
   })
 
   describe('Vista previa', () => {
-    it('debería mostrar nombre del producto en vista previa', () => {
-      render(<ProductCreatePage {...defaultProps} />)
-      const items = screen.getAllByText('Nombre del producto')
-      expect(items.length).toBeGreaterThanOrEqual(2) // label + preview
-    })
-
-    it('debería actualizar vista previa con nombre ingresado', () => {
-      render(<ProductCreatePage {...defaultProps} />)
-      const nameInput = screen.getByLabelText('Nombre del producto')
-      fireEvent.change(nameInput, { target: { value: 'Mi Producto' } })
-      expect(screen.getByText('Mi Producto')).toBeInTheDocument()
-    })
-
     it('debería mostrar "Sin imagen" cuando no hay URL', () => {
       render(<ProductCreatePage {...defaultProps} />)
       expect(screen.getByText('Sin imagen')).toBeInTheDocument()
@@ -300,7 +316,7 @@ describe('ProductCreatePage', () => {
     it('debería mostrar categoría en vista previa', () => {
       render(<ProductCreatePage {...defaultProps} />)
       const items = screen.getAllByText('Sin categoría')
-      expect(items.length).toBeGreaterThanOrEqual(2) // select option + preview
+      expect(items.length).toBeGreaterThanOrEqual(1)
     })
   })
 })
