@@ -39,10 +39,8 @@ export function useProductsMutations(user: User | null) {
   const update = useMutation({
     mutationFn: (product: Product) =>
       user ? updateProduct(product) : Promise.resolve(),
-    onSuccess: (_data, product) => {
-      qc.setQueryData<Product[]>(qk.products(user), (current) =>
-        (current ?? []).map((p) => (p.id === product.id ? product : p)),
-      )
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: qk.products(user) })
     },
   })
 

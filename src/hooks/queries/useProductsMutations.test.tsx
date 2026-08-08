@@ -336,7 +336,7 @@ describe('useProductsMutations', () => {
       expect(cached![1].id).toBe('p-new')
     })
 
-    it('debería actualizar producto en el caché al modificar', async () => {
+    it('debería invalidar la query de productos después de modificar', async () => {
       vi.mocked(repository.updateProduct).mockResolvedValue(undefined)
 
       const queryClient = new QueryClient({
@@ -346,6 +346,7 @@ describe('useProductsMutations', () => {
         },
       })
       queryClient.setQueryData(qk.products(mockUser), mockProducts)
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
 
       const { result } = renderHook(() => useProductsMutations(mockUser), {
         wrapper: ({ children }) => (
@@ -361,9 +362,11 @@ describe('useProductsMutations', () => {
         await result.current.update.mutateAsync(updatedProduct)
       })
 
-      const cached = queryClient.getQueryData<Product[]>(qk.products(mockUser))
-      expect(cached).toHaveLength(1)
-      expect(cached![0].name).toBe('Playera Actualizada')
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: qk.products(mockUser),
+      })
+
+      invalidateSpy.mockRestore()
     })
 
     it('debería eliminar producto del caché al borrar', async () => {

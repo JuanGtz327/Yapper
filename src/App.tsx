@@ -196,7 +196,15 @@ function DashboardApp() {
             void qc.invalidateQueries({ queryKey: qk.categories(user) })
           }}
           onVariantsChanged={() => {
-            void qc.invalidateQueries({ queryKey: qk.products(user) })
+            void qc.invalidateQueries({ queryKey: qk.products(user) }).then(() => {
+              const freshProducts = qc.getQueryData<Product[]>(qk.products(user))
+              if (freshProducts && editingProduct) {
+                const freshProduct = freshProducts.find((p) => p.id === editingProduct.id)
+                if (freshProduct) {
+                  setEditingProduct(freshProduct)
+                }
+              }
+            })
           }}
           onClose={() => {
             setModal(null)

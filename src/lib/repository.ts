@@ -341,7 +341,6 @@ export async function createProduct(
 }
 
 export async function updateProduct(product: Product) {
-  const firstVariant = product.variants[0]
   const { error } = await supabase.rpc('update_product_atomic', {
     p_product_id: product.id,
     p_name: product.name,
@@ -349,11 +348,6 @@ export async function updateProduct(product: Product) {
     p_published: product.published,
     p_public_description: product.publicDescription,
     p_image_url: product.imageUrl,
-    p_sku: firstVariant?.sku ?? null,
-    p_variant_name: firstVariant?.name ?? '',
-    p_inventory_cost: firstVariant?.inventoryCost ?? null,
-    p_sale_price: firstVariant?.salePrice ?? null,
-    p_stock: firstVariant?.stock ?? null,
   })
   if (error) throw error
 }
