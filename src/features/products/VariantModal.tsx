@@ -17,6 +17,24 @@ type OptionSelection = {
 }
 
 function buildInitialOptions(
+  optionValues: Array<{ optionType: string; value: string }>,
+  optionTypes: OptionTypeWithValues[],
+): OptionSelection[] {
+  if (optionValues.length === 0) return []
+  const selections: OptionSelection[] = []
+  for (const ov of optionValues) {
+    const type = optionTypes.find((t) => t.name === ov.optionType)
+    if (type) {
+      const val = type.values.find((v) => v.name === ov.value)
+      if (val) {
+        selections.push({ typeId: type.id, valueId: val.id })
+      }
+    }
+  }
+  return selections
+}
+
+function buildInitialOptionsFromIds(
   optionValueIds: string[],
   optionTypes: OptionTypeWithValues[],
 ): OptionSelection[] {
@@ -30,17 +48,19 @@ function buildInitialOptions(
       selections.push({ typeId: type.id, valueId: matchedValueId })
     }
   }
-  return selections.length > 0 ? selections : []
+  return selections
 }
 
 export function VariantModal({
   variant,
   optionTypes,
+  initialOptionValues,
   onClose,
   onSave,
 }: {
   variant: VariantDraft | null
   optionTypes: OptionTypeWithValues[]
+  initialOptionValues?: Array<{ optionType: string; value: string }>
   onClose: () => void
   onSave: (data: VariantDraft) => void
 }) {
@@ -51,9 +71,16 @@ export function VariantModal({
     variant?.inventoryCost ?? 0,
   )
   const [stock, setStock] = useState(variant?.stock ?? 0)
-  const [selections, setSelections] = useState<OptionSelection[]>(
-    variant ? buildInitialOptions(variant.optionValueIds, optionTypes) : [],
-  )
+  const [selections, setSelections] = useState<OptionSelection[]>(() => {
+    if (!variant) return []
+    if (initialOptionValues && initialOptionValues.length > 0) {
+      return buildInitialOptions(initialOptionValues, optionTypes)
+    }
+    if (variant.optionValueIds.length > 0) {
+      return buildInitialOptionsFromIds(variant.optionValueIds, optionTypes)
+    }
+    return []
+  })
   const toast = useToast()
 
   const updateSelection = (
@@ -110,6 +137,7 @@ export function VariantModal({
       stock,
       optionValueIds,
     })
+    toast.success(variant ? 'Variante actualizada.' : 'Variante añadida.')
   }
 
   return (

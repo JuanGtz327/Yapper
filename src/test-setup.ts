@@ -31,3 +31,6 @@ Object.defineProperty(window, 'location', {
   },
   writable: true,
 })
+
+// Mock scrollIntoView for jsdom
+Element.prototype.scrollIntoView = vi.fn()

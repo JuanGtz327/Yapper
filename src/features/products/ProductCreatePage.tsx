@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { ArrowLeft, Check, Image, Pencil, Plus, Trash2 } from 'lucide-react'
 import type { Product } from '../../types.ts'
 import { CategoryManagerModal } from './CategoryManagerModal.tsx'
@@ -30,22 +30,35 @@ function newDraft(): ProductDraft {
   }
 }
 
-function draftFromProduct(product: Product): ProductDraft {
+function draftFromProduct(
+  product: Product,
+  optionTypes: OptionTypeWithValues[],
+): ProductDraft {
   return {
     name: product.name,
     categoryId: product.categoryId,
     published: product.published,
     publicDescription: product.publicDescription,
     imageUrl: product.imageUrl ?? '',
-    variants: product.variants.map((v) => ({
-      id: v.id,
-      sku: v.sku,
-      name: v.name,
-      inventoryCost: v.inventoryCost,
-      salePrice: v.salePrice,
-      stock: v.stock,
-      optionValueIds: [],
-    })),
+    variants: product.variants.map((v) => {
+      const optionValueIds: string[] = []
+      for (const ov of v.optionValues) {
+        const type = optionTypes.find((t) => t.name === ov.optionType)
+        if (type) {
+          const val = type.values.find((vv) => vv.name === ov.value)
+          if (val) optionValueIds.push(val.id)
+        }
+      }
+      return {
+        id: v.id,
+        sku: v.sku,
+        name: v.name,
+        inventoryCost: v.inventoryCost,
+        salePrice: v.salePrice,
+        stock: v.stock,
+        optionValueIds,
+      }
+    }),
   }
 }
 
@@ -79,7 +92,7 @@ export function ProductCreatePage({
   onSubmit: (draft: ProductDraft) => Promise<boolean>
 }) {
   const [draft, setDraft] = useState<ProductDraft>(
-    initial ? draftFromProduct(initial) : newDraft,
+    initial ? draftFromProduct(initial, optionTypes) : newDraft,
   )
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -89,10 +102,11 @@ export function ProductCreatePage({
     null,
   )
   const [confirmDeleteIdx, setConfirmDeleteIdx] = useState<number | null>(null)
+  const shouldAutoSubmit = useRef(false)
   const toast = useToast()
 
   useEffect(() => {
-    if (initial) setDraft(draftFromProduct(initial))
+    if (initial) setDraft(draftFromProduct(initial, optionTypes))
   }, [initial])
 
   const selectedCategoryName =
@@ -108,6 +122,14 @@ export function ProductCreatePage({
     setVariantModalOpen(true)
   }
 
+  const editingVariantOriginalOptionValues =
+    editingVariantIdx !== null && initial
+      ? initial.variants[editingVariantIdx]?.optionValues ?? []
+      : []
+
+  const editingVariantFromDraft =
+    editingVariantIdx !== null ? draft.variants[editingVariantIdx] : null
+
   const handleSaveVariant = (data: VariantDraft) => {
     if (editingVariantIdx !== null) {
       setDraft((prev) => ({
@@ -122,6 +144,7 @@ export function ProductCreatePage({
         variants: [...prev.variants, data],
       }))
     }
+    shouldAutoSubmit.current = true
     setVariantModalOpen(false)
     setEditingVariantIdx(null)
   }
@@ -139,6 +162,25 @@ export function ProductCreatePage({
     setConfirmDeleteIdx(null)
   }
 
+  const saveProduct = async (draftToSave: ProductDraft) => {
+    const result = validateProductDraft(draftToSave)
+    if (!result.ok) {
+      setErrors(result.errors)
+      toast.error('Revisa los campos marcados.')
+      return false
+    }
+    setErrors({})
+    setSaving(true)
+    try {
+      const ok = await onSubmit(draftToSave)
+      if (!ok) return false
+      onVariantsChanged()
+      return true
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const submit = async (event: FormEvent) => {
     event.preventDefault()
     const trimmed = {
@@ -148,23 +190,14 @@ export function ProductCreatePage({
       imageUrl: draft.imageUrl.trim(),
     }
     setDraft(trimmed)
-
-    const result = validateProductDraft(trimmed)
-    if (!result.ok) {
-      setErrors(result.errors)
-      toast.error('Revisa los campos marcados.')
-      return
-    }
-    setErrors({})
-    setSaving(true)
-    try {
-      const ok = await onSubmit(trimmed)
-      if (!ok) return
-      onVariantsChanged()
-    } finally {
-      setSaving(false)
-    }
+    await saveProduct(trimmed)
   }
+
+  useEffect(() => {
+    if (!shouldAutoSubmit.current) return
+    shouldAutoSubmit.current = false
+    void saveProduct(draft)
+  }, [draft])
 
   return (
     <section className="page-section">
@@ -417,12 +450,9 @@ export function ProductCreatePage({
       {/* ── VARIANT MODAL ──────────────────────────────────── */}
       {variantModalOpen && (
         <VariantModal
-          variant={
-            editingVariantIdx !== null
-              ? draft.variants[editingVariantIdx]
-              : null
-          }
+          variant={editingVariantFromDraft}
           optionTypes={optionTypes}
+          initialOptionValues={editingVariantOriginalOptionValues}
           onClose={() => {
             setVariantModalOpen(false)
             setEditingVariantIdx(null)
