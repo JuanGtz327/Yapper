@@ -147,13 +147,13 @@ describe('CatalogPage', () => {
         ],
       })
       render(<CatalogPage {...defaultProps} products={[product]} />)
-      expect(screen.getByText('$120')).toBeInTheDocument()
+      expect(screen.getByText('$120.00')).toBeInTheDocument()
     })
 
     it('debería mostrar $0 cuando el producto no tiene variantes', () => {
       const product = createMockProduct({ variants: [] })
       render(<CatalogPage {...defaultProps} products={[product]} />)
-      expect(screen.getByText('$0')).toBeInTheDocument()
+      expect(screen.getByText('$0.00')).toBeInTheDocument()
     })
 
     it('debería mostrar imagen cuando imageUrl existe', () => {

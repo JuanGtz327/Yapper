@@ -170,7 +170,7 @@ export function ProductsPage({
                     {row.variant?.sku || '—'}
                     {label && <span className="variant-label">{label}</span>}
                   </td>
-                  <td>{formatMoney(cost, currency)}</td>
+                  <td className="col-right">{formatMoney(cost, currency)}</td>
                   <td className="table-emphasis">
                     {formatMoney(price, currency)}
                   </td>

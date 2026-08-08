@@ -102,7 +102,7 @@ describe('OrdersPage', () => {
       ]
       render(<OrdersPage {...defaultProps} orders={orders} />)
       // Total = 300 + 500 = 800
-      expect(screen.getByText('$800')).toBeInTheDocument()
+      expect(screen.getByText('$800.00')).toBeInTheDocument()
     })
 
     it('debería contar pedidos pendientes correctamente', () => {
@@ -124,7 +124,7 @@ describe('OrdersPage', () => {
       ]
       render(<OrdersPage {...defaultProps} orders={orders} />)
       const summary = screen.getByText('Este mes').parentElement
-      expect(summary?.querySelector('strong')).toHaveTextContent('$300')
+      expect(summary?.querySelector('strong')).toHaveTextContent('$300.00')
     })
 
     it('debería incluir todas las órdenes cuando createdAt es undefined', () => {
@@ -134,7 +134,7 @@ describe('OrdersPage', () => {
       ]
       render(<OrdersPage {...defaultProps} orders={orders} />)
       const summary = screen.getByText('Este mes').parentElement
-      expect(summary?.querySelector('strong')).toHaveTextContent('$800')
+      expect(summary?.querySelector('strong')).toHaveTextContent('$800.00')
     })
   })
 
@@ -159,7 +159,7 @@ describe('OrdersPage', () => {
 
     it('debería mostrar el total', () => {
       render(<OrdersPage {...defaultProps} />)
-      const totals = screen.getAllByText('$300')
+      const totals = screen.getAllByText('$300.00')
       expect(totals.length).toBeGreaterThanOrEqual(1)
     })
 

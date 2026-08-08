@@ -211,7 +211,7 @@ describe('OrderModal', () => {
     it('debería calcular el total basado en las cantidades y precios', () => {
       render(<OrderModal {...defaultProps} />)
       // Precio por defecto: 150 * 1 = 150 — two elements: line-total and strong
-      const matches = screen.getAllByText('$150')
+      const matches = screen.getAllByText('$150.00')
       expect(matches.length).toBeGreaterThanOrEqual(2)
     })
 
@@ -220,7 +220,7 @@ describe('OrderModal', () => {
       const quantityInput = screen.getByLabelText('Cantidad')
       fireEvent.change(quantityInput, { target: { value: '3' } })
       // 150 * 3 = 450 — appears in both line-total and grand total
-      const matches = screen.getAllByText('$450')
+      const matches = screen.getAllByText('$450.00')
       expect(matches.length).toBeGreaterThanOrEqual(2)
     })
   })
@@ -292,7 +292,7 @@ describe('OrderModal', () => {
       fireEvent.change(quantityInput, { target: { value: '5' } })
       
       // 150 * 5 = 750
-      const totals = screen.getAllByText('$750')
+      const totals = screen.getAllByText('$750.00')
       expect(totals.length).toBeGreaterThanOrEqual(1)
     })
 
@@ -300,14 +300,14 @@ describe('OrderModal', () => {
       render(<OrderModal {...defaultProps} />)
       
       // Initial total: 150 * 1 = 150
-      const initialTotals = screen.getAllByText('$150')
+      const initialTotals = screen.getAllByText('$150.00')
       expect(initialTotals.length).toBeGreaterThanOrEqual(1)
       
       // Add another product
       fireEvent.click(screen.getByText('Añadir otro producto'))
       
       // After adding: first line 150 * 1 + second line 150 * 1 = 300
-      expect(screen.getByText('$300')).toBeInTheDocument()
+      expect(screen.getByText('$300.00')).toBeInTheDocument()
     })
   })
 })

@@ -1,6 +1,9 @@
-export const formatMoney = (value: number, currency = 'MXN') =>
-  new Intl.NumberFormat('es-MX', {
+export const formatMoney = (value: number, currency = 'MXN') => {
+  const formatted = new Intl.NumberFormat('es-MX', {
     style: 'currency',
     currency,
-    maximumFractionDigits: 0,
-  }).format(value)
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Math.abs(value))
+  return value < 0 ? `(${formatted})` : formatted
+}

@@ -779,6 +779,7 @@ td.col-right {
 .table-emphasis {
   color: var(--ink);
   font-weight: 700;
+  text-align: right;
 }
 .table-sub {
   display: block;

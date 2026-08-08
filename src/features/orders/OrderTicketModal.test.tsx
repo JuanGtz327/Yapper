@@ -147,17 +147,17 @@ describe('OrderTicketModal', () => {
 
     it('debería mostrar el precio unitario', () => {
       render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('$150 por unidad')).toBeInTheDocument()
-      expect(screen.getByText('$250 por unidad')).toBeInTheDocument()
+      expect(screen.getByText('$150.00 por unidad')).toBeInTheDocument()
+      expect(screen.getByText('$250.00 por unidad')).toBeInTheDocument()
     })
 
     it('debería mostrar el total de cada línea', () => {
       render(<OrderTicketModal {...defaultProps} />)
       // 150 * 2 = 300 — may appear in line and elsewhere
-      const totals300 = screen.getAllByText('$300')
+      const totals300 = screen.getAllByText('$300.00')
       expect(totals300.length).toBeGreaterThanOrEqual(1)
       // 250 * 1 = 250 — appears in ticket line and elsewhere
-      const totals250 = screen.getAllByText('$250')
+      const totals250 = screen.getAllByText('$250.00')
       expect(totals250.length).toBeGreaterThanOrEqual(1)
     })
 
@@ -165,7 +165,7 @@ describe('OrderTicketModal', () => {
       render(<OrderTicketModal {...defaultProps} />)
       expect(screen.getByText('Total del pedido')).toBeInTheDocument()
       // 300 + 250 = 550
-      expect(screen.getByText('$550')).toBeInTheDocument()
+      expect(screen.getByText('$550.00')).toBeInTheDocument()
     })
   })
 
@@ -188,7 +188,7 @@ describe('OrderTicketModal', () => {
       render(<OrderTicketModal {...defaultProps} order={orderWithSnapshot} />)
       expect(screen.getByText('Playera Vintage')).toBeInTheDocument()
       expect(screen.getByText('Talla M')).toBeInTheDocument()
-      expect(screen.getByText('$200 por unidad')).toBeInTheDocument()
+      expect(screen.getByText('$200.00 por unidad')).toBeInTheDocument()
     })
 
     it('debería calcular total desde snapshot cuando lineTotal no existe', () => {
@@ -204,7 +204,7 @@ describe('OrderTicketModal', () => {
       })
       render(<OrderTicketModal {...defaultProps} order={orderWithSnapshot} />)
       // 100 * 3 = 300
-      const totals = screen.getAllByText('$300')
+      const totals = screen.getAllByText('$300.00')
       expect(totals.length).toBeGreaterThanOrEqual(1)
     })
   })
@@ -328,7 +328,7 @@ describe('OrderTicketModal', () => {
       render(
         <OrderTicketModal {...defaultProps} order={orderWithoutLines} />,
       )
-      expect(screen.getByText('$1,000')).toBeInTheDocument()
+      expect(screen.getByText('$1,000.00')).toBeInTheDocument()
     })
   })
 
