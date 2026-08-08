@@ -1,15 +1,17 @@
 import { useState, useEffect, type FormEvent } from 'react'
-import { Check, Settings } from 'lucide-react'
+import { Check, Settings, Palette } from 'lucide-react'
 import type { BusinessSettings } from '../../types.ts'
 
 export function SettingsPage({
   settings,
   onSave,
   onSignOut,
+  onOpenOptionTypes,
 }: {
   settings: BusinessSettings
   onSave: (settings: BusinessSettings) => Promise<void>
   onSignOut: () => Promise<void>
+  onOpenOptionTypes: () => void
 }) {
   const [draft, setDraft] = useState({
     ...settings,
@@ -188,7 +190,11 @@ export function SettingsPage({
             )}
           </fieldset>
           <div className="modal-actions">
-            <button className="primary-button" disabled={saving} type="submit">
+            <button
+              className={`primary-button${saving ? ' button-loading' : ''}`}
+              disabled={saving}
+              type="submit"
+            >
               <Check size={18} />
               {saving ? 'Guardando...' : 'Guardar cambios'}
             </button>
@@ -200,6 +206,18 @@ export function SettingsPage({
           <p>Tu información está protegida y solo tú puedes acceder a ella.</p>
           <button className="sign-out-button" onClick={onSignOut} type="button">
             Cerrar sesión
+          </button>
+          <div className="settings-section-divider" />
+          <span className="eyebrow">INVENTARIO</span>
+          <h3>Opciones de producto</h3>
+          <p>Administra tipos como Color, Talla o Capacidad y sus valores.</p>
+          <button
+            className="secondary-button"
+            onClick={onOpenOptionTypes}
+            type="button"
+          >
+            <Palette size={16} />
+            Gestionar opciones
           </button>
         </aside>
       </div>

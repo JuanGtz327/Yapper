@@ -8,7 +8,7 @@
 - Format the codebase with `npm run format` (Prettier, configured in `.prettierrc.json`); verify formatting without writing with `npm run format:check`.
 - Run the production check with `npm run build`; this runs `tsc -b` before `vite build`.
 - Preview a completed production build with `npm run preview`.
-- There is currently no test script or test framework in this package.
+- Run tests with `npm run test:run`; run in watch mode with `npm run test`; check coverage with `npm run test:coverage`.
 
 ## Structure
 
@@ -16,6 +16,11 @@
 - `src/App.tsx` contains the current dashboard UI; `src/App.css` and `src/index.css` provide its styling.
 - `src/lib/supabase.ts` is the Supabase client boundary. It reads `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from Vite environment files and uses placeholders when unset.
 - `vite.config.ts` enables React, Tailwind CSS, and `vite-plugin-pwa`; production builds generate the service worker and manifest in `dist/`.
+
+## Agents
+
+- `testing-expert`: Ejecuta todas las pruebas (`npm run test:run`), verifica cobertura de tests por cada funcionalidad nueva, y corre lint + typecheck. Usa el subagente `testing-expert` para validar que todo funcione.
+- `code-reviewer`: Revisión exhaustiva de código (correctitud, seguridad, tipado, convenciones, rendimiento). **Siempre** delega la validación de tests al `testing-expert` antes de emitir veredicto. No aprueba cambios con tests fallidos o tests faltantes.
 
 ## Conventions
 

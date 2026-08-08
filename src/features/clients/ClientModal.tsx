@@ -69,7 +69,11 @@ export function ClientModal({
           <button className="cancel-button" onClick={onClose} type="button">
             Cancelar
           </button>
-          <button className="primary-button" disabled={saving} type="submit">
+          <button
+            className={`primary-button${saving ? ' button-loading' : ''}`}
+            disabled={saving}
+            type="submit"
+          >
             <Check size={18} aria-hidden="true" />
             {saving ? 'Guardando...' : 'Guardar cliente'}
           </button>

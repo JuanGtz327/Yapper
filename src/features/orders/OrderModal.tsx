@@ -1,11 +1,26 @@
 import { useState, type FormEvent } from 'react'
 import { Check, Plus, X } from 'lucide-react'
-import type { Client, OrderItemInput, Product } from '../../types.ts'
+import type { Client, OrderItemInput, Product, Variant } from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { Empty } from '../../components/ui/Empty.tsx'
 
-export type DraftLine = { productId: string; quantity: number }
+export type DraftLine = { variantId: string; quantity: number }
+
+type VariantOption = {
+  variant: Variant
+  productName: string
+}
+
+function buildVariantOptions(products: Product[]): VariantOption[] {
+  const options: VariantOption[] = []
+  for (const product of products) {
+    for (const variant of product.variants) {
+      options.push({ variant, productName: product.name })
+    }
+  }
+  return options
+}
 
 export function OrderModal({
   clients,
@@ -24,18 +39,28 @@ export function OrderModal({
     payment: 'pending' | 'paid',
   ) => Promise<void>
 }) {
+  const variantOptions = buildVariantOptions(products)
+  const firstAvailable = variantOptions.find((opt) => opt.variant.stock > 0)
   const [clientId, setClientId] = useState(clients[0]?.id ?? '')
   const [lines, setLines] = useState<DraftLine[]>(
-    products[0] ? [{ productId: products[0].id, quantity: 1 }] : [],
+    firstAvailable
+      ? [{ variantId: firstAvailable.variant.id, quantity: 1 }]
+      : [],
   )
   const [payment, setPayment] = useState<'pending' | 'paid'>('paid')
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
+
+  const getVariantPrice = (variantId: string) =>
+    variantOptions.find((opt) => opt.variant.id === variantId)?.variant
+      .salePrice ?? 0
+
+  const getVariantStock = (variantId: string) =>
+    variantOptions.find((opt) => opt.variant.id === variantId)?.variant.stock ??
+    0
+
   const total = lines.reduce(
-    (sum, line) =>
-      sum +
-      (products.find((product) => product.id === line.productId)?.price ?? 0) *
-        line.quantity,
+    (sum, line) => sum + getVariantPrice(line.variantId) * line.quantity,
     0,
   )
   const money = { format: (value: number) => formatMoney(value, currency) }
@@ -56,9 +81,7 @@ export function OrderModal({
         (line) =>
           !Number.isInteger(line.quantity) ||
           line.quantity < 1 ||
-          line.quantity >
-            (products.find((product) => product.id === line.productId)?.stock ??
-              0),
+          line.quantity > getVariantStock(line.variantId),
       )
     ) {
       setError(
@@ -66,14 +89,21 @@ export function OrderModal({
       )
       return
     }
-    if (new Set(lines.map((line) => line.productId)).size !== lines.length) {
-      setError('No repitas productos en el mismo pedido.')
+    if (new Set(lines.map((line) => line.variantId)).size !== lines.length) {
+      setError('No repitas variantes en el mismo pedido.')
       return
     }
     setSaving(true)
     setError('')
     try {
-      await onSubmit(clientId, lines, payment)
+      await onSubmit(
+        clientId,
+        lines.map((line) => ({
+          variantId: line.variantId,
+          quantity: line.quantity,
+        })),
+        payment,
+      )
     } catch (submissionError) {
       setError(
         submissionError instanceof Error
@@ -84,10 +114,20 @@ export function OrderModal({
       setSaving(false)
     }
   }
+
+  const formatVariantLabel = (opt: VariantOption) => {
+    const parts = [opt.productName]
+    if (opt.variant.sku) parts.push(`(${opt.variant.sku})`)
+    const opts = opt.variant.optionValues.map((ov) => ov.value).join(', ')
+    if (opts) parts.push(`— ${opts}`)
+    parts.push(`— ${opt.variant.stock} disponibles`)
+    return parts.join(' ')
+  }
+
   return (
     <ModalFrame title="Crear pedido" onClose={onClose}>
       <form className="form-grid order-form" onSubmit={submit}>
-        {!clients.length || !products.length ? (
+        {!clients.length || !variantOptions.length ? (
           <Empty text="Necesitas al menos un cliente y un producto para crear un pedido." />
         ) : (
           <>
@@ -109,65 +149,75 @@ export function OrderModal({
                 <span>Productos</span>
                 <span>Total</span>
               </div>
-              {lines.map((line, index) => (
-                <div className="order-line" key={`${line.productId}-${index}`}>
-                  <select
-                    value={line.productId}
-                    onChange={(event) =>
-                      updateLine(index, { productId: event.target.value })
-                    }
+              {lines.map((line, index) => {
+                const selectedOpt = variantOptions.find(
+                  (opt) => opt.variant.id === line.variantId,
+                )
+                return (
+                  <div
+                    className="order-line"
+                    key={`${line.variantId}-${index}`}
                   >
-                    {products.map((product) => (
-                      <option
-                        disabled={product.stock === 0}
-                        key={product.id}
-                        value={product.id}
-                      >
-                        {product.name} ({product.stock} disponibles)
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    aria-label="Cantidad"
-                    value={line.quantity}
-                    onChange={(event) =>
-                      updateLine(index, {
-                        quantity: Number(event.target.value),
-                      })
-                    }
-                    type="number"
-                    min="1"
-                    max={
-                      products.find((product) => product.id === line.productId)
-                        ?.stock ?? 1
-                    }
-                  />
-                  <button
-                    className="icon-button danger"
-                    onClick={() =>
-                      setLines((current) =>
-                        current.filter((_, lineIndex) => lineIndex !== index),
-                      )
-                    }
-                    aria-label="Quitar producto"
-                    type="button"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              ))}
+                    <select
+                      value={line.variantId}
+                      onChange={(event) =>
+                        updateLine(index, { variantId: event.target.value })
+                      }
+                    >
+                      {variantOptions.map((opt) => (
+                        <option
+                          disabled={opt.variant.stock === 0}
+                          key={opt.variant.id}
+                          value={opt.variant.id}
+                        >
+                          {formatVariantLabel(opt)}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      aria-label="Cantidad"
+                      value={line.quantity}
+                      onChange={(event) =>
+                        updateLine(index, {
+                          quantity: Number(event.target.value),
+                        })
+                      }
+                      type="number"
+                      min="1"
+                      max={selectedOpt?.variant.stock ?? 1}
+                    />
+                    <span className="line-total">
+                      {money.format(
+                        (selectedOpt?.variant.salePrice ?? 0) * line.quantity,
+                      )}
+                    </span>
+                    <button
+                      className="icon-button danger"
+                      onClick={() =>
+                        setLines((current) =>
+                          current.filter((_, lineIndex) => lineIndex !== index),
+                        )
+                      }
+                      aria-label="Quitar producto"
+                      type="button"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )
+              })}
               <button
                 className="add-line"
                 onClick={() => {
-                  const next = products.find(
-                    (product) =>
-                      product.stock > 0 &&
-                      !lines.some((line) => line.productId === product.id),
+                  const next = variantOptions.find(
+                    (opt) =>
+                      opt.variant.stock > 0 &&
+                      !lines.some((line) => line.variantId === opt.variant.id),
                   )
                   if (next)
                     setLines((current) => [
                       ...current,
-                      { productId: next.id, quantity: 1 },
+                      { variantId: next.variant.id, quantity: 1 },
                     ])
                 }}
                 type="button"
@@ -198,7 +248,7 @@ export function OrderModal({
                 Cancelar
               </button>
               <button
-                className="primary-button"
+                className={`primary-button${saving ? ' button-loading' : ''}`}
                 disabled={saving}
                 type="submit"
               >

@@ -11,5 +11,9 @@ export const qk = {
   settings: (user: User | null) => ['users', uid(user), 'settings'] as const,
   sales: (user: User | null, period: '7d' | '6m') =>
     ['users', uid(user), 'sales', period] as const,
+  categories: (user: User | null) =>
+    ['users', uid(user), 'categories'] as const,
+  optionTypes: (user: User | null) =>
+    ['users', uid(user), 'optionTypes'] as const,
   publicCatalog: (slug: string) => ['publicCatalog', slug] as const,
 }

@@ -3,6 +3,11 @@ import { formatMoney } from '../../lib/format.ts'
 import { safeImageUrl } from '../../lib/security.ts'
 import type { BusinessSettings, Product } from '../../types.ts'
 
+function minVariantPrice(product: Product): number {
+  if (!product.variants.length) return 0
+  return Math.min(...product.variants.map((v) => v.salePrice))
+}
+
 export function CatalogPage({
   products,
   currency,
@@ -55,6 +60,7 @@ export function CatalogPage({
           .filter((product) => product.published)
           .map((product) => {
             const imageUrl = safeImageUrl(product.imageUrl)
+            const price = minVariantPrice(product)
             return (
               <article className="catalog-card" key={product.id}>
                 {imageUrl ? (
@@ -74,7 +80,7 @@ export function CatalogPage({
                   <p className="catalog-description">
                     {product.publicDescription}
                   </p>
-                  <strong>{formatMoney(product.price, currency)}</strong>
+                  <strong>{formatMoney(price, currency)}</strong>
                 </div>
               </article>
             )

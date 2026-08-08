@@ -10,7 +10,17 @@ const demoCatalog: PublicCatalog = {
   currency: 'MXN',
   whatsappNumber: '525512348765',
   publicIntro: 'Productos útiles para tu día a día.',
-  products: demoProducts.filter((product) => product.published),
+  products: demoProducts
+    .filter((product) => product.published)
+    .map((product) => ({
+      id: product.id,
+      name: product.name,
+      category: product.category,
+      publicDescription: product.publicDescription,
+      imageUrl: product.imageUrl,
+      color: product.color,
+      price: product.variants[0]?.salePrice ?? 0,
+    })),
 }
 
 function fetchPublicCatalog(slug: string): Promise<PublicCatalog | null> {

@@ -28,8 +28,8 @@ export function DashboardPage({
   const pending = activeOrders.filter(
     (order) => order.status === 'Pendiente',
   ).length
-  const lowStock = products.filter(
-    (product) => product.stock <= threshold,
+  const lowStock = products.filter((product) =>
+    product.variants.some((v) => v.stock <= threshold),
   ).length
   const maxSales = Math.max(...sales.map((item) => item.total), 1)
   return (

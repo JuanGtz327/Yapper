@@ -1,0 +1,112 @@
+import { useState, useRef, type FormEvent } from 'react'
+import { Plus, X, Tag } from 'lucide-react'
+import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { createCategory, deleteCategory } from '../../lib/repository.ts'
+
+export function CategoryManagerModal({
+  categories,
+  onSelect,
+  onCategoryCreated,
+  onClose,
+}: {
+  categories: Array<{ id: string; name: string }>
+  onSelect: (categoryId: string) => void
+  onCategoryCreated: () => void
+  onClose: () => void
+}) {
+  const [newName, setNewName] = useState('')
+  const [creating, setCreating] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [error, setError] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleCreate = async (event?: FormEvent) => {
+    event?.preventDefault()
+    const name = newName.trim()
+    if (!name) return
+    setCreating(true)
+    setError('')
+    try {
+      const id = await createCategory(name)
+      setNewName('')
+      onCategoryCreated()
+      onSelect(id)
+    } catch {
+      setError('No pudimos crear la categoría.')
+    } finally {
+      setCreating(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id)
+    setError('')
+    try {
+      await deleteCategory(id)
+      onCategoryCreated()
+    } catch {
+      setError('No pudimos eliminar la categoría.')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
+  return (
+    <ModalFrame title="Categorías" onClose={onClose}>
+      <form className="category-add-row" onSubmit={handleCreate}>
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Nueva categoría..."
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          disabled={creating}
+          aria-label="Nombre de la nueva categoría"
+        />
+        <button
+          className={`primary-button${creating ? ' button-loading' : ''}`}
+          type="submit"
+          disabled={creating || !newName.trim()}
+          aria-busy={creating}
+        >
+          <Plus size={15} aria-hidden="true" />
+          Añadir
+        </button>
+      </form>
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
+      <ul className="category-list">
+        {categories.length === 0 && (
+          <li className="category-list-empty">
+            <Tag size={16} aria-hidden="true" />
+            No hay categorías todavía
+          </li>
+        )}
+        {categories.map((cat) => (
+          <li key={cat.id} className="category-list-item">
+            <button
+              className="category-list-select"
+              onClick={() => onSelect(cat.id)}
+              type="button"
+            >
+              <Tag size={14} aria-hidden="true" />
+              {cat.name}
+            </button>
+            <button
+              className="icon-button danger"
+              onClick={() => handleDelete(cat.id)}
+              disabled={deletingId === cat.id}
+              type="button"
+              aria-label={`Eliminar ${cat.name}`}
+            >
+              <X size={15} aria-hidden="true" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </ModalFrame>
+  )
+}

@@ -12,8 +12,22 @@ export function useProductsMutations(user: User | null) {
   const qc = useQueryClient()
 
   const create = useMutation({
-    mutationFn: (product: Product) =>
-      user ? createProduct(user, product) : Promise.resolve(product),
+    mutationFn: ({
+      product,
+      defaultVariant,
+    }: {
+      product: Omit<Product, 'id'>
+      defaultVariant?: {
+        sku: string
+        inventoryCost: number
+        salePrice: number
+        stock: number
+        optionValueIds: string[]
+      }
+    }) =>
+      user
+        ? createProduct(user, product, defaultVariant)
+        : Promise.resolve({ ...product, id: `p${Date.now()}` } as Product),
     onSuccess: (saved) => {
       qc.setQueryData<Product[]>(qk.products(user), (current) => [
         ...(current ?? []),

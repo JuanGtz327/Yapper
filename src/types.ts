@@ -1,14 +1,35 @@
+export type OptionType = {
+  id: string
+  name: string
+}
+
+export type OptionValue = {
+  id: string
+  optionTypeId: string
+  name: string
+}
+
+export type Variant = {
+  id: string
+  productId: string
+  sku: string
+  name: string
+  inventoryCost: number
+  salePrice: number
+  stock: number
+  optionValues: Array<{ optionType: string; value: string }>
+}
+
 export type Product = {
   id: string
   name: string
   category: string
-  price: number
-  stock: number
-  unit: string
-  color: string
+  categoryId: string | null
   published: boolean
   publicDescription: string
   imageUrl: string | null
+  color: string
+  variants: Variant[]
 }
 
 export type Client = {
@@ -34,8 +55,14 @@ export type Order = {
 }
 
 export type OrderItemInput = {
-  productId: string
+  variantId: string
   quantity: number
+  productNameSnapshot?: string
+  skuSnapshot?: string
+  variantLabelSnapshot?: string
+  unitPrice?: number
+  unitCostSnapshot?: number
+  lineTotal?: number
 }
 
 export type BusinessSettings = {
@@ -56,14 +83,8 @@ export type PublicCatalog = {
   products: Array<
     Pick<
       Product,
-      | 'id'
-      | 'name'
-      | 'category'
-      | 'price'
-      | 'publicDescription'
-      | 'imageUrl'
-      | 'color'
-    >
+      'id' | 'name' | 'category' | 'publicDescription' | 'imageUrl' | 'color'
+    > & { price: number }
   >
 }
 

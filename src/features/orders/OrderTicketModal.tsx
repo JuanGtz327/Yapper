@@ -18,13 +18,40 @@ export function OrderTicketModal({
 }) {
   const lines = order.itemLines ?? []
   const lineItems = lines.map((line) => {
-    const product = products.find((item) => item.id === line.productId)
-    const unitPrice = product?.price ?? 0
+    if (line.productNameSnapshot) {
+      return {
+        name: line.productNameSnapshot,
+        variantLabel: line.variantLabelSnapshot || '',
+        quantity: line.quantity,
+        unitPrice: line.unitPrice ?? 0,
+        unitCost: line.unitCostSnapshot ?? 0,
+        total: line.lineTotal ?? (line.unitPrice ?? 0) * line.quantity,
+        isSnapshot: true,
+      }
+    }
+    let productName = 'Producto no disponible'
+    let variantLabel = ''
+    let unitPrice = 0
+    let unitCost = 0
+    for (const product of products) {
+      const variant = product.variants.find((v) => v.id === line.variantId)
+      if (variant) {
+        productName = product.name
+        unitPrice = variant.salePrice
+        unitCost = variant.inventoryCost
+        const opts = variant.optionValues.map((ov) => ov.value).join(', ')
+        variantLabel = [variant.sku, opts].filter(Boolean).join(' — ')
+        break
+      }
+    }
     return {
-      name: product?.name ?? 'Producto no disponible',
+      name: productName,
+      variantLabel,
       quantity: line.quantity,
       unitPrice,
+      unitCost,
       total: unitPrice * line.quantity,
+      isSnapshot: false,
     }
   })
   const calculatedTotal = lineItems.reduce((sum, line) => sum + line.total, 0)
@@ -91,6 +118,11 @@ export function OrderTicketModal({
                   <li key={`${line.name}-${index}`}>
                     <div className="ticket-product">
                       <strong>{line.name}</strong>
+                      {line.variantLabel && (
+                        <span className="detail-muted">
+                          {line.variantLabel}
+                        </span>
+                      )}
                       <span>
                         {formatMoney(line.unitPrice, currency)} por unidad
                       </span>

@@ -14,6 +14,8 @@ import { useClientsQuery } from './queries/useClients.ts'
 import { useOrdersQuery } from './queries/useOrders.ts'
 import { useSettingsQuery } from './queries/useSettings.ts'
 import { useSalesQuery } from './queries/useSales.ts'
+import { useCategoriesQuery } from './queries/useCategories.ts'
+import { useOptionTypesQuery } from './queries/useOptionTypes.ts'
 import { useProductsMutations } from './queries/useProductsMutations.ts'
 import { useClientsMutations } from './queries/useClientsMutations.ts'
 import { useOrdersMutations } from './queries/useOrdersMutations.ts'
@@ -25,10 +27,14 @@ export function useDashboardData(user: User | null) {
   const ordersQuery = useOrdersQuery(user)
   const settingsQuery = useSettingsQuery(user)
   const salesQuery = useSalesQuery(user, '7d')
+  const categoriesQuery = useCategoriesQuery(user)
+  const optionTypesQuery = useOptionTypesQuery(user)
 
   const products = productsQuery.data ?? []
   const clients = clientsQuery.data ?? []
   const rawOrders = ordersQuery.data ?? []
+  const categories = categoriesQuery.data ?? []
+  const optionTypes = optionTypesQuery.data ?? []
   const settings = settingsQuery.data ?? {
     businessName: 'Mi negocio',
     currency: 'MXN',
@@ -71,44 +77,65 @@ export function useDashboardData(user: User | null) {
       event.preventDefault()
       const form = new FormData(event.currentTarget)
       const name = String(form.get('name') || '').trim()
-      const price = Number(form.get('price'))
+      const sku = String(form.get('sku') || '').trim()
+      const salePrice = Number(form.get('salePrice') ?? form.get('price'))
+      const inventoryCost = Number(
+        form.get('inventoryCost') ?? form.get('cost') ?? 0,
+      )
       const stock = Number(form.get('stock'))
       if (name.length < 2 || name.length > 120) {
         setMutationError('El nombre debe tener entre 2 y 120 caracteres.')
         return false
       }
-      if (!Number.isFinite(price) || price < 0) {
-        setMutationError('Introduce un precio válido mayor o igual a cero.')
-        return false
-      }
-      if (!Number.isInteger(stock) || stock < 0) {
-        setMutationError(
-          'Las existencias deben ser un número entero no negativo.',
-        )
-        return false
+      if (!editing) {
+        if (!sku) {
+          setMutationError('El SKU es obligatorio.')
+          return false
+        }
+        if (!Number.isFinite(salePrice) || salePrice < 0) {
+          setMutationError(
+            'Introduce un precio de venta válido mayor o igual a cero.',
+          )
+          return false
+        }
+        if (!Number.isInteger(stock) || stock < 0) {
+          setMutationError(
+            'Las existencias deben ser un número entero no negativo.',
+          )
+          return false
+        }
       }
       const imageUrl = String(form.get('imageUrl') || '').trim() || null
       if (imageUrl && !isSafeImageUrl(imageUrl)) {
         setMutationError('La imagen pública debe usar una URL HTTPS válida.')
         return false
       }
+      const categoryId = (form.get('categoryId') as string) || null
       const newProduct = {
         id: editing?.id ?? `p${Date.now()}`,
         name,
-        category: String(form.get('category') || 'General'),
-        price,
-        stock,
-        unit: editing?.unit ?? 'pieza',
-        color: editing?.color ?? 'sky',
+        category: editing?.category ?? 'General',
+        categoryId,
         published: form.get('published') === 'on',
         publicDescription: String(form.get('publicDescription') || '').trim(),
         imageUrl,
+        color: editing?.color ?? 'sky',
+        variants: editing?.variants ?? [],
       } satisfies Product
       try {
         if (editing) {
           await productMutations.update.mutateAsync(newProduct)
         } else {
-          await productMutations.create.mutateAsync(newProduct)
+          await productMutations.create.mutateAsync({
+            product: newProduct,
+            defaultVariant: {
+              sku,
+              inventoryCost,
+              salePrice,
+              stock,
+              optionValueIds: [],
+            },
+          })
         }
         setMutationError('')
         return true
@@ -304,6 +331,8 @@ export function useDashboardData(user: User | null) {
     products,
     clients,
     orders,
+    categories,
+    optionTypes,
     sales,
     settings,
     dataLoading,

@@ -75,6 +75,30 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           address: string
@@ -105,27 +129,95 @@ export type Database = {
         }
         Relationships: []
       }
+      option_types: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      option_values: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          option_type_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          option_type_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          option_type_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "option_values_option_type_id_fkey"
+            columns: ["option_type_id"]
+            isOneToOne: false
+            referencedRelation: "option_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           id: string
+          line_total: number
           order_id: string
           product_id: string
+          product_name_snapshot: string
           quantity: number
+          sku_snapshot: string
+          unit_cost_snapshot: number
           unit_price: number
+          variant_id: string | null
+          variant_label_snapshot: string
         }
         Insert: {
           id?: string
+          line_total?: number
           order_id: string
           product_id: string
+          product_name_snapshot?: string
           quantity: number
+          sku_snapshot?: string
+          unit_cost_snapshot?: number
           unit_price: number
+          variant_id?: string | null
+          variant_label_snapshot?: string
         }
         Update: {
           id?: string
+          line_total?: number
           order_id?: string
           product_id?: string
+          product_name_snapshot?: string
           quantity?: number
+          sku_snapshot?: string
+          unit_cost_snapshot?: number
           unit_price?: number
+          variant_id?: string | null
+          variant_label_snapshot?: string
         }
         Relationships: [
           {
@@ -142,6 +234,13 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "order_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       orders: {
@@ -151,6 +250,7 @@ export type Database = {
           delivered_at: string | null
           id: string
           notes: string
+          order_number: string
           payment_status: string
           status: string
           total: number
@@ -162,6 +262,7 @@ export type Database = {
           delivered_at?: string | null
           id?: string
           notes?: string
+          order_number: string
           payment_status?: string
           status?: string
           total?: number
@@ -173,6 +274,7 @@ export type Database = {
           delivered_at?: string | null
           id?: string
           notes?: string
+          order_number?: string
           payment_status?: string
           status?: string
           total?: number
@@ -188,9 +290,60 @@ export type Database = {
           },
         ]
       }
+      product_variants: {
+        Row: {
+          created_at: string
+          id: string
+          inventory_cost: number
+          low_stock_threshold: number
+          name: string
+          product_id: string
+          sale_price: number
+          sku: string
+          stock: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inventory_cost?: number
+          low_stock_threshold?: number
+          name?: string
+          product_id: string
+          sale_price: number
+          sku: string
+          stock?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inventory_cost?: number
+          low_stock_threshold?: number
+          name?: string
+          product_id?: string
+          sale_price?: number
+          sku?: string
+          stock?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string
+          category_id: string | null
           cost: number
           created_at: string
           description: string
@@ -207,6 +360,7 @@ export type Database = {
         }
         Insert: {
           category?: string
+          category_id?: string | null
           cost?: number
           created_at?: string
           description?: string
@@ -223,6 +377,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          category_id?: string | null
           cost?: number
           created_at?: string
           description?: string
@@ -237,7 +392,45 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      variant_option_values: {
+        Row: {
+          option_value_id: string
+          variant_id: string
+        }
+        Insert: {
+          option_value_id: string
+          variant_id: string
+        }
+        Update: {
+          option_value_id?: string
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "variant_option_values_option_value_id_fkey"
+            columns: ["option_value_id"]
+            isOneToOne: false
+            referencedRelation: "option_values"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "variant_option_values_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -245,14 +438,38 @@ export type Database = {
     }
     Functions: {
       adjust_product_stock: {
-        Args: { p_delta?: number; p_product_id: string; p_stock?: number }
+        Args: { p_delta?: number; p_stock?: number; p_variant_id: string }
         Returns: undefined
       }
       cancel_order: { Args: { p_order_id: string }; Returns: undefined }
+      create_category: { Args: { p_name: string }; Returns: string }
+      create_option_type: { Args: { p_name: string }; Returns: string }
+      create_option_value: {
+        Args: { p_name: string; p_option_type_id: string }
+        Returns: string
+      }
       create_order: {
         Args: { p_client_id: string; p_items: Json; p_payment_status?: string }
         Returns: string
       }
+      create_variant: {
+        Args: {
+          p_inventory_cost: number
+          p_option_value_ids?: string[]
+          p_product_id: string
+          p_sale_price: number
+          p_sku: string
+          p_stock: number
+          p_variant_name: string
+        }
+        Returns: string
+      }
+      delete_category: { Args: { p_category_id: string }; Returns: undefined }
+      delete_option_type: {
+        Args: { p_option_type_id: string }
+        Returns: undefined
+      }
+      delete_variant: { Args: { p_variant_id: string }; Returns: undefined }
       get_public_catalog: {
         Args: { p_slug: string }
         Returns: {
@@ -261,6 +478,14 @@ export type Database = {
           products: Json
           public_intro: string
           whatsapp_number: string
+        }[]
+      }
+      inventory_aggregates: {
+        Args: never
+        Returns: {
+          cost_total: number
+          profit_total: number
+          sale_total: number
         }[]
       }
       sales_aggregates: {
@@ -281,14 +506,29 @@ export type Database = {
       }
       update_product_atomic: {
         Args: {
-          p_category: string
+          p_category_id: string
           p_image_url?: string
+          p_inventory_cost?: number
           p_name: string
-          p_price: number
           p_product_id: string
           p_public_description?: string
           p_published?: boolean
+          p_sale_price?: number
+          p_sku?: string
+          p_stock?: number
+          p_variant_name?: string
+        }
+        Returns: undefined
+      }
+      update_variant: {
+        Args: {
+          p_inventory_cost: number
+          p_option_value_ids?: string[]
+          p_sale_price: number
+          p_sku: string
           p_stock: number
+          p_variant_id: string
+          p_variant_name: string
         }
         Returns: undefined
       }

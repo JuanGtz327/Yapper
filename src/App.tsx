@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import './App.css'
 import type { Client, Product } from './types.ts'
 import { AuthScreen } from './features/auth/AuthScreen.tsx'
@@ -15,9 +16,12 @@ import { AppSidebar } from './components/layout/AppSidebar.tsx'
 import { Topbar } from './components/layout/Topbar.tsx'
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer.tsx'
 import { ProductModal } from './features/products/ProductModal.tsx'
+import { CategoryManagerModal } from './features/products/CategoryManagerModal.tsx'
+import { OptionTypeManagerModal } from './features/products/OptionTypeManagerModal.tsx'
 import { ClientModal } from './features/clients/ClientModal.tsx'
 import { OrderModal } from './features/orders/OrderModal.tsx'
 import { isSupabaseConfigured } from './lib/supabase.ts'
+import { qk } from './lib/queryKeys.ts'
 import type { Page, Modal } from './lib/navigation.ts'
 import { getPublicCatalogSlug } from './lib/routing.ts'
 import { useAuth } from './hooks/useAuth.ts'
@@ -30,6 +34,7 @@ function App() {
 }
 
 function DashboardApp() {
+  const qc = useQueryClient()
   const [page, setPage] = useState<Page>('Inicio')
   const [modal, setModal] = useState<Modal>(null)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -43,6 +48,8 @@ function DashboardApp() {
     products,
     clients,
     orders,
+    categories,
+    optionTypes,
     sales,
     settings,
     dataLoading,
@@ -127,6 +134,7 @@ function DashboardApp() {
             search={search}
             setSearch={setSearch}
             onAdd={() => openModalForAction('product')}
+            onManageCategories={() => setModal('categories')}
             onEdit={(product) => openModalForAction('product', product)}
             onRemove={removeProduct}
           />
@@ -167,6 +175,7 @@ function DashboardApp() {
             settings={settings}
             onSave={updateBusinessSettings}
             onSignOut={signOut}
+            onOpenOptionTypes={() => setModal('optionTypes')}
           />
         )}
       </main>
@@ -181,6 +190,14 @@ function DashboardApp() {
       {modal === 'product' && (
         <ProductModal
           initial={editingProduct}
+          categories={categories}
+          optionTypes={optionTypes}
+          onCategoryCreated={() => {
+            void qc.invalidateQueries({ queryKey: qk.categories(user) })
+          }}
+          onVariantsChanged={() => {
+            void qc.invalidateQueries({ queryKey: qk.products(user) })
+          }}
           onClose={() => {
             setModal(null)
             setEditingProduct(null)
@@ -219,6 +236,25 @@ function DashboardApp() {
               setModal(null)
             }
           }}
+        />
+      )}
+      {modal === 'categories' && (
+        <CategoryManagerModal
+          categories={categories}
+          onSelect={() => setModal(null)}
+          onCategoryCreated={() => {
+            void qc.invalidateQueries({ queryKey: qk.categories(user) })
+          }}
+          onClose={() => setModal(null)}
+        />
+      )}
+      {modal === 'optionTypes' && (
+        <OptionTypeManagerModal
+          optionTypes={optionTypes}
+          onRefresh={() => {
+            void qc.invalidateQueries({ queryKey: qk.optionTypes(user) })
+          }}
+          onClose={() => setModal(null)}
         />
       )}
     </div>

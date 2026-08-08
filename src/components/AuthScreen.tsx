@@ -81,7 +81,7 @@ export function AuthScreen() {
             </p>
           )}
           <button
-            className="primary-button auth-submit"
+            className={`primary-button auth-submit${loading ? ' button-loading' : ''}`}
             disabled={loading}
             type="submit"
           >
