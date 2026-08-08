@@ -2017,7 +2017,14 @@ td.row-actions .row-actions-inner {
   font-size: 12px;
 }
 .ticket-product span {
-  display: none;
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.ticket-product span + span {
+  margin-top: 2px;
+  font-size: 9px;
 }
 .ticket-quantity {
   color: var(--ink);

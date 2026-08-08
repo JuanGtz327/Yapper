@@ -190,7 +190,7 @@ describe('OrderTicketModal', () => {
       })
       render(<OrderTicketModal {...defaultProps} order={orderWithSnapshot} />)
       expect(screen.getByText('Playera Vintage')).toBeInTheDocument()
-      expect(screen.getByText('Talla M')).toBeInTheDocument()
+      expect(screen.getByText('Negro')).toBeInTheDocument()
       expect(screen.getByText('$200.00 por unidad')).toBeInTheDocument()
     })
 
@@ -210,6 +210,22 @@ describe('OrderTicketModal', () => {
       const totals = screen.getAllByText('$300.00')
       expect(totals.length).toBeGreaterThanOrEqual(1)
     })
+
+    it('debería complementar un snapshot sin variante con SKU y opciones actuales', () => {
+      const orderWithSnapshot = createMockOrder({
+        itemLines: [
+          {
+            variantId: 'v1',
+            quantity: 1,
+            productNameSnapshot: 'Playera Vintage',
+            unitPrice: 200,
+          },
+        ],
+      })
+      render(<OrderTicketModal {...defaultProps} order={orderWithSnapshot} />)
+
+      expect(screen.getByText('Negro')).toBeInTheDocument()
+    })
   })
 
   describe('Productos sin snapshot', () => {
@@ -228,9 +244,61 @@ describe('OrderTicketModal', () => {
       expect(screen.getByText('Producto no disponible')).toBeInTheDocument()
     })
 
-    it('debería mostrar la etiqueta de variante con SKU y opciones', () => {
+    it('debería mostrar los valores de opciones de la variante', () => {
       render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText(/PLA-BAS-NEG/)).toBeInTheDocument()
+      expect(screen.getByText('Negro')).toBeInTheDocument()
+    })
+
+    it('debería ordenar productos y opciones alfabéticamente', () => {
+      const products = [
+        {
+          ...defaultProps.products[0],
+          name: 'Zeta',
+          variants: [
+            {
+              ...defaultProps.products[0].variants[0],
+              id: 'z1',
+              optionValues: [
+                { optionType: 'Talla', value: 'Mediana' },
+                { optionType: 'Color', value: 'Azul' },
+              ],
+            },
+          ],
+        },
+        {
+          ...defaultProps.products[0],
+          id: 'p2',
+          name: 'Alfa',
+          variants: [
+            {
+              ...defaultProps.products[0].variants[0],
+              id: 'a1',
+              optionValues: [],
+            },
+          ],
+        },
+      ]
+      const order = createMockOrder({
+        itemLines: [
+          { variantId: 'z1', quantity: 1 },
+          { variantId: 'a1', quantity: 1 },
+        ],
+      })
+      render(
+        <OrderTicketModal
+          {...defaultProps}
+          products={products}
+          order={order}
+        />,
+      )
+
+      const productNames = screen
+        .getAllByRole('listitem')
+        .map(
+          (item) => item.querySelector('.ticket-product strong')?.textContent,
+        )
+      expect(productNames).toEqual(['Alfa', 'Zeta'])
+      expect(screen.getByText('Azul - Mediana')).toBeInTheDocument()
     })
   })
 

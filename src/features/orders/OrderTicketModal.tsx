@@ -24,43 +24,63 @@ export function OrderTicketModal({
   onCancel: (order: Order) => void
 }) {
   const lines = order.itemLines ?? []
-  const lineItems = lines.map((line) => {
-    if (line.productNameSnapshot) {
+  const findVariant = (variantId: string) =>
+    products
+      .flatMap((product) => product.variants)
+      .find((variant) => variant.id === variantId)
+  const formatVariantLabel = (line: (typeof lines)[number]) => {
+    const variant = findVariant(line.variantId)
+    const optionValues =
+      variant?.optionValues
+        .map((option) => option.value)
+        .sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' })) ?? []
+    if (optionValues.length) return optionValues.join(' - ')
+    return line.variantLabelSnapshot || variant?.name || ''
+  }
+  const lineItems = lines
+    .map((line) => {
+      if (line.productNameSnapshot) {
+        return {
+          name: line.productNameSnapshot,
+          variantLabel: formatVariantLabel(line),
+          quantity: line.quantity,
+          unitPrice: line.unitPrice ?? 0,
+          unitCost: line.unitCostSnapshot ?? 0,
+          total: line.lineTotal ?? (line.unitPrice ?? 0) * line.quantity,
+          isSnapshot: true,
+        }
+      }
+      let productName = 'Producto no disponible'
+      let variantLabel = ''
+      let unitPrice = 0
+      let unitCost = 0
+      for (const product of products) {
+        const variant = product.variants.find((v) => v.id === line.variantId)
+        if (variant) {
+          productName = product.name
+          unitPrice = variant.salePrice
+          unitCost = variant.inventoryCost
+          variantLabel = formatVariantLabel(line)
+          break
+        }
+      }
       return {
-        name: line.productNameSnapshot,
-        variantLabel: line.variantLabelSnapshot || '',
+        name: productName,
+        variantLabel,
         quantity: line.quantity,
-        unitPrice: line.unitPrice ?? 0,
-        unitCost: line.unitCostSnapshot ?? 0,
-        total: line.lineTotal ?? (line.unitPrice ?? 0) * line.quantity,
-        isSnapshot: true,
+        unitPrice,
+        unitCost,
+        total: unitPrice * line.quantity,
+        isSnapshot: false,
       }
-    }
-    let productName = 'Producto no disponible'
-    let variantLabel = ''
-    let unitPrice = 0
-    let unitCost = 0
-    for (const product of products) {
-      const variant = product.variants.find((v) => v.id === line.variantId)
-      if (variant) {
-        productName = product.name
-        unitPrice = variant.salePrice
-        unitCost = variant.inventoryCost
-        const opts = variant.optionValues.map((ov) => ov.value).join(', ')
-        variantLabel = [variant.sku, opts].filter(Boolean).join(' — ')
-        break
-      }
-    }
-    return {
-      name: productName,
-      variantLabel,
-      quantity: line.quantity,
-      unitPrice,
-      unitCost,
-      total: unitPrice * line.quantity,
-      isSnapshot: false,
-    }
-  })
+    })
+    .sort(
+      (a, b) =>
+        a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }) ||
+        a.variantLabel.localeCompare(b.variantLabel, 'es', {
+          sensitivity: 'base',
+        }),
+    )
   const calculatedTotal = lineItems.reduce((sum, line) => sum + line.total, 0)
   const total = lineItems.length ? calculatedTotal : order.total
   return (
