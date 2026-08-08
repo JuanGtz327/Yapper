@@ -83,6 +83,7 @@ function DashboardApp() {
 
   const navigateToPage = (nextPage: Page) => {
     setPage(nextPage)
+    setProductEditor(null)
     setMobileMenuOpen(false)
   }
 
@@ -146,7 +147,6 @@ function DashboardApp() {
         }
         toast.success(toastMessages.product.updated)
         void qc.invalidateQueries({ queryKey: qk.products(user) })
-        setProductEditor(null)
         return true
       } catch {
         toast.error('No pudimos guardar el producto. Inténtalo de nuevo.')
