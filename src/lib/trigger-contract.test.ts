@@ -153,7 +153,7 @@ describe('Contrato del trigger validate_order_item_owner', () => {
     })
   })
 
-  // ─── Escenario 4: cancelOrder (trigger not involved but documents flow) ──
+  // ─── Escenario 4: cancelOrder ─────────────────────────────────────────
   describe('Escenario: Cancelación de pedido', () => {
     it('debería llamar a cancel_order RPC', async () => {
       mockRpc.mockResolvedValue({ data: null, error: null })
@@ -164,6 +164,30 @@ describe('Contrato del trigger validate_order_item_owner', () => {
       expect(mockRpc).toHaveBeenCalledWith('cancel_order', {
         p_order_id: 'order-1',
       })
+    })
+
+    it('debería permitir cancelar pedidos cuyos variantes fueron eliminados con el producto', async () => {
+      // When a product is deleted, its variants are CASCADE-deleted.
+      // cancel_order now skips stock restoration for deleted variants.
+      mockRpc.mockResolvedValue({ data: null, error: null })
+
+      const { cancelOrder } = await import('./repository.ts')
+      // Should not throw — the RPC skips stock restoration for deleted variants
+      await expect(cancelOrder('order-with-deleted-variant')).resolves.toBeUndefined()
+    })
+
+    it('debería propagar error si la variante existe pero pertenece a otro usuario', async () => {
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: {
+          message: 'Variant no longer belongs to this account',
+        },
+      })
+
+      const { cancelOrder } = await import('./repository.ts')
+      await expect(cancelOrder('order-stolen-variant')).rejects.toThrow(
+        'Variant no longer belongs to this account',
+      )
     })
   })
 
