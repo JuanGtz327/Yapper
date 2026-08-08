@@ -443,6 +443,7 @@ describe('Repositorio de pedidos', () => {
           { variant_id: 'v2', quantity: 1 },
         ],
         p_payment_status: 'paid',
+        p_client_name: '',
       })
       expect(result).toBe('order-123')
     })

@@ -505,6 +505,47 @@ describe('useDashboardData', () => {
     })
   })
 
+  describe('preservar nombre del cliente tras eliminación', () => {
+    it('debería mantener el nombre del cliente en pedidos después de eliminarlo usando el snapshot', async () => {
+      mockOrdersData = [
+        {
+          id: '#PED-001', databaseId: 'db-1', clientId: 'c1', client: 'Juan Pérez',
+          clientNameSnapshot: 'Juan Pérez',
+          date: '15 ene 2026', items: 2, total: 300, status: 'Pendiente', payment: 'Pagado',
+          itemLines: [{ variantId: 'v1', quantity: 2 }],
+        },
+      ]
+      mockClientsData = [
+        { id: 'c1', name: 'Juan Pérez', phone: '5512345678', zone: 'Centro', orders: 5, initials: 'JP' },
+      ]
+
+      const { result } = renderHook(() => useDashboardData(mockUser), { wrapper: createWrapper() })
+
+      expect(result.current.orders[0].client).toBe('Juan Pérez')
+
+      mockClientsData = []
+
+      const { result: resultAfterDelete } = renderHook(() => useDashboardData(mockUser), { wrapper: createWrapper() })
+
+      expect(resultAfterDelete.current.orders[0].client).toBe('Juan Pérez')
+    })
+
+    it('debería mostrar "Cliente sin nombre" si no hay snapshot ni cliente en la lista', async () => {
+      mockOrdersData = [
+        {
+          id: '#PED-001', databaseId: 'db-1', clientId: 'c-eliminado', client: 'Cliente sin nombre',
+          date: '15 ene 2026', items: 2, total: 300, status: 'Pendiente', payment: 'Pagado',
+          itemLines: [{ variantId: 'v1', quantity: 2 }],
+        },
+      ]
+      mockClientsData = []
+
+      const { result } = renderHook(() => useDashboardData(mockUser), { wrapper: createWrapper() })
+
+      expect(result.current.orders[0].client).toBe('Cliente sin nombre')
+    })
+  })
+
   describe('changeOrderPayment', () => {
     it('debería actualizar pago a Pagado', async () => {
       mockUpdateOrderPayment.mockResolvedValue(undefined)

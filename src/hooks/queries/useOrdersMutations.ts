@@ -21,10 +21,13 @@ export function useOrdersMutations(user: User | null) {
       clientId: string
       items: Array<{ variantId: string; quantity: number }>
       payment: 'pending' | 'paid'
-    }) =>
-      user
-        ? createOrder(clientId, items, payment)
-        : Promise.resolve(`d${Date.now()}`),
+    }) => {
+      const clients = qc.getQueryData<Client[]>(qk.clients(user)) ?? []
+      const client = clients.find((c) => c.id === clientId)
+      return user
+        ? createOrder(clientId, items, payment, client?.name ?? '')
+        : Promise.resolve(`d${Date.now()}`)
+    },
     onSuccess: (_databaseId, { clientId, items, payment }) => {
       const clients = qc.getQueryData<Client[]>(qk.clients(user)) ?? []
       const products = qc.getQueryData<Product[]>(qk.products(user)) ?? []
@@ -67,6 +70,7 @@ export function useOrdersMutations(user: User | null) {
           databaseId,
           clientId,
           client: client?.name || 'Cliente sin nombre',
+          clientNameSnapshot: client?.name || undefined,
           date: 'Ahora',
           items: items.reduce((sum, item) => sum + item.quantity, 0),
           total,

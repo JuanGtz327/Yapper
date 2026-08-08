@@ -46,6 +46,7 @@ export type Order = {
   databaseId?: string
   clientId?: string
   client: string
+  clientNameSnapshot?: string
   date: string
   createdAt?: string
   items: number

@@ -107,6 +107,7 @@ describe('useOrdersMutations', () => {
         'c1',
         [{ variantId: 'v1', quantity: 2 }],
         'paid',
+        'Juan Pérez',
       )
     })
 

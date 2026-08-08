@@ -93,6 +93,7 @@ describe('Contrato del trigger validate_order_item_owner', () => {
           { variant_id: 'v2', quantity: 1 },
         ],
         p_payment_status: 'paid',
+        p_client_name: '',
       })
       expect(result).toBe('order-new')
     })

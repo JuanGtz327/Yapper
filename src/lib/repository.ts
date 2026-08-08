@@ -53,6 +53,7 @@ type OrderRow = {
   total: number
   created_at: string
   order_number: string | null
+  client_name_snapshot: string
 }
 
 type OrderItemRow = {
@@ -487,6 +488,7 @@ export async function createOrder(
   clientId: string,
   items: OrderItemInput[],
   paymentStatus: 'pending' | 'paid',
+  clientName: string = '',
 ) {
   const { data, error } = await supabase.rpc('create_order', {
     p_client_id: clientId,
@@ -495,6 +497,7 @@ export async function createOrder(
       quantity: item.quantity,
     })),
     p_payment_status: paymentStatus,
+    p_client_name: clientName,
   })
   if (error) throw error
   return data as string
@@ -506,7 +509,7 @@ export async function loadOrders(
   const { data, error } = await supabase
     .from('orders')
     .select(
-      'id, client_id, status, payment_status, total, created_at, order_number',
+      'id, client_id, status, payment_status, total, created_at, order_number, client_name_snapshot',
     )
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
@@ -535,7 +538,8 @@ export async function loadOrders(
     id: row.order_number ?? `#${row.id.slice(0, 6).toUpperCase()}`,
     databaseId: row.id,
     clientId: row.client_id ?? undefined,
-    client: 'Cliente sin nombre',
+    client: row.client_name_snapshot || 'Cliente sin nombre',
+    clientNameSnapshot: row.client_name_snapshot || undefined,
     date: new Intl.DateTimeFormat('es-MX', {
       dateStyle: 'medium',
       timeStyle: 'short',

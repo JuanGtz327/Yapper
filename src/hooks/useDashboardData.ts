@@ -52,6 +52,7 @@ export function useDashboardData(user: User | null) {
       ...order,
       client:
         clients.find((client) => client.id === order.clientId)?.name ||
+        order.clientNameSnapshot ||
         'Cliente sin nombre',
     }))
   }, [rawOrders, clients])

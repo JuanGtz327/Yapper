@@ -184,7 +184,7 @@ export type Database = {
           id: string
           line_total: number
           order_id: string
-          product_id: string
+          product_id: string | null
           product_name_snapshot: string
           quantity: number
           sku_snapshot: string
@@ -197,7 +197,7 @@ export type Database = {
           id?: string
           line_total?: number
           order_id: string
-          product_id: string
+          product_id?: string | null
           product_name_snapshot?: string
           quantity: number
           sku_snapshot?: string
@@ -210,7 +210,7 @@ export type Database = {
           id?: string
           line_total?: number
           order_id?: string
-          product_id?: string
+          product_id?: string | null
           product_name_snapshot?: string
           quantity?: number
           sku_snapshot?: string
@@ -344,51 +344,42 @@ export type Database = {
         Row: {
           category: string
           category_id: string | null
-          cost: number
           created_at: string
           description: string
           id: string
           image_url: string | null
           low_stock_threshold: number
           name: string
-          price: number
           public_description: string
           published: boolean
-          stock: number
           updated_at: string
           user_id: string
         }
         Insert: {
           category?: string
           category_id?: string | null
-          cost?: number
           created_at?: string
           description?: string
           id?: string
           image_url?: string | null
           low_stock_threshold?: number
           name: string
-          price: number
           public_description?: string
           published?: boolean
-          stock?: number
           updated_at?: string
           user_id: string
         }
         Update: {
           category?: string
           category_id?: string | null
-          cost?: number
           created_at?: string
           description?: string
           id?: string
           image_url?: string | null
           low_stock_threshold?: number
           name?: string
-          price?: number
           public_description?: string
           published?: boolean
-          stock?: number
           updated_at?: string
           user_id?: string
         }
@@ -467,6 +458,10 @@ export type Database = {
       delete_category: { Args: { p_category_id: string }; Returns: undefined }
       delete_option_type: {
         Args: { p_option_type_id: string }
+        Returns: undefined
+      }
+      delete_option_value: {
+        Args: { p_option_value_id: string }
         Returns: undefined
       }
       delete_variant: { Args: { p_variant_id: string }; Returns: undefined }
