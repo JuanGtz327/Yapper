@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/ReactToastify.css'
 import './App.css'
 import type { Client, Product } from './types.ts'
 import { AuthScreen } from './features/auth/AuthScreen.tsx'
@@ -20,6 +22,7 @@ import { CategoryManagerModal } from './features/products/CategoryManagerModal.t
 import { OptionTypeManagerModal } from './features/products/OptionTypeManagerModal.tsx'
 import { ClientModal } from './features/clients/ClientModal.tsx'
 import { OrderModal } from './features/orders/OrderModal.tsx'
+import { ConfirmModal } from './components/ui/ConfirmModal.tsx'
 import { isSupabaseConfigured } from './lib/supabase.ts'
 import { qk } from './lib/queryKeys.ts'
 import type { Page, Modal } from './lib/navigation.ts'
@@ -53,7 +56,8 @@ function DashboardApp() {
     sales,
     settings,
     dataLoading,
-    dataError,
+    confirmState,
+    clearConfirm,
     addProduct: addProductAction,
     addClient: addClientAction,
     removeProduct,
@@ -109,11 +113,6 @@ function DashboardApp() {
           <div className="data-notice">
             <Spinner label="Sincronizando tus datos" /> Sincronizando tus
             datos...
-          </div>
-        )}
-        {dataError && (
-          <div className="data-notice error" role="alert" aria-live="assertive">
-            {dataError}
           </div>
         )}
         {page === 'Inicio' && (
@@ -265,6 +264,26 @@ function DashboardApp() {
           onClose={() => setModal(null)}
         />
       )}
+      {confirmState && (
+        <ConfirmModal
+          title={confirmState.title}
+          message={confirmState.message}
+          danger
+          onConfirm={() => {
+            void confirmState.onConfirm()
+          }}
+          onClose={clearConfirm}
+        />
+      )}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="light"
+      />
     </div>
   )
 }

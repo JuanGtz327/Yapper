@@ -20,6 +20,7 @@ import { useProductsMutations } from './queries/useProductsMutations.ts'
 import { useClientsMutations } from './queries/useClientsMutations.ts'
 import { useOrdersMutations } from './queries/useOrdersMutations.ts'
 import { useSettingsMutation } from './queries/useSettingsMutation.ts'
+import { useToast, toastMessages } from './useToast.ts'
 
 export function useDashboardData(user: User | null) {
   const productsQuery = useProductsQuery(user)
@@ -57,12 +58,14 @@ export function useDashboardData(user: User | null) {
 
   const dataLoading =
     productsQuery.isLoading || clientsQuery.isLoading || ordersQuery.isLoading
-  const dataError =
-    productsQuery.isError || clientsQuery.isError || ordersQuery.isError
-      ? 'No pudimos cargar tus datos. Revisa la configuración de Supabase.'
-      : ''
 
-  const [mutationError, setMutationError] = useState('')
+  const toast = useToast()
+
+  const [confirmState, setConfirmState] = useState<{
+    title: string
+    message: string
+    onConfirm: () => void
+  } | null>(null)
 
   const productMutations = useProductsMutations(user)
   const clientMutations = useClientsMutations(user)
@@ -84,22 +87,22 @@ export function useDashboardData(user: User | null) {
       )
       const stock = Number(form.get('stock'))
       if (name.length < 2 || name.length > 120) {
-        setMutationError('El nombre debe tener entre 2 y 120 caracteres.')
+        toast.error('El nombre debe tener entre 2 y 120 caracteres.')
         return false
       }
       if (!editing) {
         if (!sku) {
-          setMutationError('El SKU es obligatorio.')
+          toast.error('El SKU es obligatorio.')
           return false
         }
         if (!Number.isFinite(salePrice) || salePrice < 0) {
-          setMutationError(
+          toast.error(
             'Introduce un precio de venta válido mayor o igual a cero.',
           )
           return false
         }
         if (!Number.isInteger(stock) || stock < 0) {
-          setMutationError(
+          toast.error(
             'Las existencias deben ser un número entero no negativo.',
           )
           return false
@@ -107,7 +110,7 @@ export function useDashboardData(user: User | null) {
       }
       const imageUrl = String(form.get('imageUrl') || '').trim() || null
       if (imageUrl && !isSafeImageUrl(imageUrl)) {
-        setMutationError('La imagen pública debe usar una URL HTTPS válida.')
+        toast.error('La imagen pública debe usar una URL HTTPS válida.')
         return false
       }
       const categoryId = (form.get('categoryId') as string) || null
@@ -137,14 +140,18 @@ export function useDashboardData(user: User | null) {
             },
           })
         }
-        setMutationError('')
+        toast.success(
+          editing
+            ? toastMessages.product.updated
+            : toastMessages.product.created,
+        )
         return true
       } catch {
-        setMutationError('No pudimos guardar el producto. Inténtalo de nuevo.')
+        toast.error('No pudimos guardar el producto. Inténtalo de nuevo.')
         return false
       }
     },
-    [productMutations],
+    [productMutations, toast],
   )
 
   const addClient = useCallback(
@@ -156,7 +163,7 @@ export function useDashboardData(user: User | null) {
       const form = new FormData(event.currentTarget)
       const name = String(form.get('name') || '').trim()
       if (name.length < 2 || name.length > 120) {
-        setMutationError('El nombre debe tener entre 2 y 120 caracteres.')
+        toast.error('El nombre debe tener entre 2 y 120 caracteres.')
         return false
       }
       const initials = name
@@ -179,36 +186,56 @@ export function useDashboardData(user: User | null) {
         } else {
           await clientMutations.create.mutateAsync(newClient)
         }
-        setMutationError('')
+        toast.success(
+          editing
+            ? toastMessages.client.updated
+            : toastMessages.client.created,
+        )
         return true
       } catch {
-        setMutationError('No pudimos guardar el cliente. Inténtalo de nuevo.')
+        toast.error('No pudimos guardar el cliente. Inténtalo de nuevo.')
         return false
       }
     },
-    [clientMutations],
+    [clientMutations, toast],
   )
 
   const removeProduct = useCallback(
     async (id: string) => {
-      try {
-        await productMutations.remove.mutateAsync(id)
-      } catch {
-        setMutationError('No pudimos eliminar el producto.')
-      }
+      const product = products.find((p) => p.id === id)
+      setConfirmState({
+        title: 'Eliminar producto',
+        message: `¿Eliminar el producto "${product?.name ?? ''}"? Esta acción no se puede deshacer.`,
+        onConfirm: async () => {
+          try {
+            await productMutations.remove.mutateAsync(id)
+            toast.success(toastMessages.product.deleted)
+          } catch {
+            toast.error('No pudimos eliminar el producto.')
+          }
+        },
+      })
     },
-    [productMutations],
+    [products, productMutations, toast],
   )
 
   const removeClient = useCallback(
     async (id: string) => {
-      try {
-        await clientMutations.remove.mutateAsync(id)
-      } catch {
-        setMutationError('No pudimos eliminar el cliente.')
-      }
+      const client = clients.find((c) => c.id === id)
+      setConfirmState({
+        title: 'Eliminar cliente',
+        message: `¿Eliminar el cliente "${client?.name ?? ''}"? Esta acción no se puede deshacer.`,
+        onConfirm: async () => {
+          try {
+            await clientMutations.remove.mutateAsync(id)
+            toast.success(toastMessages.client.deleted)
+          } catch {
+            toast.error('No pudimos eliminar el cliente.')
+          }
+        },
+      })
     },
-    [clientMutations],
+    [clients, clientMutations, toast],
   )
 
   const addOrder = useCallback(
@@ -221,35 +248,36 @@ export function useDashboardData(user: User | null) {
       if (!client) throw new Error('Selecciona un cliente')
       try {
         await orderMutations.create.mutateAsync({ clientId, items, payment })
-        setMutationError('')
+        toast.success(toastMessages.order.created)
         return true
       } catch {
-        setMutationError('No pudimos crear el pedido. Inténtalo de nuevo.')
+        toast.error('No pudimos crear el pedido. Inténtalo de nuevo.')
         return false
       }
     },
-    [clients, orderMutations],
+    [clients, orderMutations, toast],
   )
 
   const cancelExistingOrder = useCallback(
     async (order: Order) => {
       if (order.status === 'Cancelado') return
-      if (
-        !window.confirm(
+      setConfirmState({
+        title: 'Cancelar pedido',
+        message:
           '¿Cancelar este pedido? Se restaurarán sus existencias en el inventario.',
-        )
-      )
-        return
-      try {
-        await orderMutations.cancel.mutateAsync(order)
-        setMutationError('')
-      } catch {
-        setMutationError(
-          'No pudimos cancelar el pedido. Puede que ya esté cancelado.',
-        )
-      }
+        onConfirm: async () => {
+          try {
+            await orderMutations.cancel.mutateAsync(order)
+            toast.success(toastMessages.order.cancelled)
+          } catch {
+            toast.error(
+              'No pudimos cancelar el pedido. Puede que ya esté cancelado.',
+            )
+          }
+        },
+      })
     },
-    [orderMutations],
+    [orderMutations, toast],
   )
 
   const changeOrderStatus = useCallback(
@@ -260,29 +288,31 @@ export function useDashboardData(user: User | null) {
       }
       try {
         await orderMutations.updateStatus.mutateAsync({ order, status })
+        toast.success(toastMessages.order.statusUpdated)
       } catch {
-        setMutationError('No pudimos actualizar el estado del pedido.')
+        toast.error('No pudimos actualizar el estado del pedido.')
       }
     },
-    [orderMutations, cancelExistingOrder],
+    [orderMutations, cancelExistingOrder, toast],
   )
 
   const changeOrderPayment = useCallback(
     async (order: Order, payment: 'pending' | 'paid') => {
       try {
         await orderMutations.updatePayment.mutateAsync({ order, payment })
+        toast.success(toastMessages.order.paymentUpdated)
       } catch {
-        setMutationError('No pudimos actualizar el estado del pago.')
+        toast.error('No pudimos actualizar el estado del pago.')
       }
     },
-    [orderMutations],
+    [orderMutations, toast],
   )
 
   const updateBusinessSettings = useCallback(
     async (next: BusinessSettings) => {
       const businessName = next.businessName.trim()
       if (businessName.length < 2 || businessName.length > 120) {
-        setMutationError('El nombre debe tener entre 2 y 120 caracteres.')
+        toast.error('El nombre debe tener entre 2 y 120 caracteres.')
         return
       }
       if (
@@ -291,7 +321,7 @@ export function useDashboardData(user: User | null) {
         next.lowStockThreshold < 0 ||
         next.lowStockThreshold > 10000
       ) {
-        setMutationError('El umbral debe ser un entero entre 0 y 10,000.')
+        toast.error('El umbral debe ser un entero entre 0 y 10,000.')
         return
       }
       const slug = (next.publicSlug ?? '').trim().toLowerCase()
@@ -299,14 +329,14 @@ export function useDashboardData(user: User | null) {
         next.publicCatalogEnabled &&
         !/^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$/.test(slug)
       ) {
-        setMutationError(
+        toast.error(
           'El slug público solo acepta letras minúsculas, números y guiones (2–50 caracteres).',
         )
         return
       }
       const normalizedWhatsApp = normalizeMexicanWhatsApp(next.whatsappNumber)
       if (next.publicCatalogEnabled && !normalizedWhatsApp) {
-        setMutationError('Configura un WhatsApp mexicano válido de 10 dígitos.')
+        toast.error('Configura un WhatsApp mexicano válido de 10 dígitos.')
         return
       }
       const validated = {
@@ -317,14 +347,14 @@ export function useDashboardData(user: User | null) {
       }
       try {
         await settingsMutation.mutateAsync(validated)
-        setMutationError('')
+        toast.success(toastMessages.settings.saved)
       } catch {
-        setMutationError(
+        toast.error(
           'No pudimos guardar la configuración. Inténtalo de nuevo.',
         )
       }
     },
-    [settingsMutation],
+    [settingsMutation, toast],
   )
 
   return {
@@ -336,7 +366,8 @@ export function useDashboardData(user: User | null) {
     sales,
     settings,
     dataLoading,
-    dataError: dataError || mutationError,
+    confirmState,
+    clearConfirm: () => setConfirmState(null),
     addProduct,
     addClient,
     removeProduct,

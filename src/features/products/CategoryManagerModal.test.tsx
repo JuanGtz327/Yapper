@@ -3,6 +3,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { CategoryManagerModal } from './CategoryManagerModal'
 import * as repository from '../../lib/repository.ts'
 
+const mockToastError = vi.fn()
+const mockToastSuccess = vi.fn()
+
+vi.mock('../../hooks/useToast.ts', () => ({
+  useToast: () => ({
+    success: mockToastSuccess,
+    error: mockToastError,
+  }),
+  toastMessages: {
+    category: {
+      created: 'Categoría creada.',
+      deleted: 'Categoría eliminada.',
+    },
+  },
+}))
+
 vi.mock('../../lib/repository.ts', () => ({
   createCategory: vi.fn(),
   deleteCategory: vi.fn(),
@@ -150,9 +166,9 @@ describe('CategoryManagerModal', () => {
       fireEvent.click(screen.getByText('Añadir'))
 
       await waitFor(() => {
-        expect(
-          screen.getByText('No pudimos crear la categoría.'),
-        ).toBeInTheDocument()
+        expect(mockToastError).toHaveBeenCalledWith(
+          'No pudimos crear la categoría.',
+        )
       })
     })
 
@@ -183,6 +199,8 @@ describe('CategoryManagerModal', () => {
 
       fireEvent.click(screen.getByLabelText('Eliminar Ropa'))
 
+      fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
+
       await waitFor(() => {
         expect(deleteCategory).toHaveBeenCalledWith('cat1')
       })
@@ -202,6 +220,8 @@ describe('CategoryManagerModal', () => {
 
       fireEvent.click(screen.getByLabelText('Eliminar Ropa'))
 
+      fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
+
       await waitFor(() => {
         expect(onCategoryCreated).toHaveBeenCalledTimes(1)
       })
@@ -215,10 +235,12 @@ describe('CategoryManagerModal', () => {
 
       fireEvent.click(screen.getByLabelText('Eliminar Ropa'))
 
+      fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
+
       await waitFor(() => {
-        expect(
-          screen.getByText('No pudimos eliminar la categoría.'),
-        ).toBeInTheDocument()
+        expect(mockToastError).toHaveBeenCalledWith(
+          'No pudimos eliminar la categoría.',
+        )
       })
     })
   })

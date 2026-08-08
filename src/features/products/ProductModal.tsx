@@ -2,9 +2,11 @@ import { useState, type FormEvent } from 'react'
 import { Check, Pencil, Plus, Trash2 } from 'lucide-react'
 import type { Product, Variant } from '../../types.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { CategoryManagerModal } from './CategoryManagerModal.tsx'
 import { VariantManagerModal } from './VariantManagerModal.tsx'
 import { createVariant, updateVariant, deleteVariant } from '../../lib/repository.ts'
+import { useToast, toastMessages } from '../../hooks/useToast.ts'
 
 type OptionTypeWithValues = {
   id: string
@@ -30,25 +32,23 @@ export function ProductModal({
   onSubmit: (event: FormEvent<HTMLFormElement>) => Promise<void>
 }) {
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
   const [selectedCategoryId, setSelectedCategoryId] = useState(
     initial?.categoryId ?? '',
   )
   const [categoryManagerOpen, setCategoryManagerOpen] = useState(false)
   const [variantManagerOpen, setVariantManagerOpen] = useState(false)
   const [editingVariant, setEditingVariant] = useState<Variant | null>(null)
+  const [confirmState, setConfirmState] = useState<{
+    title: string
+    message: string
+    onConfirm: () => void
+  } | null>(null)
+  const toast = useToast()
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     setSaving(true)
-    setError('')
     try {
       await onSubmit(event)
-    } catch (submissionError) {
-      setError(
-        submissionError instanceof Error
-          ? submissionError.message
-          : 'No pudimos guardar el producto.',
-      )
     } finally {
       setSaving(false)
     }
@@ -68,6 +68,11 @@ export function ProductModal({
     } else {
       await createVariant(initial.id, data)
     }
+    toast.success(
+      editingVariant
+        ? toastMessages.variant.updated
+        : toastMessages.variant.created,
+    )
     setVariantManagerOpen(false)
     setEditingVariant(null)
     onVariantsChanged()
@@ -76,16 +81,22 @@ export function ProductModal({
   const handleDeleteVariant = async (variant: Variant) => {
     if (!initial) return
     if (initial.variants.length <= 1) {
-      setError('No puedes eliminar la única variante de un producto.')
+      toast.error('No puedes eliminar la única variante de un producto.')
       return
     }
-    if (!window.confirm(`¿Eliminar la variante ${variant.sku}?`)) return
-    try {
-      await deleteVariant(variant.id)
-      onVariantsChanged()
-    } catch {
-      setError('No pudimos eliminar la variante.')
-    }
+    setConfirmState({
+      title: 'Eliminar variante',
+      message: `¿Eliminar la variante ${variant.sku}?`,
+      onConfirm: async () => {
+        try {
+          await deleteVariant(variant.id)
+          toast.success(toastMessages.variant.deleted)
+          onVariantsChanged()
+        } catch {
+          toast.error('No pudimos eliminar la variante.')
+        }
+      },
+    })
   }
 
   if (categoryManagerOpen) {
@@ -288,11 +299,6 @@ export function ProductModal({
             />
           </label>
         </fieldset>
-        {error && (
-          <p className="form-error" role="alert">
-            {error}
-          </p>
-        )}
         <div className="modal-actions">
           <button className="cancel-button" onClick={onClose} type="button">
             Cancelar
@@ -307,6 +313,16 @@ export function ProductModal({
           </button>
         </div>
       </form>
+      {confirmState && (
+        <ConfirmModal
+          title={confirmState.title}
+          message={confirmState.message}
+          danger
+          confirmLabel="Eliminar"
+          onConfirm={() => void confirmState.onConfirm()}
+          onClose={() => setConfirmState(null)}
+        />
+      )}
     </ModalFrame>
   )
 }

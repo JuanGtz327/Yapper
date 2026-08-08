@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Check } from 'lucide-react'
 import type { Variant } from '../../types.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { useToast } from '../../hooks/useToast.ts'
 
 type OptionTypeWithValues = {
   id: string
@@ -28,7 +29,7 @@ export function VariantManagerModal({
   }) => Promise<void>
 }) {
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const toast = useToast()
 
   // Initialize selected option values from the existing variant
   const initialOptionValues: Record<string, string> = {}
@@ -56,22 +57,21 @@ export function VariantManagerModal({
     const stock = Number(form.get('stock'))
 
     if (!sku) {
-      setError('El SKU es obligatorio.')
+      toast.error('El SKU es obligatorio.')
       return
     }
     if (!Number.isFinite(salePrice) || salePrice < 0) {
-      setError('Introduce un precio de venta válido.')
+      toast.error('Introduce un precio de venta válido.')
       return
     }
     if (!Number.isInteger(stock) || stock < 0) {
-      setError('Las existencias deben ser un número entero no negativo.')
+      toast.error('Las existencias deben ser un número entero no negativo.')
       return
     }
 
     const optionValueIds = Object.values(selectedOptions).filter(Boolean)
 
     setSaving(true)
-    setError('')
     try {
       await onSave({
         sku,
@@ -82,7 +82,7 @@ export function VariantManagerModal({
         optionValueIds,
       })
     } catch (submissionError) {
-      setError(
+      toast.error(
         submissionError instanceof Error
           ? submissionError.message
           : 'No pudimos guardar la variante.',
@@ -177,11 +177,6 @@ export function VariantManagerModal({
               </label>
             ))}
           </fieldset>
-        )}
-        {error && (
-          <p className="form-error" role="alert">
-            {error}
-          </p>
         )}
         <div className="modal-actions">
           <button className="cancel-button" onClick={onClose} type="button">

@@ -1,7 +1,9 @@
 import { useState, useRef, type FormEvent } from 'react'
 import { Plus, X, Tag } from 'lucide-react'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { createCategory, deleteCategory } from '../../lib/repository.ts'
+import { useToast, toastMessages } from '../../hooks/useToast.ts'
 
 export function CategoryManagerModal({
   categories,
@@ -17,38 +19,50 @@ export function CategoryManagerModal({
   const [newName, setNewName] = useState('')
   const [creating, setCreating] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [error, setError] = useState('')
+  const [confirmState, setConfirmState] = useState<{
+    title: string
+    message: string
+    onConfirm: () => void
+  } | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const toast = useToast()
 
   const handleCreate = async (event?: FormEvent) => {
     event?.preventDefault()
     const name = newName.trim()
     if (!name) return
     setCreating(true)
-    setError('')
     try {
       const id = await createCategory(name)
+      toast.success(toastMessages.category.created)
       setNewName('')
       onCategoryCreated()
       onSelect(id)
     } catch {
-      setError('No pudimos crear la categoría.')
+      toast.error('No pudimos crear la categoría.')
     } finally {
       setCreating(false)
     }
   }
 
-  const handleDelete = async (id: string) => {
-    setDeletingId(id)
-    setError('')
-    try {
-      await deleteCategory(id)
-      onCategoryCreated()
-    } catch {
-      setError('No pudimos eliminar la categoría.')
-    } finally {
-      setDeletingId(null)
-    }
+  const handleDelete = (id: string) => {
+    const cat = categories.find((c) => c.id === id)
+    setConfirmState({
+      title: 'Eliminar categoría',
+      message: `¿Eliminar la categoría "${cat?.name ?? ''}"? Los productos asociados perderán su categoría.`,
+      onConfirm: async () => {
+        setDeletingId(id)
+        try {
+          await deleteCategory(id)
+          toast.success(toastMessages.category.deleted)
+          onCategoryCreated()
+        } catch {
+          toast.error('No pudimos eliminar la categoría.')
+        } finally {
+          setDeletingId(null)
+        }
+      },
+    })
   }
 
   return (
@@ -73,11 +87,6 @@ export function CategoryManagerModal({
           Añadir
         </button>
       </form>
-      {error && (
-        <p className="form-error" role="alert">
-          {error}
-        </p>
-      )}
       <ul className="category-list">
         {categories.length === 0 && (
           <li className="category-list-empty">
@@ -107,6 +116,16 @@ export function CategoryManagerModal({
           </li>
         ))}
       </ul>
+      {confirmState && (
+        <ConfirmModal
+          title={confirmState.title}
+          message={confirmState.message}
+          danger
+          confirmLabel="Eliminar"
+          onConfirm={() => void confirmState.onConfirm()}
+          onClose={() => setConfirmState(null)}
+        />
+      )}
     </ModalFrame>
   )
 }

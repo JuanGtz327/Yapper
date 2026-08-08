@@ -22,6 +22,15 @@ vi.mock('../lib/whatsapp.ts', () => ({
   },
 }))
 
+const mockToastSuccess = vi.fn()
+const mockToastError = vi.fn()
+vi.mock('react-toastify', () => ({
+  toast: {
+    success: (...args: unknown[]) => mockToastSuccess(...args),
+    error: (...args: unknown[]) => mockToastError(...args),
+  },
+}))
+
 const mockCreateProduct = vi.fn()
 const mockUpdateProduct = vi.fn()
 const mockRemoveProduct = vi.fn()
@@ -191,7 +200,7 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addProduct(event, null) })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('nombre')
+      expect(mockToastError).toHaveBeenCalledWith('El nombre debe tener entre 2 y 120 caracteres.', expect.anything())
       expect(mockCreateProduct).not.toHaveBeenCalled()
     })
 
@@ -203,7 +212,7 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addProduct(event, null) })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('nombre')
+      expect(mockToastError).toHaveBeenCalledWith('El nombre debe tener entre 2 y 120 caracteres.', expect.anything())
     })
 
     it('debería rechazar SKU vacío al crear', async () => {
@@ -214,7 +223,7 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addProduct(event, null) })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('SKU')
+      expect(mockToastError).toHaveBeenCalledWith('El SKU es obligatorio.', expect.anything())
     })
 
     it('debería rechazar precio negativo al crear', async () => {
@@ -225,7 +234,7 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addProduct(event, null) })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('precio')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('precio'), expect.anything())
     })
 
     it('debería rechazar stock no entero al crear', async () => {
@@ -236,7 +245,7 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addProduct(event, null) })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('existencias')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('existencias'), expect.anything())
     })
 
     it('debería rechazar stock negativo al crear', async () => {
@@ -247,7 +256,7 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addProduct(event, null) })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('existencias')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('existencias'), expect.anything())
     })
 
     it('debería rechazar imagen HTTP', async () => {
@@ -261,7 +270,7 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addProduct(event, null) })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('HTTPS')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('HTTPS'), expect.anything())
     })
 
     it('debería crear producto válido', async () => {
@@ -276,8 +285,8 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addProduct(event, null) })
 
       expect(returned).toBe(true)
-      expect(result.current.dataError).toBe('')
       expect(mockCreateProduct).toHaveBeenCalled()
+      expect(mockToastSuccess).toHaveBeenCalled()
     })
 
     it('debería permitir imagen vacía (null)', async () => {
@@ -300,7 +309,7 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addProduct(event, null) })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('guardar el producto')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('guardar el producto'), expect.anything())
     })
   })
 
@@ -329,7 +338,7 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addClient(event, null) })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('nombre')
+      expect(mockToastError).toHaveBeenCalledWith('El nombre debe tener entre 2 y 120 caracteres.', expect.anything())
     })
 
     it('debería crear cliente válido', async () => {
@@ -342,6 +351,7 @@ describe('useDashboardData', () => {
 
       expect(returned).toBe(true)
       expect(mockCreateClient).toHaveBeenCalled()
+      expect(mockToastSuccess).toHaveBeenCalled()
     })
 
     it('debería manejar error al crear cliente', async () => {
@@ -353,7 +363,7 @@ describe('useDashboardData', () => {
       await act(async () => { returned = await result.current.addClient(event, null) })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('guardar el cliente')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('guardar el cliente'), expect.anything())
     })
   })
 
@@ -364,7 +374,12 @@ describe('useDashboardData', () => {
 
       await act(async () => { await result.current.removeProduct('p1') })
 
+      expect(result.current.confirmState).not.toBeNull()
+
+      await act(async () => { await result.current.confirmState!.onConfirm() })
+
       expect(mockRemoveProduct).toHaveBeenCalledWith('p1')
+      expect(mockToastSuccess).toHaveBeenCalled()
     })
 
     it('debería manejar error al eliminar producto', async () => {
@@ -373,7 +388,11 @@ describe('useDashboardData', () => {
 
       await act(async () => { await result.current.removeProduct('p1') })
 
-      expect(result.current.dataError).toContain('eliminar el producto')
+      expect(result.current.confirmState).not.toBeNull()
+
+      await act(async () => { await result.current.confirmState!.onConfirm() })
+
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('eliminar el producto'), expect.anything())
     })
 
     it('debería eliminar cliente', async () => {
@@ -382,7 +401,12 @@ describe('useDashboardData', () => {
 
       await act(async () => { await result.current.removeClient('c1') })
 
+      expect(result.current.confirmState).not.toBeNull()
+
+      await act(async () => { await result.current.confirmState!.onConfirm() })
+
       expect(mockRemoveClient).toHaveBeenCalledWith('c1')
+      expect(mockToastSuccess).toHaveBeenCalled()
     })
 
     it('debería manejar error al eliminar cliente', async () => {
@@ -391,7 +415,11 @@ describe('useDashboardData', () => {
 
       await act(async () => { await result.current.removeClient('c1') })
 
-      expect(result.current.dataError).toContain('eliminar el cliente')
+      expect(result.current.confirmState).not.toBeNull()
+
+      await act(async () => { await result.current.confirmState!.onConfirm() })
+
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('eliminar el cliente'), expect.anything())
     })
   })
 
@@ -411,6 +439,7 @@ describe('useDashboardData', () => {
         items: [{ variantId: 'v1', quantity: 2 }],
         payment: 'paid',
       })
+      expect(mockToastSuccess).toHaveBeenCalled()
     })
 
     it('debería lanzar error si el cliente no existe', async () => {
@@ -431,7 +460,7 @@ describe('useDashboardData', () => {
       })
 
       expect(returned).toBe(false)
-      expect(result.current.dataError).toContain('crear el pedido')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('crear el pedido'), expect.anything())
     })
   })
 
@@ -445,18 +474,14 @@ describe('useDashboardData', () => {
       expect(mockCancelOrder).not.toHaveBeenCalled()
     })
 
-    it('debería cancelar pedido después de confirmación', async () => {
-      mockCancelOrder.mockResolvedValue(undefined)
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+    it('debería abrir confirmación al cancelar pedido', async () => {
       const { result } = renderHook(() => useDashboardData(mockUser), { wrapper: createWrapper() })
 
       await act(async () => { await result.current.changeOrderStatus(mockOrdersData[0], 'cancelled') })
 
-      expect(mockCancelOrder).toHaveBeenCalled()
-      vi.mocked(window.confirm).mockRestore()
+      expect(result.current.confirmState).not.toBeNull()
+      expect(result.current.confirmState?.title).toBe('Cancelar pedido')
     })
-
-
   })
 
   describe('changeOrderStatus', () => {
@@ -467,6 +492,7 @@ describe('useDashboardData', () => {
       await act(async () => { await result.current.changeOrderStatus(mockOrdersData[0], 'delivered') })
 
       expect(mockUpdateOrderStatus).toHaveBeenCalledWith({ order: mockOrdersData[0], status: 'delivered' })
+      expect(mockToastSuccess).toHaveBeenCalled()
     })
 
     it('debería manejar error al actualizar estado', async () => {
@@ -475,7 +501,7 @@ describe('useDashboardData', () => {
 
       await act(async () => { await result.current.changeOrderStatus(mockOrdersData[0], 'delivered') })
 
-      expect(result.current.dataError).toContain('actualizar el estado')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('actualizar el estado'), expect.anything())
     })
   })
 
@@ -487,6 +513,7 @@ describe('useDashboardData', () => {
       await act(async () => { await result.current.changeOrderPayment(mockOrdersData[0], 'paid') })
 
       expect(mockUpdateOrderPayment).toHaveBeenCalledWith({ order: mockOrdersData[0], payment: 'paid' })
+      expect(mockToastSuccess).toHaveBeenCalled()
     })
 
     it('debería manejar error al actualizar pago', async () => {
@@ -495,7 +522,7 @@ describe('useDashboardData', () => {
 
       await act(async () => { await result.current.changeOrderPayment(mockOrdersData[0], 'paid') })
 
-      expect(result.current.dataError).toContain('actualizar el estado del pago')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('actualizar el estado del pago'), expect.anything())
     })
   })
 
@@ -510,7 +537,7 @@ describe('useDashboardData', () => {
         })
       })
 
-      expect(result.current.dataError).toContain('nombre')
+      expect(mockToastError).toHaveBeenCalledWith('El nombre debe tener entre 2 y 120 caracteres.', expect.anything())
       expect(mockUpdateSettings).not.toHaveBeenCalled()
     })
 
@@ -524,7 +551,7 @@ describe('useDashboardData', () => {
         })
       })
 
-      expect(result.current.dataError).toContain('umbral')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('umbral'), expect.anything())
     })
 
     it('debería rechazar umbral mayor a 10000', async () => {
@@ -537,7 +564,7 @@ describe('useDashboardData', () => {
         })
       })
 
-      expect(result.current.dataError).toContain('umbral')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('umbral'), expect.anything())
     })
 
     it('debería rechazar slug inválido cuando catálogo público está habilitado', async () => {
@@ -551,7 +578,7 @@ describe('useDashboardData', () => {
         })
       })
 
-      expect(result.current.dataError).toContain('slug')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('slug'), expect.anything())
     })
 
     it('debería rechazar WhatsApp inválido cuando catálico público está habilitado', async () => {
@@ -565,7 +592,7 @@ describe('useDashboardData', () => {
         })
       })
 
-      expect(result.current.dataError).toContain('WhatsApp')
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('WhatsApp'), expect.anything())
     })
 
     it('debería guardar configuración válida', async () => {
@@ -581,7 +608,7 @@ describe('useDashboardData', () => {
       })
 
       expect(mockUpdateSettings).toHaveBeenCalled()
-      expect(result.current.dataError).toBe('')
+      expect(mockToastSuccess).toHaveBeenCalled()
     })
 
     it('debería manejar error al guardar configuración', async () => {
@@ -595,19 +622,7 @@ describe('useDashboardData', () => {
         })
       })
 
-      expect(result.current.dataError).toContain('guardar la configuración')
-    })
-  })
-
-  describe('data loading states', () => {
-    it('debería devolver dataError cuando hay error en queries', async () => {
-      mockProductsQueryError = true
-
-      const { result } = renderHook(() => useDashboardData(mockUser), { wrapper: createWrapper() })
-
-      expect(result.current.dataError).toContain('Supabase')
-
-      mockProductsQueryError = false
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringContaining('guardar la configuración'), expect.anything())
     })
   })
 })

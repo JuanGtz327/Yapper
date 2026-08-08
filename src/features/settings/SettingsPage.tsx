@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { Check, Settings, Palette } from 'lucide-react'
 import type { BusinessSettings } from '../../types.ts'
+import { useToast } from '../../hooks/useToast.ts'
 
 export function SettingsPage({
   settings,
@@ -20,7 +21,7 @@ export function SettingsPage({
     publicIntro: settings.publicIntro ?? '',
   })
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const toast = useToast()
   useEffect(
     () =>
       setDraft({
@@ -35,7 +36,7 @@ export function SettingsPage({
     event.preventDefault()
     const name = draft.businessName.trim()
     if (name.length < 2 || name.length > 120) {
-      setError('El nombre debe tener entre 2 y 120 caracteres.')
+      toast.error('El nombre debe tener entre 2 y 120 caracteres.')
       return
     }
     if (
@@ -44,10 +45,9 @@ export function SettingsPage({
       draft.lowStockThreshold < 0 ||
       draft.lowStockThreshold > 10000
     ) {
-      setError('El umbral debe ser un entero entre 0 y 10,000.')
+      toast.error('El umbral debe ser un entero entre 0 y 10,000.')
       return
     }
-    setError('')
     setSaving(true)
     try {
       await onSave({
@@ -81,11 +81,6 @@ export function SettingsPage({
               <p>Estos datos se guardan en tu cuenta.</p>
             </div>
           </div>
-          {error && (
-            <p className="form-error" role="alert">
-              {error}
-            </p>
-          )}
           <label>
             Nombre del negocio
             <input

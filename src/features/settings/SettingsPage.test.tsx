@@ -4,6 +4,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { SettingsPage } from './SettingsPage'
 import type { BusinessSettings } from '../../types.ts'
 
+const mockToastError = vi.fn()
+const mockToastSuccess = vi.fn()
+
+vi.mock('../../hooks/useToast.ts', () => ({
+  useToast: () => ({
+    success: mockToastSuccess,
+    error: mockToastError,
+  }),
+  toastMessages: {
+    settings: { saved: 'Configuración guardada.' },
+  },
+}))
+
 const defaultSettings: BusinessSettings = {
   businessName: 'Mi Negocio',
   currency: 'MXN',
@@ -185,9 +198,9 @@ describe('SettingsPage', () => {
       await user.clear(input)
       await user.type(input, 'A')
       await user.click(screen.getByText('Guardar cambios'))
-      expect(
-        screen.getByText('El nombre debe tener entre 2 y 120 caracteres.'),
-      ).toBeInTheDocument()
+      expect(mockToastError).toHaveBeenCalledWith(
+        'El nombre debe tener entre 2 y 120 caracteres.',
+      )
     })
 
     it('debería mostrar error si el nombre es muy largo', async () => {
@@ -196,9 +209,9 @@ describe('SettingsPage', () => {
       fireEvent.change(input, { target: { value: 'A'.repeat(121) } })
       await screen.findByText('Guardar cambios')
       fireEvent.click(screen.getByText('Guardar cambios'))
-      expect(
-        screen.getByText('El nombre debe tener entre 2 y 120 caracteres.'),
-      ).toBeInTheDocument()
+      expect(mockToastError).toHaveBeenCalledWith(
+        'El nombre debe tener entre 2 y 120 caracteres.',
+      )
     })
 
     it('debería mostrar error si el umbral es negativo', async () => {
@@ -211,9 +224,9 @@ describe('SettingsPage', () => {
       nativeInputValueSetter.call(input, '-1')
       fireEvent.change(input, { target: { value: '-1' } })
       fireEvent.submit(input.closest('form')!)
-      expect(
-        screen.getByText('El umbral debe ser un entero entre 0 y 10,000.'),
-      ).toBeInTheDocument()
+      expect(mockToastError).toHaveBeenCalledWith(
+        'El umbral debe ser un entero entre 0 y 10,000.',
+      )
     })
 
     it('debería mostrar error si el umbral supera 10000', async () => {
@@ -226,9 +239,9 @@ describe('SettingsPage', () => {
       nativeInputValueSetter.call(input, '10001')
       fireEvent.change(input, { target: { value: '10001' } })
       fireEvent.submit(input.closest('form')!)
-      expect(
-        screen.getByText('El umbral debe ser un entero entre 0 y 10,000.'),
-      ).toBeInTheDocument()
+      expect(mockToastError).toHaveBeenCalledWith(
+        'El umbral debe ser un entero entre 0 y 10,000.',
+      )
     })
   })
 

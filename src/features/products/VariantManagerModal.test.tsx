@@ -3,6 +3,23 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { VariantManagerModal } from './VariantManagerModal'
 import type { Variant } from '../../types.ts'
 
+const mockToastError = vi.fn()
+const mockToastSuccess = vi.fn()
+
+vi.mock('../../hooks/useToast.ts', () => ({
+  useToast: () => ({
+    success: mockToastSuccess,
+    error: mockToastError,
+  }),
+  toastMessages: {
+    variant: {
+      created: 'Variante guardada exitosamente.',
+      updated: 'Variante actualizada exitosamente.',
+      deleted: 'Variante eliminada.',
+    },
+  },
+}))
+
 const mockOptionTypes = [
   {
     id: 'ot1',
@@ -364,7 +381,7 @@ describe('VariantManagerModal', () => {
       fireEvent.click(screen.getByRole('button', { name: /añadir variante/i }))
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toHaveTextContent('Error de prueba')
+        expect(mockToastError).toHaveBeenCalledWith('Error de prueba')
       })
     })
 
@@ -385,7 +402,7 @@ describe('VariantManagerModal', () => {
       fireEvent.click(screen.getByRole('button', { name: /añadir variante/i }))
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toHaveTextContent(
+        expect(mockToastError).toHaveBeenCalledWith(
           'No pudimos guardar la variante.',
         )
       })

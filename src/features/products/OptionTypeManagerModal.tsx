@@ -1,12 +1,14 @@
 import { useState, useRef, type FormEvent } from 'react'
 import { Plus, X, Palette, ChevronDown, ChevronRight } from 'lucide-react'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import {
   createOptionType,
   createOptionValue,
   deleteOptionType,
   deleteOptionValue,
 } from '../../lib/repository.ts'
+import { useToast, toastMessages } from '../../hooks/useToast.ts'
 
 type OptionType = {
   id: string
@@ -30,67 +32,93 @@ export function OptionTypeManagerModal({
   const [expandedTypeId, setExpandedTypeId] = useState<string | null>(null)
   const [newValues, setNewValues] = useState<Record<string, string>>({})
   const [addingValueTo, setAddingValueTo] = useState<string | null>(null)
-  const [error, setError] = useState('')
+  const [confirmState, setConfirmState] = useState<{
+    title: string
+    message: string
+    onConfirm: () => void
+  } | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const valueInputRef = useRef<HTMLInputElement>(null)
+  const toast = useToast()
 
   const handleCreateType = async (event?: FormEvent) => {
     event?.preventDefault()
     const name = newTypeName.trim()
     if (!name) return
     setCreatingType(true)
-    setError('')
     try {
       await createOptionType(name)
+      toast.success(toastMessages.optionType.created)
       setNewTypeName('')
       onRefresh()
     } catch {
-      setError('No pudimos crear el tipo de opción.')
+      toast.error('No pudimos crear el tipo de opción.')
     } finally {
       setCreatingType(false)
     }
   }
 
-  const handleDeleteType = async (id: string) => {
-    setDeletingTypeId(id)
-    setError('')
-    try {
-      await deleteOptionType(id)
-      onRefresh()
-    } catch {
-      setError('No pudimos eliminar el tipo de opción.')
-    } finally {
-      setDeletingTypeId(null)
-    }
+  const handleDeleteType = (id: string) => {
+    const type = optionTypes.find((t) => t.id === id)
+    setConfirmState({
+      title: 'Eliminar tipo de opción',
+      message: `¿Eliminar el tipo "${type?.name ?? ''}" y todos sus valores? Esta acción no se puede deshacer.`,
+      onConfirm: async () => {
+        setDeletingTypeId(id)
+        try {
+          await deleteOptionType(id)
+          toast.success(toastMessages.optionType.deleted)
+          onRefresh()
+        } catch {
+          toast.error('No pudimos eliminar el tipo de opción.')
+        } finally {
+          setDeletingTypeId(null)
+        }
+      },
+    })
   }
 
   const handleAddValue = async (typeId: string) => {
     const name = (newValues[typeId] || '').trim()
     if (!name) return
     setAddingValueTo(typeId)
-    setError('')
     try {
       await createOptionValue(typeId, name)
+      toast.success(toastMessages.optionValue.created)
       setNewValues({ ...newValues, [typeId]: '' })
       onRefresh()
     } catch {
-      setError('No pudimos agregar el valor.')
+      toast.error('No pudimos agregar el valor.')
     } finally {
       setAddingValueTo(null)
     }
   }
 
-  const handleDeleteValue = async (valueId: string) => {
-    setDeletingValueId(valueId)
-    setError('')
-    try {
-      await deleteOptionValue(valueId)
-      onRefresh()
-    } catch {
-      setError('No pudimos eliminar el valor.')
-    } finally {
-      setDeletingValueId(null)
+  const handleDeleteValue = (valueId: string) => {
+    let valueName = ''
+    for (const type of optionTypes) {
+      const val = type.values.find((v) => v.id === valueId)
+      if (val) {
+        valueName = val.name
+        break
+      }
     }
+    setConfirmState({
+      title: 'Eliminar valor',
+      message: `¿Eliminar el valor "${valueName}"? Esta acción no se puede deshacer.`,
+      onConfirm: async () => {
+        setDeletingValueId(valueId)
+        try {
+          await deleteOptionValue(valueId)
+          toast.success(toastMessages.optionValue.deleted)
+          onRefresh()
+        } catch {
+          toast.error('No pudimos eliminar el valor.')
+        } finally {
+          setDeletingValueId(null)
+        }
+      },
+    })
   }
 
   return (
@@ -120,12 +148,6 @@ export function OptionTypeManagerModal({
           Añadir
         </button>
       </form>
-
-      {error && (
-        <p className="form-error" role="alert">
-          {error}
-        </p>
-      )}
 
       <ul className="option-type-list">
         {optionTypes.length === 0 && (
@@ -232,6 +254,16 @@ export function OptionTypeManagerModal({
           )
         })}
       </ul>
+      {confirmState && (
+        <ConfirmModal
+          title={confirmState.title}
+          message={confirmState.message}
+          danger
+          confirmLabel="Eliminar"
+          onConfirm={() => void confirmState.onConfirm()}
+          onClose={() => setConfirmState(null)}
+        />
+      )}
     </ModalFrame>
   )
 }

@@ -4,6 +4,7 @@ import type { Client, OrderItemInput, Product, Variant } from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { Empty } from '../../components/ui/Empty.tsx'
+import { useToast } from '../../hooks/useToast.ts'
 
 export type DraftLine = { variantId: string; quantity: number }
 
@@ -48,8 +49,8 @@ export function OrderModal({
       : [],
   )
   const [payment, setPayment] = useState<'pending' | 'paid'>('paid')
-  const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
+  const toast = useToast()
 
   const getVariantPrice = (variantId: string) =>
     variantOptions.find((opt) => opt.variant.id === variantId)?.variant
@@ -73,7 +74,7 @@ export function OrderModal({
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!clientId || !lines.length) {
-      setError('Selecciona un cliente y al menos un producto.')
+      toast.error('Selecciona un cliente y al menos un producto.')
       return
     }
     if (
@@ -84,17 +85,16 @@ export function OrderModal({
           line.quantity > getVariantStock(line.variantId),
       )
     ) {
-      setError(
+      toast.error(
         'Revisa las cantidades: usa enteros positivos sin superar las existencias disponibles.',
       )
       return
     }
     if (new Set(lines.map((line) => line.variantId)).size !== lines.length) {
-      setError('No repitas variantes en el mismo pedido.')
+      toast.error('No repitas variantes en el mismo pedido.')
       return
     }
     setSaving(true)
-    setError('')
     try {
       await onSubmit(
         clientId,
@@ -105,7 +105,7 @@ export function OrderModal({
         payment,
       )
     } catch (submissionError) {
-      setError(
+      toast.error(
         submissionError instanceof Error
           ? submissionError.message
           : 'No pudimos guardar el pedido.',
@@ -243,7 +243,6 @@ export function OrderModal({
               <span>Total del pedido</span>
               <strong>{money.format(total)}</strong>
             </div>
-            {error && <p className="form-error">{error}</p>}
             <div className="modal-actions">
               <button className="cancel-button" onClick={onClose} type="button">
                 Cancelar

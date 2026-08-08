@@ -13,18 +13,10 @@ export function ClientModal({
   onSubmit: (event: FormEvent<HTMLFormElement>) => Promise<void>
 }) {
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     setSaving(true)
-    setError('')
     try {
       await onSubmit(event)
-    } catch (submissionError) {
-      setError(
-        submissionError instanceof Error
-          ? submissionError.message
-          : 'No pudimos guardar el cliente.',
-      )
     } finally {
       setSaving(false)
     }
@@ -60,11 +52,6 @@ export function ClientModal({
             placeholder="Ej. Coyoacán"
           />
         </label>
-        {error && (
-          <p className="form-error" role="alert">
-            {error}
-          </p>
-        )}
         <div className="modal-actions">
           <button className="cancel-button" onClick={onClose} type="button">
             Cancelar

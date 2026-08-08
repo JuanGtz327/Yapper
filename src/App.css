@@ -1769,13 +1769,6 @@ td:first-child {
   color: var(--plum);
   font-size: 22px;
 }
-.form-error {
-  padding: 10px 12px;
-  border-radius: 7px;
-  color: #aa6259;
-  background: #fff3f0;
-  font-size: 11px;
-}
 .auth-page {
   display: grid;
   grid-template-columns: minmax(390px, 480px) 1fr;

@@ -3,6 +3,26 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { OptionTypeManagerModal } from './OptionTypeManagerModal'
 import * as repository from '../../lib/repository.ts'
 
+const mockToastError = vi.fn()
+const mockToastSuccess = vi.fn()
+
+vi.mock('../../hooks/useToast.ts', () => ({
+  useToast: () => ({
+    success: mockToastSuccess,
+    error: mockToastError,
+  }),
+  toastMessages: {
+    optionType: {
+      created: 'Tipo de opción creado.',
+      deleted: 'Tipo de opción eliminado.',
+    },
+    optionValue: {
+      created: 'Valor agregado.',
+      deleted: 'Valor eliminado.',
+    },
+  },
+}))
+
 vi.mock('../../lib/repository.ts', () => ({
   createOptionType: vi.fn(),
   createOptionValue: vi.fn(),
@@ -160,9 +180,9 @@ describe('OptionTypeManagerModal', () => {
       fireEvent.click(screen.getByText('Añadir'))
 
       await waitFor(() => {
-        expect(
-          screen.getByText('No pudimos crear el tipo de opción.'),
-        ).toBeInTheDocument()
+        expect(mockToastError).toHaveBeenCalledWith(
+          'No pudimos crear el tipo de opción.',
+        )
       })
     })
 
@@ -195,6 +215,8 @@ describe('OptionTypeManagerModal', () => {
 
       fireEvent.click(screen.getByLabelText('Eliminar Color'))
 
+      fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
+
       await waitFor(() => {
         expect(deleteOptionType).toHaveBeenCalledWith('ot1')
       })
@@ -211,6 +233,8 @@ describe('OptionTypeManagerModal', () => {
 
       fireEvent.click(screen.getByLabelText('Eliminar Color'))
 
+      fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
+
       await waitFor(() => {
         expect(onRefresh).toHaveBeenCalledTimes(1)
       })
@@ -224,10 +248,12 @@ describe('OptionTypeManagerModal', () => {
 
       fireEvent.click(screen.getByLabelText('Eliminar Color'))
 
+      fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
+
       await waitFor(() => {
-        expect(
-          screen.getByText('No pudimos eliminar el tipo de opción.'),
-        ).toBeInTheDocument()
+        expect(mockToastError).toHaveBeenCalledWith(
+          'No pudimos eliminar el tipo de opción.',
+        )
       })
     })
   })
@@ -311,6 +337,8 @@ describe('OptionTypeManagerModal', () => {
 
       fireEvent.click(screen.getByLabelText('Eliminar Negro'))
 
+      fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
+
       await waitFor(() => {
         expect(deleteOptionValue).toHaveBeenCalledWith('ov1')
       })
@@ -328,6 +356,8 @@ describe('OptionTypeManagerModal', () => {
       fireEvent.click(screen.getByText('Color'))
 
       fireEvent.click(screen.getByLabelText('Eliminar Negro'))
+
+      fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }))
 
       await waitFor(() => {
         expect(onRefresh).toHaveBeenCalledTimes(1)

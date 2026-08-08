@@ -86,7 +86,6 @@ describe('ProductModal — bug fix: variant editing data flow', () => {
     vi.mocked(repository.createVariant).mockResolvedValue('new-variant-id')
     vi.mocked(repository.updateVariant).mockResolvedValue(undefined)
     vi.mocked(repository.deleteVariant).mockResolvedValue(undefined)
-    window.confirm = vi.fn(() => true)
   })
 
   describe('onVariantsChanged callback', () => {
@@ -175,8 +174,17 @@ describe('ProductModal — bug fix: variant editing data flow', () => {
         />,
       )
 
-      // Click delete on the second variant
+      // Click delete on the second variant — opens ConfirmModal
       fireEvent.click(screen.getByLabelText('Eliminar variante PLA-BAS-BLAN'))
+
+      // ConfirmModal should be visible with the "Eliminar" confirm button
+      await waitFor(() => {
+        expect(screen.getByText('¿Eliminar la variante PLA-BAS-BLAN?')).toBeInTheDocument()
+      })
+
+      // Click the confirm button in the ConfirmModal
+      const confirmButton = screen.getByRole('button', { name: /^Eliminar$/ })
+      fireEvent.click(confirmButton)
 
       await waitFor(() => {
         expect(onVariantsChanged).toHaveBeenCalledTimes(1)
