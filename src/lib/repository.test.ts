@@ -585,3 +585,63 @@ describe('Repositorio de pedidos', () => {
     })
   })
 })
+
+describe('Repositorio de catálogo público', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('debería cargar el catálogo público con productos', async () => {
+    mockRpc.mockResolvedValue({
+      data: [
+        {
+          business_name: 'Mi Negocio',
+          currency: 'MXN',
+          whatsapp_number: '5512345678',
+          public_intro: 'Hola',
+          products: [
+            { id: 'p1', name: 'Playera', category: 'Ropa', price: 150, publicDescription: 'Desc', imageUrl: null, color: 'sky' },
+          ],
+        },
+      ],
+      error: null,
+    })
+
+    const { loadPublicCatalog } = await import('./repository.ts')
+    const result = await loadPublicCatalog('mi-negocio')
+
+    expect(mockRpc).toHaveBeenCalledWith('get_public_catalog', { p_slug: 'mi-negocio' })
+    expect(result).not.toBeNull()
+    expect(result!.businessName).toBe('Mi Negocio')
+    expect(result!.products).toHaveLength(1)
+  })
+
+  it('debería devolver null cuando el RPC retorna un array vacío', async () => {
+    mockRpc.mockResolvedValue({ data: [], error: null })
+
+    const { loadPublicCatalog } = await import('./repository.ts')
+    const result = await loadPublicCatalog('no-existe')
+
+    expect(result).toBeNull()
+  })
+
+  it('debería devolver null cuando el RPC retorna null', async () => {
+    mockRpc.mockResolvedValue({ data: null, error: null })
+
+    const { loadPublicCatalog } = await import('./repository.ts')
+    const result = await loadPublicCatalog('no-existe')
+
+    expect(result).toBeNull()
+  })
+
+  it('debería propagar errores del RPC (como columna inexistente)', async () => {
+    mockRpc.mockResolvedValue({
+      data: null,
+      error: { message: 'column p.price does not exist', code: '42703' },
+    })
+
+    const { loadPublicCatalog } = await import('./repository.ts')
+
+    await expect(loadPublicCatalog('mi-negocio')).rejects.toThrow('column p.price does not exist')
+  })
+})

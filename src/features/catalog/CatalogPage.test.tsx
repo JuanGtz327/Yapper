@@ -88,6 +88,14 @@ describe('CatalogPage', () => {
       expect(screen.getByText('Playera Básica')).toBeInTheDocument()
     })
 
+    it('debería mostrar mensaje cuando no hay productos publicados', () => {
+      const products = [
+        createMockProduct({ id: 'p1', published: false }),
+      ]
+      render(<CatalogPage {...defaultProps} products={products} />)
+      expect(screen.getByText(/No hay productos publicados/)).toBeInTheDocument()
+    })
+
     it('debería ocultar productos no publicados', () => {
       const products = [
         createMockProduct({ id: 'p1', name: 'Publicado', published: true }),

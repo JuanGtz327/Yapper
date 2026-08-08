@@ -56,35 +56,42 @@ export function CatalogPage({
         </div>
       )}
       <div className="catalog-grid">
-        {products
-          .filter((product) => product.published)
-          .map((product) => {
-            const imageUrl = safeImageUrl(product.imageUrl)
-            const price = minVariantPrice(product)
-            return (
-              <article className="catalog-card" key={product.id}>
-                {imageUrl ? (
-                  <img
-                    className="catalog-image catalog-photo"
-                    src={imageUrl}
-                    alt={`${product.name} — ${product.category}`}
-                  />
-                ) : (
-                  <div className={`catalog-image ${product.color}`}>
-                    <Boxes size={58} strokeWidth={1.2} aria-hidden="true" />
+        {products.filter((product) => product.published).length === 0 ? (
+          <div className="empty-state">
+            No hay productos publicados aún. Publica productos desde el
+            almacén para que aparezcan aquí.
+          </div>
+        ) : (
+          products
+            .filter((product) => product.published)
+            .map((product) => {
+              const imageUrl = safeImageUrl(product.imageUrl)
+              const price = minVariantPrice(product)
+              return (
+                <article className="catalog-card" key={product.id}>
+                  {imageUrl ? (
+                    <img
+                      className="catalog-image catalog-photo"
+                      src={imageUrl}
+                      alt={`${product.name} — ${product.category}`}
+                    />
+                  ) : (
+                    <div className={`catalog-image ${product.color}`}>
+                      <Boxes size={58} strokeWidth={1.2} aria-hidden="true" />
+                    </div>
+                  )}
+                  <div>
+                    <span>{product.category}</span>
+                    <h3>{product.name}</h3>
+                    <p className="catalog-description">
+                      {product.publicDescription}
+                    </p>
+                    <strong>{formatMoney(price, currency)}</strong>
                   </div>
-                )}
-                <div>
-                  <span>{product.category}</span>
-                  <h3>{product.name}</h3>
-                  <p className="catalog-description">
-                    {product.publicDescription}
-                  </p>
-                  <strong>{formatMoney(price, currency)}</strong>
-                </div>
-              </article>
-            )
-          })}
+                </article>
+              )
+            })
+        )}
       </div>
     </section>
   )

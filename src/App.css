@@ -833,6 +833,12 @@ td:first-child {
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
+.catalog-grid > .empty-state {
+  grid-column: 1 / -1;
+  padding: 60px 24px;
+  font-size: 15px;
+  line-height: 1.6;
+}
 .catalog-card {
   overflow: hidden;
   border: 1px solid var(--line);
@@ -1061,6 +1067,17 @@ td:first-child {
   gap: 18px;
   max-width: 1120px;
   margin: auto;
+}
+.public-products > .empty-state {
+  grid-column: 1 / -1;
+  padding: 60px 24px;
+  border: 1px dashed #d9d1d8;
+  border-radius: 16px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.6;
+  background: #fffefa;
 }
 .public-product {
   overflow: hidden;
