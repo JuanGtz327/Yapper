@@ -68,7 +68,9 @@ describe('DashboardPage', () => {
 
     it('debería renderizar la sección de pedidos pendientes', () => {
       render(<DashboardPage {...defaultProps} />)
-      expect(screen.getByText('Pedidos pendientes')).toBeInTheDocument()
+      expect(
+        screen.getByText('Pedidos pendientes de entrega'),
+      ).toBeInTheDocument()
     })
 
     it('debería renderizar la sección de productos activos', () => {
@@ -97,7 +99,9 @@ describe('DashboardPage', () => {
         createMockOrder({ id: 'o3', status: 'Cancelado' }),
       ]
       render(<DashboardPage {...defaultProps} orders={orders} />)
-      expect(screen.getByText('Pedidos pendientes')).toBeInTheDocument()
+      expect(
+        screen.getByText('Pedidos pendientes de entrega'),
+      ).toBeInTheDocument()
     })
 
     it('debería contar pedidos pendientes correctamente', () => {
@@ -164,7 +168,9 @@ describe('DashboardPage', () => {
       const { container } = render(<DashboardPage {...defaultProps} />)
       const barChart = container.querySelector('.bar-chart')
       expect(barChart).toBeInTheDocument()
-      expect(barChart!.querySelectorAll('span')).toHaveLength(defaultSales.length)
+      expect(barChart!.querySelectorAll('span')).toHaveLength(
+        defaultSales.length,
+      )
     })
 
     it('debería mostrar mensaje de vacío cuando no hay ventas', () => {

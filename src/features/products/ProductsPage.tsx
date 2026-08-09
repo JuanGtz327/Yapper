@@ -3,6 +3,7 @@ import { Boxes, DollarSign, Plus, Search, Tag } from 'lucide-react'
 import { Empty } from '../../components/ui/Empty.tsx'
 import { formatMoney } from '../../lib/format.ts'
 import type { Product } from '../../types.ts'
+import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 
 type VariantRow = {
   product: Product
@@ -70,9 +71,28 @@ export function ProductsPage({
   onEdit: (product: Product) => void
 }) {
   const [hoveredProductId, setHoveredProductId] = useState<string | null>(null)
-  const filtered = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase()),
-  )
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  const [stockFilter, setStockFilter] = useState('all')
+  const categories = Array.from(
+    new Set(products.map((product) => product.category || 'Sin categoría')),
+  ).sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }))
+  const filtered = products.filter((product) => {
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(search.toLowerCase())
+    const category = product.category || 'Sin categoría'
+    const stocks = product.variants.map((variant) => variant.stock)
+    const matchesCategory =
+      categoryFilter === 'all' || category === categoryFilter
+    const matchesStock =
+      stockFilter === 'all' ||
+      (stockFilter === 'available' && stocks.some((stock) => stock > 0)) ||
+      (stockFilter === 'low' &&
+        stocks.some((stock) => stock > 0 && stock <= threshold)) ||
+      (stockFilter === 'out' &&
+        (!stocks.length || stocks.every((stock) => stock === 0)))
+    return matchesSearch && matchesCategory && matchesStock
+  })
   const rows = flattenProducts(filtered)
 
   const totalInvestment = products.reduce(
@@ -118,8 +138,8 @@ export function ProductsPage({
         <span>Inventario: {formatMoney(totalSaleValue, currency)}</span>
         <strong>Ganancia: {formatMoney(totalProfit, currency)}</strong>
       </div>
-      <div className="toolbar">
-        <label className="search-box">
+      <div className="table-filters" aria-label="Filtros de productos">
+        <label className="table-filter-search search-box">
           <Search size={18} aria-hidden="true" />
           <input
             aria-label="Buscar productos"
@@ -128,7 +148,36 @@ export function ProductsPage({
             placeholder="Buscar producto"
           />
         </label>
-        <span>
+        <label>
+          Categoría
+          <CustomSelect
+            value={categoryFilter}
+            onChange={setCategoryFilter}
+            ariaLabel="Filtrar por categoría"
+            options={[
+              { value: 'all', label: 'Todas' },
+              ...categories.map((category) => ({
+                value: category,
+                label: category,
+              })),
+            ]}
+          />
+        </label>
+        <label>
+          Existencias
+          <CustomSelect
+            value={stockFilter}
+            onChange={setStockFilter}
+            ariaLabel="Filtrar por existencias"
+            options={[
+              { value: 'all', label: 'Todas' },
+              { value: 'available', label: 'Con existencias' },
+              { value: 'low', label: 'Bajo stock' },
+              { value: 'out', label: 'Agotados' },
+            ]}
+          />
+        </label>
+        <span className="table-filter-count">
           {filtered.length} {filtered.length === 1 ? 'producto' : 'productos'}
         </span>
       </div>

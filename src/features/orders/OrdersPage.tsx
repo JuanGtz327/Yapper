@@ -3,10 +3,11 @@ import {
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import type { Order, Product } from '../../types.ts'
 import { OrderTicketModal } from './OrderTicketModal.tsx'
+import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 
 export function OrdersPage({
   orders,
@@ -28,6 +29,9 @@ export function OrdersPage({
   onCancel: (order: Order) => void
 }) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [deliveryFilter, setDeliveryFilter] = useState('all')
+  const [paymentFilter, setPaymentFilter] = useState('all')
+  const [orderSearch, setOrderSearch] = useState('')
   useEffect(() => {
     if (!selectedOrder) return
     const updatedOrder = orders.find((order) => order.id === selectedOrder.id)
@@ -46,6 +50,25 @@ export function OrdersPage({
     )
   })
   const openOrder = (order: Order) => setSelectedOrder(order)
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch = order.id
+      .toLowerCase()
+      .includes(orderSearch.trim().toLowerCase())
+    const matchesDelivery =
+      deliveryFilter === 'all' ||
+      (deliveryFilter === 'pending' && order.status === 'Pendiente') ||
+      (deliveryFilter === 'delivered' && order.status === 'Entregado') ||
+      (deliveryFilter === 'cancelled' && order.status === 'Cancelado')
+    const matchesPayment =
+      paymentFilter === 'all' ||
+      (paymentFilter === 'paid' &&
+        order.status !== 'Cancelado' &&
+        order.payment === 'Pagado') ||
+      (paymentFilter === 'pending' &&
+        order.status !== 'Cancelado' &&
+        order.payment === 'Pendiente')
+    return matchesSearch && matchesDelivery && matchesPayment
+  })
   const handleRowKeyDown = (
     event: ReactKeyboardEvent<HTMLTableRowElement>,
     order: Order,
@@ -98,6 +121,48 @@ export function OrdersPage({
           </strong>
         </div>
       </div>
+      <div className="table-filters" aria-label="Filtros de pedidos">
+        <label className="table-filter-search search-box">
+          <Search size={16} aria-hidden="true" />
+          <input
+            aria-label="Buscar por número de pedido"
+            value={orderSearch}
+            onChange={(event) => setOrderSearch(event.target.value)}
+            placeholder="Buscar número de pedido"
+          />
+        </label>
+        <label>
+          Entrega
+          <CustomSelect
+            value={deliveryFilter}
+            onChange={setDeliveryFilter}
+            ariaLabel="Filtrar por entrega"
+            options={[
+              { value: 'all', label: 'Todas' },
+              { value: 'pending', label: 'Pendientes' },
+              { value: 'delivered', label: 'Entregados' },
+              { value: 'cancelled', label: 'Cancelados' },
+            ]}
+          />
+        </label>
+        <label>
+          Pago
+          <CustomSelect
+            value={paymentFilter}
+            onChange={setPaymentFilter}
+            ariaLabel="Filtrar por pago"
+            options={[
+              { value: 'all', label: 'Todos' },
+              { value: 'paid', label: 'Pagados' },
+              { value: 'pending', label: 'Pendientes' },
+            ]}
+          />
+        </label>
+        <span className="table-filter-count">
+          {filteredOrders.length}{' '}
+          {filteredOrders.length === 1 ? 'pedido' : 'pedidos'}
+        </span>
+      </div>
       <div className="table-card orders-table">
         <table>
           <caption className="visually-hidden">
@@ -114,7 +179,7 @@ export function OrdersPage({
             </tr>
           </thead>
           <tbody>
-            {orders.map((order, idx) => (
+            {filteredOrders.map((order, idx) => (
               <tr
                 className={`order-row${idx % 2 === 1 ? ' zebra-stripe' : ''}`}
                 tabIndex={0}
@@ -170,7 +235,7 @@ export function OrdersPage({
         <p className="visually-hidden">
           Selecciona un pedido para ver sus detalles.
         </p>
-        {orders.map((order) => (
+        {filteredOrders.map((order) => (
           <article
             className="order-card"
             tabIndex={0}

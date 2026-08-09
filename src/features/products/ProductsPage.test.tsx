@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { ProductsPage } from './ProductsPage'
 import type { Product } from '../../types.ts'
@@ -133,7 +134,7 @@ describe('ProductsPage', () => {
       ]
       render(<ProductsPage {...defaultProps} products={products} />)
       // Valor de venta = 150 * 25 = 3750
-      expect(screen.getByText(/Venta:/)).toBeInTheDocument()
+      expect(screen.getByText(/Inventario:/)).toBeInTheDocument()
     })
 
     it('debería calcular la ganancia correctamente', () => {
@@ -200,6 +201,49 @@ describe('ProductsPage', () => {
       const input = screen.getByLabelText('Buscar productos')
       fireEvent.change(input, { target: { value: 'playera' } })
       expect(setSearch).toHaveBeenCalledWith('playera')
+    })
+  })
+
+  describe('Filtros', () => {
+    it('debería filtrar por categoría', async () => {
+      const user = userEvent.setup()
+      const products = [
+        createMockProduct({ id: 'p1', name: 'Playera', category: 'Ropa' }),
+        createMockProduct({ id: 'p2', name: 'Taza', category: 'Hogar' }),
+      ]
+      render(<ProductsPage {...defaultProps} products={products} />)
+
+      await user.click(
+        screen.getByRole('button', { name: 'Filtrar por categoría' }),
+      )
+      await user.click(screen.getByRole('option', { name: 'Hogar' }))
+
+      expect(screen.getByText('Taza')).toBeInTheDocument()
+      expect(screen.queryByText('Playera')).not.toBeInTheDocument()
+    })
+
+    it('debería filtrar productos agotados', async () => {
+      const user = userEvent.setup()
+      const products = [
+        createMockProduct({ id: 'p1', name: 'Disponible' }),
+        createMockProduct({
+          id: 'p2',
+          name: 'Agotado',
+          variants: createMockProduct().variants.map((variant) => ({
+            ...variant,
+            stock: 0,
+          })),
+        }),
+      ]
+      render(<ProductsPage {...defaultProps} products={products} />)
+
+      await user.click(
+        screen.getByRole('button', { name: 'Filtrar por existencias' }),
+      )
+      await user.click(screen.getByRole('option', { name: 'Agotados' }))
+
+      expect(screen.getByText('Agotado')).toBeInTheDocument()
+      expect(screen.queryByText('Disponible')).not.toBeInTheDocument()
     })
   })
 

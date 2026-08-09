@@ -278,6 +278,63 @@ describe('OrdersPage', () => {
     })
   })
 
+  describe('Filtros', () => {
+    it('debería buscar pedidos por número', () => {
+      const orders = [
+        createMockOrder({ id: '#PED-001' }),
+        createMockOrder({ id: '#PED-002' }),
+      ]
+      render(<OrdersPage {...defaultProps} orders={orders} />)
+
+      fireEvent.change(screen.getByLabelText('Buscar por número de pedido'), {
+        target: { value: '002' },
+      })
+
+      expect(screen.getAllByText('#PED-002').length).toBeGreaterThan(0)
+      expect(screen.queryByText('#PED-001')).not.toBeInTheDocument()
+    })
+
+    it('debería filtrar pedidos por estado de entrega', async () => {
+      const user = userEvent.setup()
+      const orders = [
+        createMockOrder({ id: '#PED-001', status: 'Pendiente' }),
+        createMockOrder({ id: '#PED-002', status: 'Entregado' }),
+      ]
+      render(<OrdersPage {...defaultProps} orders={orders} />)
+
+      await user.click(
+        screen.getByRole('button', { name: 'Filtrar por entrega' }),
+      )
+      await user.click(screen.getByRole('option', { name: 'Entregados' }))
+
+      expect(screen.getAllByText('#PED-002').length).toBeGreaterThan(0)
+      expect(screen.queryByText('#PED-001')).not.toBeInTheDocument()
+    })
+
+    it('no debería incluir cancelados en los filtros de pago', async () => {
+      const user = userEvent.setup()
+      const orders = [
+        createMockOrder({
+          id: '#PED-001',
+          status: 'Cancelado',
+          payment: 'Pagado',
+        }),
+        createMockOrder({
+          id: '#PED-002',
+          status: 'Pendiente',
+          payment: 'Pagado',
+        }),
+      ]
+      render(<OrdersPage {...defaultProps} orders={orders} />)
+
+      await user.click(screen.getByRole('button', { name: 'Filtrar por pago' }))
+      await user.click(screen.getByRole('option', { name: 'Pagados' }))
+
+      expect(screen.getAllByText('#PED-002').length).toBeGreaterThan(0)
+      expect(screen.queryByText('#PED-001')).not.toBeInTheDocument()
+    })
+  })
+
   describe('Tarjetas de pedidos (móvil)', () => {
     it('debería renderizar las tarjetas de pedidos', () => {
       render(<OrdersPage {...defaultProps} />)

@@ -700,6 +700,44 @@ select {
   color: #aaa5a8;
   font-size: 11px;
 }
+.table-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.table-filters label {
+  display: grid;
+  gap: 6px;
+  min-width: 150px;
+  color: #716b72;
+  font-size: 11px;
+  font-weight: 700;
+}
+.table-filter-search {
+  align-items: center;
+  display: flex !important;
+  gap: 8px;
+  height: 40px;
+  min-width: 220px !important;
+  padding: 0 11px;
+}
+.table-filter-search input {
+  min-width: 0;
+}
+.table-filters .custom-select {
+  min-width: 150px;
+}
+.table-filters .custom-select-trigger {
+  height: 40px;
+  padding-block: 0;
+}
+.table-filter-count {
+  margin-left: auto;
+  padding-bottom: 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
 .search-box {
   display: flex;
   align-items: center;
@@ -718,6 +756,10 @@ select {
   color: var(--ink);
   background: transparent;
   font-size: 12px;
+}
+.search-box:focus-within {
+  border-color: #9d72a0;
+  box-shadow: 0 0 0 3px #9d72a018;
 }
 .table-card {
   overflow: auto;
@@ -2134,6 +2176,10 @@ td.row-actions .row-actions-inner {
   padding: 10px 8px;
   text-align: center;
 }
+.order-line input:focus {
+  border-color: #9d72a0;
+  box-shadow: 0 0 0 3px #9d72a018;
+}
 .order-line-remove {
   justify-self: end;
 }
@@ -2392,6 +2438,19 @@ td.row-actions .row-actions-inner {
   .secondary-button {
     align-self: stretch;
     justify-content: center;
+  }
+  .table-filters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .table-filters label,
+  .table-filters .custom-select {
+    width: 100%;
+    min-width: 0;
+  }
+  .table-filter-count {
+    margin-left: 0;
+    padding-bottom: 0;
   }
   .auth-page {
     display: block;
