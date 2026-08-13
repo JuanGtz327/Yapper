@@ -7,10 +7,10 @@ import type { SalesAggregate } from '../../types.ts'
 import { demoOrders } from '../../data/demo.ts'
 
 const demoSales: SalesAggregate[] = demoOrders
-  .filter((order) => order.payment === 'Pagado')
+  .filter((order) => order.payment === 'Pagado' || order.payment === 'Parcial')
   .map((order) => ({
     label: order.date.split(',')[0],
-    total: order.total,
+    total: order.payment === 'Parcial' ? order.paidAmount : order.total,
     orders: 1,
   }))
 

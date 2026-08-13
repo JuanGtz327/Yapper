@@ -382,6 +382,24 @@ export function useDashboardData(user: User | null) {
     [settingsMutation, toast],
   )
 
+  const handleRegisterPayment = useCallback(
+    async (data: {
+      orderId: string
+      amount: number
+      paymentMethod: 'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro'
+      reference?: string
+      notes?: string
+    }) => {
+      try {
+        await orderMutations.registerPayment.mutateAsync(data)
+        toast.success('Abono registrado exitosamente.')
+      } catch {
+        toast.error('No pudimos registrar el abono. Inténtalo de nuevo.')
+      }
+    },
+    [orderMutations.registerPayment, toast],
+  )
+
   return {
     products,
     clients,
@@ -400,6 +418,8 @@ export function useDashboardData(user: User | null) {
     addOrder,
     changeOrderStatus,
     changeOrderPayment,
+    registerPayment: handleRegisterPayment,
+    registerPaymentPending: orderMutations.registerPayment.isPending,
     updateExistingOrder,
     updateBusinessSettings,
   }

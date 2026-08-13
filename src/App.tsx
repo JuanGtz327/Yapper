@@ -9,6 +9,7 @@ import { DashboardPage } from './features/dashboard/DashboardPage.tsx'
 import { ProductsPage } from './features/products/ProductsPage.tsx'
 import { ClientsPage } from './features/clients/ClientsPage.tsx'
 import { OrdersPage } from './features/orders/OrdersPage.tsx'
+import { OrderDetailPage } from './features/orders/OrderDetailPage.tsx'
 import { OrderCreatePage } from './features/orders/OrderCreatePage.tsx'
 import { CatalogPage } from './features/catalog/CatalogPage.tsx'
 import { StatsPage } from './features/stats/StatsPage.tsx'
@@ -56,6 +57,7 @@ function DashboardApp() {
   const [orderEditor, setOrderEditor] = useState<Order | null | undefined>(
     undefined,
   )
+  const [orderDetail, setOrderDetail] = useState<Order | null>(null)
   const [search, setSearch] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const hamburgerRef = useRef<HTMLButtonElement>(null)
@@ -79,6 +81,8 @@ function DashboardApp() {
     addOrder: addOrderAction,
     changeOrderStatus,
     changeOrderPayment,
+    registerPayment,
+    registerPaymentPending,
     updateExistingOrder,
     updateBusinessSettings,
   } = useDashboardData(user)
@@ -89,6 +93,7 @@ function DashboardApp() {
     setPage(nextPage)
     setProductEditor(null)
     setOrderEditor(undefined)
+    setOrderDetail(null)
     setMobileMenuOpen(false)
   }
 
@@ -281,15 +286,28 @@ function DashboardApp() {
             onRemove={removeClient}
           />
         )}
-        {page === 'Pedidos' && orderEditor === undefined && (
+        {page === 'Pedidos' && orderEditor === undefined && !orderDetail && (
           <OrdersPage
             orders={orders}
-            products={products}
             currency={settings.currency}
             onAdd={() => openOrderEditor()}
-            onEdit={openOrderEditor}
+            onSelectOrder={(order) => setOrderDetail(order)}
+          />
+        )}
+        {page === 'Pedidos' && orderDetail && orderEditor === undefined && (
+          <OrderDetailPage
+            order={orders.find((o) => o.id === orderDetail.id) ?? orderDetail}
+            products={products}
+            currency={settings.currency}
+            isSubmittingPayment={registerPaymentPending}
+            onBack={() => setOrderDetail(null)}
+            onEdit={(order) => {
+              setOrderDetail(null)
+              setOrderEditor(order)
+            }}
             onStatusChange={changeOrderStatus}
             onPaymentChange={changeOrderPayment}
+            onRegisterPayment={registerPayment}
             onCancel={(order) => changeOrderStatus(order, 'cancelled')}
           />
         )}
@@ -300,6 +318,14 @@ function DashboardApp() {
             products={products}
             currency={settings.currency}
             onClose={() => setOrderEditor(undefined)}
+            onBackToDetail={
+              orderEditor?.databaseId
+                ? () => {
+                    setOrderEditor(undefined)
+                    setOrderDetail(orderEditor)
+                  }
+                : undefined
+            }
             onSubmit={async (clientId, items, payment) => {
               if (!orderEditor) {
                 return addOrderAction(clientId, items, payment)

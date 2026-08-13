@@ -11,6 +11,7 @@ vi.mock('../../lib/repository.ts', () => ({
   cancelOrder: vi.fn(),
   updateOrderStatus: vi.fn(),
   updateOrderPayment: vi.fn(),
+  registerPayment: vi.fn(),
 }))
 
 const mockUser = { id: 'user-1' } as User
@@ -60,6 +61,7 @@ const mockOrders: Order[] = [
     date: '15 ene 2026, 10:30',
     items: 2,
     total: 300,
+    paidAmount: 300,
     status: 'Pendiente',
     payment: 'Pagado',
     itemLines: [{ variantId: 'v1', quantity: 2 }],
@@ -303,6 +305,7 @@ describe('useOrdersMutations', () => {
         date: 'Ahora',
         items: 2,
         total: 300,
+        paidAmount: 300,
         status: 'Pendiente',
         payment: 'Pagado',
         itemLines: [{ variantId: 'v1', quantity: 2 }],
@@ -433,6 +436,7 @@ describe('useOrdersMutations', () => {
         date: 'Ahora',
         items: 1,
         total: 150,
+        paidAmount: 150,
         status: 'Pendiente',
         payment: 'Pagado',
         itemLines: [{ variantId: 'v1', quantity: 1 }],
@@ -551,6 +555,7 @@ describe('useOrdersMutations', () => {
         date: 'Ahora',
         items: 1,
         total: 150,
+        paidAmount: 150,
         status: 'Pendiente',
         payment: 'Pagado',
         itemLines: [{ variantId: 'v1', quantity: 1 }],
@@ -638,6 +643,157 @@ describe('useOrdersMutations', () => {
 
       const orders = queryClient.getQueryData<Order[]>(qk.orders(mockUser))
       expect(orders![0].id).toMatch(/^#DB-AB/)
+    })
+  })
+
+  describe('registerPayment', () => {
+    it('debería llamar a registerPayment del repository', async () => {
+      const { registerPayment } = await import('../../lib/repository.ts')
+      vi.mocked(registerPayment).mockResolvedValue({ id: 'pay-1' })
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        await result.current.registerPayment.mutateAsync({
+          orderId: 'db-1',
+          amount: 50,
+          paymentMethod: 'Efectivo',
+        })
+      })
+
+      expect(registerPayment).toHaveBeenCalledWith(
+        'db-1',
+        50,
+        'Efectivo',
+        undefined,
+        undefined,
+      )
+    })
+
+    it('debería enviar reference y notes cuando se proporcionan', async () => {
+      const { registerPayment } = await import('../../lib/repository.ts')
+      vi.mocked(registerPayment).mockResolvedValue({ id: 'pay-1' })
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        await result.current.registerPayment.mutateAsync({
+          orderId: 'db-1',
+          amount: 100,
+          paymentMethod: 'Transferencia',
+          reference: 'REF-123',
+          notes: 'Primer abono',
+        })
+      })
+
+      expect(registerPayment).toHaveBeenCalledWith(
+        'db-1',
+        100,
+        'Transferencia',
+        'REF-123',
+        'Primer abono',
+      )
+    })
+
+    it('debería invalidar el cache de pedidos y ventas después del registro', async () => {
+      const { registerPayment } = await import('../../lib/repository.ts')
+      vi.mocked(registerPayment).mockResolvedValue({ id: 'pay-1' })
+
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false },
+        },
+      })
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+      queryClient.setQueryData(qk.orders(mockUser), mockOrders)
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      })
+
+      await act(async () => {
+        await result.current.registerPayment.mutateAsync({
+          orderId: 'db-1',
+          amount: 50,
+          paymentMethod: 'Efectivo',
+        })
+      })
+
+      await waitFor(() => {
+        expect(invalidateSpy).toHaveBeenCalledWith({
+          queryKey: qk.orders(mockUser),
+        })
+        expect(invalidateSpy).toHaveBeenCalledWith({
+          queryKey: qk.sales(mockUser, '7d'),
+        })
+      })
+
+      invalidateSpy.mockRestore()
+    })
+
+    it('debería registrar múltiples abonos secuencialmente', async () => {
+      const { registerPayment } = await import('../../lib/repository.ts')
+      vi.mocked(registerPayment)
+        .mockResolvedValueOnce({ id: 'pay-1' })
+        .mockResolvedValueOnce({ id: 'pay-2' })
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        await result.current.registerPayment.mutateAsync({
+          orderId: 'db-1',
+          amount: 30,
+          paymentMethod: 'Efectivo',
+        })
+      })
+
+      await act(async () => {
+        await result.current.registerPayment.mutateAsync({
+          orderId: 'db-1',
+          amount: 40,
+          paymentMethod: 'Transferencia',
+          reference: 'REF-789',
+        })
+      })
+
+      expect(registerPayment).toHaveBeenCalledTimes(2)
+      expect(registerPayment).toHaveBeenLastCalledWith(
+        'db-1',
+        40,
+        'Transferencia',
+        'REF-789',
+        undefined,
+      )
+    })
+
+    it('debería lanzar error cuando el repository falla', async () => {
+      const { registerPayment } = await import('../../lib/repository.ts')
+      vi.mocked(registerPayment).mockRejectedValue(
+        new Error('Payment amount exceeds remaining balance'),
+      )
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: createWrapper(),
+      })
+
+      await expect(
+        result.current.registerPayment.mutateAsync({
+          orderId: 'db-1',
+          amount: 500,
+          paymentMethod: 'Efectivo',
+        }),
+      ).rejects.toThrow('Payment amount exceeds remaining balance')
     })
   })
 

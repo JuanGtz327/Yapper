@@ -788,6 +788,183 @@ describe('Repositorio de pedidos', () => {
   })
 })
 
+describe('Repositorio de pagos parciales', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockRpc.mockResolvedValue({ data: null, error: null })
+  })
+
+  describe('registerPayment', () => {
+    it('debería llamar a register_payment RPC con los datos correctos', async () => {
+      mockRpc.mockResolvedValue({ data: { id: 'pay-1' }, error: null })
+      const { registerPayment } = await import('./repository.ts')
+
+      await registerPayment('order-1', 50, 'Efectivo')
+
+      expect(mockRpc).toHaveBeenCalledWith('register_payment', {
+        p_order_id: 'order-1',
+        p_amount: 50,
+        p_payment_method: 'Efectivo',
+        p_reference: null,
+        p_notes: null,
+      })
+    })
+
+    it('debería enviar reference y notes cuando se proporcionan', async () => {
+      mockRpc.mockResolvedValue({ data: { id: 'pay-1' }, error: null })
+      const { registerPayment } = await import('./repository.ts')
+
+      await registerPayment('order-1', 100, 'Transferencia', 'REF-123', 'Primer abono')
+
+      expect(mockRpc).toHaveBeenCalledWith('register_payment', {
+        p_order_id: 'order-1',
+        p_amount: 100,
+        p_payment_method: 'Transferencia',
+        p_reference: 'REF-123',
+        p_notes: 'Primer abono',
+      })
+    })
+
+    it('debería lanzar error cuando el RPC falla', async () => {
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: 'Order is cancelled' },
+      })
+      const { registerPayment } = await import('./repository.ts')
+
+      await expect(
+        registerPayment('order-1', 50, 'Efectivo'),
+      ).rejects.toThrow('Order is cancelled')
+    })
+
+    it('debería lanzar error cuando el monto excede el saldo', async () => {
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: 'Payment amount exceeds remaining balance' },
+      })
+      const { registerPayment } = await import('./repository.ts')
+
+      await expect(
+        registerPayment('order-1', 500, 'Efectivo'),
+      ).rejects.toThrow('Payment amount exceeds remaining balance')
+    })
+  })
+
+  describe('loadOrderPayments', () => {
+    it('debería cargar los abonos de un pedido', async () => {
+      const mockPayments = [
+        {
+          id: 'pay-1',
+          order_id: 'order-1',
+          amount: 50,
+          payment_method: 'Efectivo',
+          reference: null,
+          notes: null,
+          created_at: '2026-01-15T10:30:00Z',
+        },
+        {
+          id: 'pay-2',
+          order_id: 'order-1',
+          amount: 30,
+          payment_method: 'Transferencia',
+          reference: 'REF-456',
+          notes: 'Segundo abono',
+          created_at: '2026-01-16T14:00:00Z',
+        },
+      ]
+
+      const orderMock = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          order: vi
+            .fn()
+            .mockResolvedValue({ data: mockPayments, error: null }),
+        }),
+      })
+      supabaseFromMock.mockReturnValue({ select: orderMock })
+
+      const { loadOrderPayments } = await import('./repository.ts')
+      const result = await loadOrderPayments('order-1')
+
+      expect(supabaseFromMock).toHaveBeenCalledWith('order_payments')
+      expect(result).toHaveLength(2)
+      expect(result[0].amount).toBe(50)
+      expect(result[0].paymentMethod).toBe('Efectivo')
+      expect(result[1].reference).toBe('REF-456')
+    })
+
+    it('debería devolver array vacío cuando no hay abonos', async () => {
+      const orderMock = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          order: vi
+            .fn()
+            .mockResolvedValue({ data: [], error: null }),
+        }),
+      })
+      supabaseFromMock.mockReturnValue({ select: orderMock })
+
+      const { loadOrderPayments } = await import('./repository.ts')
+      const result = await loadOrderPayments('order-1')
+
+      expect(result).toEqual([])
+    })
+
+    it('debería ordenar abonos por fecha ascendente', async () => {
+      const mockPayments = [
+        {
+          id: 'pay-1',
+          order_id: 'order-1',
+          amount: 50,
+          payment_method: 'Efectivo',
+          reference: null,
+          notes: null,
+          created_at: '2026-01-15T10:30:00Z',
+        },
+        {
+          id: 'pay-2',
+          order_id: 'order-1',
+          amount: 30,
+          payment_method: 'Transferencia',
+          reference: null,
+          notes: null,
+          created_at: '2026-01-16T14:00:00Z',
+        },
+      ]
+
+      const orderMock = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          order: vi
+            .fn()
+            .mockResolvedValue({ data: mockPayments, error: null }),
+        }),
+      })
+      supabaseFromMock.mockReturnValue({ select: orderMock })
+
+      const { loadOrderPayments } = await import('./repository.ts')
+      const result = await loadOrderPayments('order-1')
+
+      expect(result[0].id).toBe('pay-1')
+      expect(result[1].id).toBe('pay-2')
+    })
+
+    it('debería lanzar error cuando supabase falla', async () => {
+      const orderMock = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          order: vi
+            .fn()
+            .mockResolvedValue({
+              data: null,
+              error: { message: 'DB error' },
+            }),
+        }),
+      })
+      supabaseFromMock.mockReturnValue({ select: orderMock })
+
+      const { loadOrderPayments } = await import('./repository.ts')
+      await expect(loadOrderPayments('order-1')).rejects.toThrow('DB error')
+    })
+  })
+})
+
 describe('Repositorio de catálogo público', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -856,6 +1033,69 @@ describe('Repositorio de catálogo público', () => {
 
     await expect(loadPublicCatalog('mi-negocio')).rejects.toThrow(
       'column p.price does not exist',
+    )
+  })
+})
+
+describe('Repositorio de ventas agregadas', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockRpc.mockResolvedValue({ data: null, error: null })
+  })
+
+  it('debería llamar a sales_aggregates con el período correcto', async () => {
+    mockRpc.mockResolvedValue({
+      data: [{ label: 'Ene', total: 1000, orders: 5 }],
+      error: null,
+    })
+
+    const { loadSalesAggregates } = await import('./repository.ts')
+    await loadSalesAggregates('7d')
+
+    expect(mockRpc).toHaveBeenCalledWith('sales_aggregates', {
+      p_period: '7d',
+    })
+  })
+
+  it('debería mapear los resultados correctamente', async () => {
+    mockRpc.mockResolvedValue({
+      data: [
+        { label: 'Ene', total: 1000, orders: 5 },
+        { label: 'Feb', total: 2000, orders: 8 },
+      ],
+      error: null,
+    })
+
+    const { loadSalesAggregates } = await import('./repository.ts')
+    const result = await loadSalesAggregates('6m')
+
+    expect(result).toHaveLength(2)
+    expect(result[0].label).toBe('Ene')
+    expect(result[0].total).toBe(1000)
+    expect(result[0].orders).toBe(5)
+    expect(result[1].label).toBe('Feb')
+    expect(result[1].total).toBe(2000)
+    expect(result[1].orders).toBe(8)
+  })
+
+  it('debería retornar array vacío cuando no hay datos', async () => {
+    mockRpc.mockResolvedValue({ data: [], error: null })
+
+    const { loadSalesAggregates } = await import('./repository.ts')
+    const result = await loadSalesAggregates('7d')
+
+    expect(result).toEqual([])
+  })
+
+  it('debería propagar errores del RPC', async () => {
+    mockRpc.mockResolvedValue({
+      data: null,
+      error: { message: 'RPC execution failed' },
+    })
+
+    const { loadSalesAggregates } = await import('./repository.ts')
+    await expect(loadSalesAggregates('7d')).rejects.toThrow(
+      'RPC execution failed',
     )
   })
 })

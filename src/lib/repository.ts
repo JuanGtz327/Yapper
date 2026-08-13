@@ -49,8 +49,9 @@ type OrderRow = {
   id: string
   client_id: string | null
   status: 'pending' | 'delivered' | 'cancelled'
-  payment_status: 'pending' | 'paid'
+  payment_status: 'pending' | 'partial' | 'paid'
   total: number
+  paid_amount: number
   created_at: string
   order_number: string | null
   client_name_snapshot: string
@@ -598,7 +599,7 @@ export async function loadOrders(
   const { data, error } = await supabase
     .from('orders')
     .select(
-      'id, client_id, status, payment_status, total, created_at, order_number, client_name_snapshot',
+      'id, client_id, status, payment_status, total, paid_amount, created_at, order_number, client_name_snapshot',
     )
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
@@ -648,13 +649,19 @@ export async function loadOrders(
         lineTotal: item.line_total,
       })),
     total: row.total,
+    paidAmount: row.paid_amount ?? 0,
     status:
       row.status === 'delivered'
         ? 'Entregado'
         : row.status === 'cancelled'
           ? 'Cancelado'
           : 'Pendiente',
-    payment: row.payment_status === 'paid' ? 'Pagado' : 'Pendiente',
+    payment:
+      row.payment_status === 'paid'
+        ? 'Pagado'
+        : row.payment_status === 'partial'
+          ? 'Parcial'
+          : 'Pendiente',
   }))
 }
 
@@ -683,6 +690,54 @@ export async function updateOrderPayment(
     p_payment_status: paymentStatus,
   })
   if (error) throw error
+}
+
+export async function registerPayment(
+  orderId: string,
+  amount: number,
+  paymentMethod: 'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro',
+  reference?: string,
+  notes?: string,
+) {
+  const { data, error } = await supabase.rpc('register_payment', {
+    p_order_id: orderId,
+    p_amount: amount,
+    p_payment_method: paymentMethod,
+    p_reference: reference ?? null,
+    p_notes: notes ?? null,
+  })
+  if (error) throw error
+  return data
+}
+
+export async function loadOrderPayments(
+  orderId: string,
+): Promise<
+  Array<{
+    id: string
+    orderId: string
+    amount: number
+    paymentMethod: 'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro'
+    reference: string | null
+    notes: string | null
+    createdAt: string
+  }>
+> {
+  const { data, error } = await supabase
+    .from('order_payments')
+    .select('id, order_id, amount, payment_method, reference, notes, created_at')
+    .eq('order_id', orderId)
+    .order('created_at', { ascending: true })
+  if (error) throw error
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    orderId: row.order_id,
+    amount: row.amount,
+    paymentMethod: row.payment_method as 'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro',
+    reference: row.reference,
+    notes: row.notes,
+    createdAt: row.created_at,
+  }))
 }
 
 // ─── SETTINGS ────────────────────────────────────────────────

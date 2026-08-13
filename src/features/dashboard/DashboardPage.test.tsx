@@ -34,6 +34,7 @@ const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
   date: '2026-01-01',
   items: 2,
   total: 300,
+  paidAmount: 0,
   status: 'Pendiente',
   payment: 'Pendiente',
   ...overrides,

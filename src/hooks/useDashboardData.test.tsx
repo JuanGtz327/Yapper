@@ -131,6 +131,7 @@ vi.mock('./queries/useOrdersMutations.ts', () => ({
     cancel: { mutateAsync: mockCancelOrder },
     updateStatus: { mutateAsync: mockUpdateOrderStatus },
     updatePayment: { mutateAsync: mockUpdateOrderPayment },
+    registerPayment: { mutateAsync: vi.fn(), isPending: false },
   }),
 }))
 
@@ -185,7 +186,7 @@ describe('useDashboardData', () => {
     mockOrdersData = [
       {
         id: '#PED-001', databaseId: 'db-1', clientId: 'c1', client: 'Juan Pérez',
-        date: '15 ene 2026', items: 2, total: 300, status: 'Pendiente', payment: 'Pagado',
+        date: '15 ene 2026', items: 2, total: 300, paidAmount: 300, status: 'Pendiente', payment: 'Pagado',
         itemLines: [{ variantId: 'v1', quantity: 2 }],
       },
     ]
@@ -511,7 +512,7 @@ describe('useDashboardData', () => {
         {
           id: '#PED-001', databaseId: 'db-1', clientId: 'c1', client: 'Juan Pérez',
           clientNameSnapshot: 'Juan Pérez',
-          date: '15 ene 2026', items: 2, total: 300, status: 'Pendiente', payment: 'Pagado',
+          date: '15 ene 2026', items: 2, total: 300, paidAmount: 300, status: 'Pendiente', payment: 'Pagado',
           itemLines: [{ variantId: 'v1', quantity: 2 }],
         },
       ]
@@ -534,7 +535,7 @@ describe('useDashboardData', () => {
       mockOrdersData = [
         {
           id: '#PED-001', databaseId: 'db-1', clientId: 'c-eliminado', client: 'Cliente sin nombre',
-          date: '15 ene 2026', items: 2, total: 300, status: 'Pendiente', payment: 'Pagado',
+          date: '15 ene 2026', items: 2, total: 300, paidAmount: 300, status: 'Pendiente', payment: 'Pagado',
           itemLines: [{ variantId: 'v1', quantity: 2 }],
         },
       ]

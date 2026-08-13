@@ -3,6 +3,10 @@ import { describe, it, expect, vi } from 'vitest'
 import { OrderTicketModal } from './OrderTicketModal'
 import type { Order, Product } from '../../types.ts'
 
+vi.mock('../../hooks/queries/useOrderPayments.ts', () => ({
+  useOrderPaymentsQuery: vi.fn().mockReturnValue({ data: [], isLoading: false }),
+}))
+
 const mockProducts: Product[] = [
   {
     id: 'p1',
@@ -68,6 +72,7 @@ const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
   date: '15 ene 2026, 10:30',
   items: 2,
   total: 300,
+  paidAmount: 300,
   status: 'Pendiente',
   payment: 'Pagado',
   itemLines: [
@@ -81,10 +86,12 @@ const defaultProps = {
   order: createMockOrder(),
   products: mockProducts,
   currency: 'MXN',
+  isSubmittingPayment: false,
   onClose: vi.fn(),
   onEdit: vi.fn(),
   onStatusChange: vi.fn(),
   onPaymentChange: vi.fn(),
+  onRegisterPayment: vi.fn(),
   onCancel: vi.fn(),
 }
 
@@ -133,7 +140,7 @@ describe('OrderTicketModal', () => {
       expect(screen.getByText('Producto')).toBeInTheDocument()
       expect(screen.getByText('Cant.')).toBeInTheDocument()
       expect(screen.getByText('Precio')).toBeInTheDocument()
-      expect(screen.getByText('Total')).toBeInTheDocument()
+      expect(screen.getAllByText('Total').length).toBeGreaterThan(0)
     })
 
     it('debería mostrar los nombres de los productos', () => {
@@ -168,7 +175,7 @@ describe('OrderTicketModal', () => {
       render(<OrderTicketModal {...defaultProps} />)
       expect(screen.getByText('Total del pedido')).toBeInTheDocument()
       // 300 + 250 = 550
-      expect(screen.getByText('$550.00')).toBeInTheDocument()
+      expect(screen.getAllByText('$550.00').length).toBeGreaterThan(0)
     })
   })
 
@@ -424,7 +431,7 @@ describe('OrderTicketModal', () => {
         total: 1000,
       })
       render(<OrderTicketModal {...defaultProps} order={orderWithoutLines} />)
-      expect(screen.getByText('$1,000.00')).toBeInTheDocument()
+      expect(screen.getAllByText('$1,000.00').length).toBeGreaterThan(0)
     })
   })
 

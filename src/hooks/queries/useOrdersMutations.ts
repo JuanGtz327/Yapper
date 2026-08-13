@@ -6,6 +6,7 @@ import {
   cancelOrder,
   updateOrderStatus,
   updateOrderPayment,
+  registerPayment,
 } from '../../lib/repository.ts'
 import { qk } from '../../lib/queryKeys.ts'
 import type { Client, Order, Product } from '../../types.ts'
@@ -75,6 +76,7 @@ export function useOrdersMutations(user: User | null) {
           date: 'Ahora',
           items: items.reduce((sum, item) => sum + item.quantity, 0),
           total,
+          paidAmount: payment === 'paid' ? total : 0,
           status: 'Pendiente',
           payment: payment === 'paid' ? 'Pagado' : 'Pendiente',
           itemLines: items,
@@ -279,6 +281,7 @@ export function useOrdersMutations(user: User | null) {
             ? {
                 ...item,
                 payment: payment === 'paid' ? 'Pagado' : 'Pendiente',
+                paidAmount: payment === 'paid' ? item.total : item.paidAmount,
               }
             : item,
         ),
@@ -294,5 +297,33 @@ export function useOrdersMutations(user: User | null) {
     },
   })
 
-  return { create, update, cancel, updateStatus, updatePayment }
+  const registerPaymentMutation = useMutation({
+    mutationFn: ({
+      orderId,
+      amount,
+      paymentMethod,
+      reference,
+      notes,
+    }: {
+      orderId: string
+      amount: number
+      paymentMethod: 'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro'
+      reference?: string
+      notes?: string
+    }) => registerPayment(orderId, amount, paymentMethod, reference, notes),
+    onSuccess: async (_data, variables) => {
+      await qc.invalidateQueries({ queryKey: qk.orders(user) })
+      await qc.invalidateQueries({ queryKey: qk.orderPayments(variables.orderId) })
+      await qc.invalidateQueries({ queryKey: qk.sales(user, '7d') })
+    },
+  })
+
+  return {
+    create,
+    update,
+    cancel,
+    updateStatus,
+    updatePayment,
+    registerPayment: registerPaymentMutation,
+  }
 }

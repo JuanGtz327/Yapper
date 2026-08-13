@@ -32,6 +32,7 @@ export function OrderCreatePage({
   products,
   currency,
   onClose,
+  onBackToDetail,
   onSubmit,
 }: {
   initial: Order | null
@@ -39,6 +40,7 @@ export function OrderCreatePage({
   products: Product[]
   currency: string
   onClose: () => void
+  onBackToDetail?: () => void
   onSubmit: (
     clientId: string,
     items: OrderItemInput[],
@@ -150,6 +152,16 @@ export function OrderCreatePage({
           </p>
         </div>
         <div className="section-actions">
+          {onBackToDetail && (
+            <button
+              className="secondary-button"
+              onClick={onBackToDetail}
+              type="button"
+            >
+              <ArrowLeft size={16} aria-hidden="true" />
+              Volver al pedido
+            </button>
+          )}
           <button className="secondary-button" onClick={onClose} type="button">
             <ArrowLeft size={16} aria-hidden="true" />
             Volver a pedidos

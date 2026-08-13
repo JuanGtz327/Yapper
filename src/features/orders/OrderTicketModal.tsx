@@ -1,28 +1,47 @@
+import { useState } from 'react'
 import { Pencil, X } from 'lucide-react'
 import type { MouseEvent } from 'react'
 import type { Order, Product } from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { useOrderPaymentsQuery } from '../../hooks/queries/useOrderPayments.ts'
+import { PaymentProgress } from './PaymentProgress.tsx'
+import { PaymentHistory } from './PaymentHistory.tsx'
+import { PaymentModal, PaymentButton } from './PaymentModal.tsx'
 
 export function OrderTicketModal({
   order,
   products,
   currency,
+  isSubmittingPayment,
   onClose,
   onEdit,
   onStatusChange,
   onPaymentChange,
+  onRegisterPayment,
   onCancel,
 }: {
   order: Order
   products: Product[]
   currency: string
+  isSubmittingPayment: boolean
   onClose: () => void
   onEdit?: (order: Order) => void
   onStatusChange: (order: Order, status: 'pending' | 'delivered') => void
   onPaymentChange: (order: Order, payment: 'pending' | 'paid') => void
+  onRegisterPayment: (data: {
+    orderId: string
+    amount: number
+    paymentMethod: 'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro'
+    reference?: string
+    notes?: string
+  }) => void
   onCancel: (order: Order) => void
 }) {
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const { data: orderPayments = [] } = useOrderPaymentsQuery(
+    order.databaseId ?? null,
+  )
   const lines = order.itemLines ?? []
   const findVariant = (variantId: string) =>
     products
@@ -83,6 +102,9 @@ export function OrderTicketModal({
     )
   const calculatedTotal = lineItems.reduce((sum, line) => sum + line.total, 0)
   const total = lineItems.length ? calculatedTotal : order.total
+  const paidAmount = order.paidAmount ?? 0
+  const hasRemainingBalance = paidAmount < total && order.status !== 'Cancelado'
+
   return (
     <ModalFrame title={`Detalles del pedido ${order.id}`} onClose={onClose}>
       <div className="order-ticket">
@@ -108,6 +130,13 @@ export function OrderTicketModal({
             </dd>
           </div>
         </dl>
+
+        <PaymentProgress
+          total={total}
+          paidAmount={paidAmount}
+          currency={currency}
+        />
+
         <section
           className="ticket-lines"
           aria-labelledby="ticket-products-title"
@@ -157,6 +186,19 @@ export function OrderTicketModal({
           <span>Total del pedido</span>
           <strong>{formatMoney(total, currency)}</strong>
         </div>
+
+        {orderPayments.length > 0 && (
+          <PaymentHistory payments={orderPayments} currency={currency} />
+        )}
+
+        {hasRemainingBalance && (
+          <div className="payment-action-section">
+            <PaymentButton
+              onClick={() => setShowPaymentModal(true)}
+            />
+          </div>
+        )}
+
         {order.status !== 'Cancelado' && (
           <section
             className="order-detail-actions"
@@ -245,6 +287,19 @@ export function OrderTicketModal({
           </section>
         )}
       </div>
+
+      {showPaymentModal && order.databaseId && (
+        <PaymentModal
+          order={order}
+          currency={currency}
+          isSubmitting={isSubmittingPayment}
+          onClose={() => setShowPaymentModal(false)}
+          onSubmit={(data) => {
+            onRegisterPayment({ orderId: order.databaseId!, ...data })
+            setShowPaymentModal(false)
+          }}
+        />
+      )}
     </ModalFrame>
   )
 }
@@ -257,7 +312,9 @@ function StatusBadge({ value }: { value: string }) {
           ? 'badge success'
           : value === 'Cancelado'
             ? 'badge danger'
-            : 'badge warning'
+            : value === 'Parcial'
+              ? 'badge info'
+              : 'badge warning'
       }
     >
       {value}

@@ -134,6 +134,7 @@ export const demoOrders: Order[] = [
     date: 'Hoy, 09:42',
     items: 2,
     total: 378,
+    paidAmount: 378,
     status: 'Pendiente',
     payment: 'Pagado',
     itemLines: [
@@ -148,6 +149,7 @@ export const demoOrders: Order[] = [
     date: 'Ayer, 18:20',
     items: 2,
     total: 178,
+    paidAmount: 178,
     status: 'Entregado',
     payment: 'Pagado',
     itemLines: [{ variantId: 'v3', quantity: 2 }],
@@ -159,8 +161,9 @@ export const demoOrders: Order[] = [
     date: 'Ayer, 15:05',
     items: 1,
     total: 249,
+    paidAmount: 100,
     status: 'Entregado',
-    payment: 'Pendiente',
+    payment: 'Parcial',
     itemLines: [{ variantId: 'v2', quantity: 1 }],
   },
   {
@@ -170,6 +173,7 @@ export const demoOrders: Order[] = [
     date: 'Lun, 11:30',
     items: 4,
     total: 896,
+    paidAmount: 896,
     status: 'Entregado',
     payment: 'Pagado',
     itemLines: [

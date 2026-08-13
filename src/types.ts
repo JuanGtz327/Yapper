@@ -51,9 +51,20 @@ export type Order = {
   createdAt?: string
   items: number
   total: number
+  paidAmount: number
   status: 'Pendiente' | 'Entregado' | 'Cancelado'
-  payment: 'Pagado' | 'Pendiente'
+  payment: 'Pagado' | 'Pendiente' | 'Parcial'
   itemLines?: OrderItemInput[]
+}
+
+export type OrderPayment = {
+  id: string
+  orderId: string
+  amount: number
+  paymentMethod: 'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro'
+  reference: string | null
+  notes: string | null
+  createdAt: string
 }
 
 export type OrderItemInput = {

@@ -1,44 +1,24 @@
-import {
-  useEffect,
-  useState,
-  type KeyboardEvent as ReactKeyboardEvent,
-} from 'react'
+import { useState } from 'react'
 import { Plus, Search } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
-import type { Order, Product } from '../../types.ts'
-import { OrderTicketModal } from './OrderTicketModal.tsx'
+import type { Order } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 
 export function OrdersPage({
   orders,
-  products,
   currency,
   onAdd,
-  onEdit,
-  onStatusChange,
-  onPaymentChange,
-  onCancel,
+  onSelectOrder,
 }: {
   orders: Order[]
-  products: Product[]
   currency: string
   onAdd: () => void
-  onEdit?: (order: Order) => void
-  onStatusChange: (order: Order, status: 'pending' | 'delivered') => void
-  onPaymentChange: (order: Order, payment: 'pending' | 'paid') => void
-  onCancel: (order: Order) => void
+  onSelectOrder: (order: Order) => void
 }) {
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [deliveryFilter, setDeliveryFilter] = useState('all')
   const [paymentFilter, setPaymentFilter] = useState('all')
   const [orderSearch, setOrderSearch] = useState('')
-  useEffect(() => {
-    if (!selectedOrder) return
-    const updatedOrder = orders.find((order) => order.id === selectedOrder.id)
-    if (updatedOrder && updatedOrder !== selectedOrder) {
-      setSelectedOrder(updatedOrder)
-    }
-  }, [orders, selectedOrder])
+
   const now = new Date()
   const active = orders.filter((order) => order.status !== 'Cancelado')
   const thisMonth = active.filter((order) => {
@@ -49,7 +29,6 @@ export function OrdersPage({
       orderDate.getMonth() === now.getMonth()
     )
   })
-  const openOrder = (order: Order) => setSelectedOrder(order)
   const filteredOrders = orders.filter((order) => {
     const matchesSearch = order.id
       .toLowerCase()
@@ -63,23 +42,13 @@ export function OrdersPage({
       paymentFilter === 'all' ||
       (paymentFilter === 'paid' &&
         order.status !== 'Cancelado' &&
-        order.payment === 'Pagado') ||
+        (order.payment === 'Pagado' || order.payment === 'Parcial')) ||
       (paymentFilter === 'pending' &&
         order.status !== 'Cancelado' &&
         order.payment === 'Pendiente')
     return matchesSearch && matchesDelivery && matchesPayment
   })
-  const handleRowKeyDown = (
-    event: ReactKeyboardEvent<HTMLTableRowElement>,
-    order: Order,
-  ) => {
-    if ((event.target as HTMLElement).closest('button, select, input, a'))
-      return
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      openOrder(order)
-    }
-  }
+
   return (
     <section className="page-section">
       <div className="section-intro">
@@ -184,8 +153,15 @@ export function OrdersPage({
                 className={`order-row${idx % 2 === 1 ? ' zebra-stripe' : ''}`}
                 tabIndex={0}
                 key={order.id}
-                onClick={() => openOrder(order)}
-                onKeyDown={(event) => handleRowKeyDown(event, order)}
+                onClick={() => onSelectOrder(order)}
+                onKeyDown={(event) => {
+                  if ((event.target as HTMLElement).closest('button, select, input, a'))
+                    return
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    onSelectOrder(order)
+                  }
+                }}
               >
                 <td className="table-emphasis">{order.id}</td>
                 <td>
@@ -219,7 +195,9 @@ export function OrdersPage({
                       className={
                         order.payment === 'Pagado'
                           ? 'badge success'
-                          : 'badge warning'
+                          : order.payment === 'Parcial'
+                            ? 'badge info'
+                            : 'badge warning'
                       }
                     >
                       {order.payment}
@@ -240,7 +218,7 @@ export function OrdersPage({
             className="order-card"
             tabIndex={0}
             key={order.id}
-            onClick={() => openOrder(order)}
+            onClick={() => onSelectOrder(order)}
             onKeyDown={(event) => {
               if (
                 (event.target as HTMLElement).closest(
@@ -250,7 +228,7 @@ export function OrdersPage({
                 return
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault()
-                openOrder(order)
+                onSelectOrder(order)
               }
             }}
           >
@@ -287,18 +265,6 @@ export function OrdersPage({
           </article>
         ))}
       </div>
-      {selectedOrder && (
-        <OrderTicketModal
-          order={selectedOrder}
-          products={products}
-          currency={currency}
-          onClose={() => setSelectedOrder(null)}
-          onEdit={onEdit}
-          onStatusChange={onStatusChange}
-          onPaymentChange={onPaymentChange}
-          onCancel={onCancel}
-        />
-      )}
     </section>
   )
 }

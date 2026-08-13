@@ -2,7 +2,11 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { OrdersPage } from './OrdersPage'
-import type { Order, Product } from '../../types.ts'
+import type { Order } from '../../types.ts'
+
+vi.mock('../../hooks/queries/useOrderPayments.ts', () => ({
+  useOrderPaymentsQuery: vi.fn().mockReturnValue({ data: [], isLoading: false }),
+}))
 
 const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
   id: '#PED-001',
@@ -13,44 +17,18 @@ const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
   createdAt: '2026-08-15T10:30:00Z',
   items: 2,
   total: 300,
+  paidAmount: 300,
   status: 'Pendiente',
   payment: 'Pagado',
   itemLines: [{ variantId: 'v1', quantity: 2 }],
   ...overrides,
 })
 
-const createMockProduct = (overrides: Partial<Product> = {}): Product => ({
-  id: 'p1',
-  name: 'Playera Básica',
-  category: 'Ropa',
-  categoryId: 'cat1',
-  published: true,
-  publicDescription: '',
-  imageUrl: null,
-  color: 'sky',
-  variants: [
-    {
-      id: 'v1',
-      productId: 'p1',
-      sku: 'PLA-BAS-NEG',
-      name: 'Negro',
-      inventoryCost: 80,
-      salePrice: 150,
-      stock: 25,
-      optionValues: [],
-    },
-  ],
-  ...overrides,
-})
-
 const defaultProps = {
   orders: [createMockOrder()],
-  products: [createMockProduct()],
   currency: 'MXN',
   onAdd: vi.fn(),
-  onStatusChange: vi.fn(),
-  onPaymentChange: vi.fn(),
-  onCancel: vi.fn(),
+  onSelectOrder: vi.fn(),
 }
 
 describe('OrdersPage', () => {
@@ -204,43 +182,6 @@ describe('OrdersPage', () => {
       expect(onAdd).toHaveBeenCalledTimes(1)
     })
 
-    it('debería cambiar el estado de entrega desde el detalle', async () => {
-      const user = userEvent.setup()
-      const onStatusChange = vi.fn()
-      render(<OrdersPage {...defaultProps} onStatusChange={onStatusChange} />)
-      await user.click(screen.getAllByText('#PED-001')[0])
-      await user.click(screen.getByRole('button', { name: 'Entregado' }))
-      expect(onStatusChange).toHaveBeenCalledWith(
-        expect.objectContaining({ id: '#PED-001' }),
-        'delivered',
-      )
-    })
-
-    it('debería cambiar el estado de pago desde el detalle', async () => {
-      const user = userEvent.setup()
-      const onPaymentChange = vi.fn()
-      render(<OrdersPage {...defaultProps} onPaymentChange={onPaymentChange} />)
-      await user.click(screen.getAllByText('#PED-001')[0])
-      const pendingButtons = screen.getAllByRole('button', {
-        name: 'Pendiente',
-      })
-      await user.click(pendingButtons[pendingButtons.length - 1])
-      expect(onPaymentChange).toHaveBeenCalledWith(
-        expect.objectContaining({ id: '#PED-001' }),
-        'pending',
-      )
-    })
-
-    it('debería llamar a onCancel desde el detalle', () => {
-      const onCancel = vi.fn()
-      render(<OrdersPage {...defaultProps} onCancel={onCancel} />)
-      fireEvent.click(screen.getAllByText('#PED-001')[0])
-      fireEvent.click(screen.getByText('Cancelar pedido'))
-      expect(onCancel).toHaveBeenCalledWith(
-        expect.objectContaining({ id: '#PED-001' }),
-      )
-    })
-
     it('no debería incluir una columna de acciones en la tabla', () => {
       render(<OrdersPage {...defaultProps} />)
       expect(
@@ -258,23 +199,24 @@ describe('OrdersPage', () => {
   })
 
   describe('Selección de pedido', () => {
-    it('debería abrir el modal de detalles al hacer clic en un pedido', () => {
-      render(<OrdersPage {...defaultProps} />)
+    it('debería llamar a onSelectOrder al hacer clic en un pedido de la tabla', () => {
+      const onSelectOrder = vi.fn()
+      render(<OrdersPage {...defaultProps} onSelectOrder={onSelectOrder} />)
       const orderIds = screen.getAllByText('#PED-001')
       fireEvent.click(orderIds[0])
-      expect(
-        screen.getAllByText('Detalles del pedido #PED-001').length,
-      ).toBeGreaterThanOrEqual(1)
+      expect(onSelectOrder).toHaveBeenCalledWith(
+        expect.objectContaining({ id: '#PED-001' }),
+      )
     })
 
-    it('debería mostrar los detalles del pedido en el modal', () => {
-      render(<OrdersPage {...defaultProps} />)
-      const orderIds = screen.getAllByText('#PED-001')
-      fireEvent.click(orderIds[0])
-      const clienteLabels = screen.getAllByText('Cliente')
-      expect(clienteLabels.length).toBeGreaterThanOrEqual(2)
-      const clientNames = screen.getAllByText('Juan Pérez')
-      expect(clientNames.length).toBeGreaterThanOrEqual(1)
+    it('debería llamar a onSelectOrder al hacer clic en una tarjeta', () => {
+      const onSelectOrder = vi.fn()
+      render(<OrdersPage {...defaultProps} onSelectOrder={onSelectOrder} />)
+      const cards = screen.getAllByText('#PED-001')
+      fireEvent.click(cards[cards.length - 1])
+      expect(onSelectOrder).toHaveBeenCalledWith(
+        expect.objectContaining({ id: '#PED-001' }),
+      )
     })
   })
 
