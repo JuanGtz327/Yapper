@@ -29,10 +29,10 @@ export function StatsPage({
           <h2>Estadísticas</h2>
           <p>Una vista clara para tomar mejores decisiones.</p>
         </div>
-        <label className="period-control">
-          <span className="visually-hidden">Periodo de estadísticas</span>
+        <label className="inline-flex items-center">
+          <span className="sr-only">Periodo de estadísticas</span>
           <CustomSelect
-            className="status-select"
+            className="px-2 py-1.5 border border-[#e5dfdf] rounded-[7px] outline-none text-[#716b72] bg-[#fffefa] text-[11px] focus:border-[#9d72a0]"
             value={period}
             onChange={(val) => setPeriod(val as '7d' | '6m')}
             options={[
@@ -53,7 +53,7 @@ export function StatsPage({
           No pudimos cargar las estadísticas. Inténtalo de nuevo.
         </div>
       )}
-      <div className="stats-grid">
+      <div className="grid grid-cols-3 gap-4 mb-[22px] max-[650px]:grid-cols-1">
         <Stat
           label="Ingresos del periodo"
           value={formatMoney(total, currency)}
@@ -72,10 +72,10 @@ export function StatsPage({
           detail="Actividad registrada"
         />
       </div>
-      <div className="panel insight-panel">
+      <div className="panel min-h-[300px]">
         <h2>Resumen de ventas</h2>
-        <div className="big-chart">
-          <div className="bars">
+        <div className="relative h-[220px] mt-[25px] border-b border-[#ebe8e4]">
+          <div className="stats-bars">
             {periodSales.map((item) => (
               <i
                 key={item.label}
@@ -84,7 +84,7 @@ export function StatsPage({
               />
             ))}
           </div>
-          <div className="chart-days">
+          <div className="absolute bottom-[-22px] left-0 right-0 flex justify-around px-5 text-[10px] text-muted-foreground">
             {periodSales.map((item) => (
               <span key={item.label}>{item.label}</span>
             ))}

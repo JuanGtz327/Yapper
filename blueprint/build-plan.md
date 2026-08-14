@@ -36,6 +36,8 @@
     - [x] 18d3. Payment components - PaymentForm, PaymentModal, PaymentProgress, PaymentHistory
     - [x] 18d4. Shared classes - table styles, form-grid, modal-actions, badge, segmented-control
   - [ ] 18e. Clients, Settings, Stats, Catalog restyle - remaining pages + public catalog + auth screen
+    - [x] 18e. Clients, Settings, Stats restyle - ClientsPage, ClientModal, SettingsPage, StatsPage
+    - [ ] 18e2. Auth & Catalog restyle - AuthScreen, CatalogPage, PublicCatalogPage
   - [ ] 18f. Cleanup - remove App.css, verify responsive behavior, final pass
 - [ ] 19. **Test coverage** - expand tests for critical business logic (orders, payments, product mutations)
 - [ ] 20. **Deploy readiness** - Vercel or Render config, env vars, production build verification

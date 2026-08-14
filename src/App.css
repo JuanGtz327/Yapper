@@ -3,14 +3,14 @@
  *
  * STILL ACTIVE (used by un-migrated components):
  *   - :root variables (used by page-specific rules below)
- *   - Auth screen (.auth-*)
- *   - Clients (.client-*)
- *   - Settings, Stats, Catalog pages
+ *   - Auth screen (.auth-*) - pending 18e2
+ *   - Catalog pages (.catalog-*, .public-*) - pending 18e2
  *   - Forms (.modal, .modal-heading, .modal-actions, input/select styles)
  *   - Eyebrow (.eyebrow), section-intro (.section-intro, .section-actions)
- *   - Data notice (.data-notice, used by StatsPage)
+ *   - Data notice (.data-notice, spinner pseudo-element)
+ *   - Stats bars (.stats-bars, .stats-bars i)
+ *   - Shared: .form-grid, .panel, .field-help, .checkbox-label, .settings-layout
  *   - Responsive/mobile styles (page-specific)
- *   - .visually-hidden (still used by StatsPage)
  *
  * MIGRATED to Tailwind (18b - Layout restyle):
  *   - .app-shell, .sidebar, .brand, .brand-mark, .nav-label, .main-nav, .nav-item
@@ -22,7 +22,7 @@
  *
  * MIGRATED to Tailwind (18c - Dashboard restyle):
  *   - .welcome-card, .welcome-tag, .welcome-decoration
- *   - .stats-grid, .content-grid, .panel
+ *   - .content-grid, .panel
  *   - .chart-placeholder, .chart-y-axis, .chart-area, .chart-lines
  *   - .bar-chart, .chart-days
  *   - .quick-actions
@@ -71,6 +71,16 @@
  *   - .visually-hidden -> sr-only (ProductsPage, OrdersPage, OrderCreatePage)
  *   - Added .eyebrow CSS definition (was missing)
  *
+ * MIGRATED to Tailwind (18e - Clients/Settings/Stats restyle):
+ *   - .client-grid, .client-card, .client-card-top, .client-orders -> Tailwind
+ *   - .toolbar -> Tailwind
+ *   - .settings-form, .settings-heading, .settings-icon -> Tailwind
+ *   - .account-panel -> Tailwind
+ *   - .stats-grid, .insight-panel, .big-chart -> Tailwind
+ *   - .status-select -> Tailwind
+ *   - .bars -> renamed to .stats-bars (kept in CSS for gradient/pseudo-elements)
+ *   - Deleted dead src/components/AuthScreen.tsx
+ *
  * DEAD (no longer referenced - can be removed in 18f):
  *   - .btn, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost (-> shadcn Button)
  *   - .loading-inline, .spinner (-> Tailwind)
@@ -102,6 +112,58 @@ h1 {
   letter-spacing: -1px;
   line-height: 1.1;
 }
+/* Stats bar chart - pseudo-elements and gradients need CSS */
+.stats-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 185px;
+  padding: 0 20px;
+  gap: 22px;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 45px,
+    #f0eeec 46px
+  );
+}
+.stats-bars i {
+  display: block;
+  flex: 1;
+  max-width: 50px;
+  border-radius: 7px 7px 0 0;
+  background: #d9bfd9;
+}
+.stats-bars i:nth-child(6) {
+  background: var(--plum);
+}
+/* Data notice spinner - pseudo-element needs CSS */
+.data-notice {
+  margin: -17px 0 18px;
+  padding: 10px 13px;
+  border: 1px solid #d9eadf;
+  border-radius: 8px;
+  color: #579078;
+  background: #eff9f1;
+  font-size: 12px;
+}
+.data-notice.error {
+  border-color: #efd8d5;
+  color: #aa6259;
+  background: #fff3f0;
+}
+.data-notice[role='status']::before {
+  content: '';
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  margin-right: 7px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -3px;
+}
 h2 {
   color: var(--ink);
   font-size: 18px;
@@ -127,12 +189,6 @@ h2 {
 .cancel-button:disabled {
   cursor: not-allowed;
   opacity: 0.65;
-}
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 22px;
 }
 .panel {
   border: 1px solid var(--line);
@@ -372,14 +428,6 @@ select {
   margin-top: 7px;
 }
 /* secondary-button - migrated to shadcn Button */
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  color: #aaa5a8;
-  font-size: 11px;
-}
 .search-box {
   display: flex;
   align-items: center;
@@ -392,43 +440,6 @@ select {
 .search-box:focus-within {
   /* migrated to shadcn Input */
 }
-.client-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-.client-card {
-  padding: 19px;
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  background: #fffefa;
-}
-.client-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.client-card h3 {
-  margin: 14px 0 6px;
-  color: var(--ink);
-  font-size: 14px;
-}
-.client-card p {
-  color: #928c92;
-  font-size: 11px;
-  margin-top: 3px;
-}
-.client-orders {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 17px;
-  padding-top: 13px;
-  border-top: 1px solid var(--line);
-  color: var(--plum);
-  font-size: 11px;
-  font-weight: 700;
-}
 .empty-state {
   padding: 45px;
   border: 1px dashed #d9d1d8;
@@ -437,18 +448,6 @@ select {
   text-align: center;
   font-size: 13px;
   background: #fffefa;
-}
-.status-select {
-  padding: 6px 8px;
-  border: 1px solid #e5dfdf;
-  border-radius: 7px;
-  outline: none;
-  color: #716b72;
-  background: #fffefa;
-  font-size: 11px;
-}
-.status-select:focus {
-  border-color: #9d72a0;
 }
 .row-actions .btn {
   display: inline-flex;
@@ -538,42 +537,6 @@ td.row-actions .row-actions-inner {
 .catalog-card strong {
   color: var(--plum);
   font-size: 17px;
-}
-.insight-panel {
-  min-height: 300px;
-}
-.big-chart {
-  position: relative;
-  height: 220px;
-  margin-top: 25px;
-  border-bottom: 1px solid var(--line);
-}
-.bars {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  height: 185px;
-  padding: 0 20px;
-  gap: 22px;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 45px,
-    #f0eeec 46px
-  );
-}
-.bars i {
-  display: block;
-  flex: 1;
-  max-width: 50px;
-  border-radius: 7px 7px 0 0;
-  background: #d9bfd9;
-}
-.bars i:nth-child(6) {
-  background: var(--plum);
-}
-.big-chart .chart-days {
-  bottom: -22px;
 }
 .data-notice {
   margin: -17px 0 18px;
@@ -818,46 +781,10 @@ td.row-actions .row-actions-inner {
   grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
   gap: 16px;
 }
-.settings-form {
-  max-width: 620px;
-}
-.settings-heading {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-.settings-heading h3,
-.account-panel h3 {
-  color: var(--ink);
-  font-size: 16px;
-}
-.settings-heading p,
-.account-panel p {
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-.settings-icon {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
-  color: var(--plum);
-  background: #f3eaf4;
-}
 .field-help {
   color: #aaa5a8;
   font-size: 10px;
   font-weight: 400;
-}
-.account-panel {
-  align-self: start;
-}
-.account-panel h3 {
-  margin-top: 7px;
 }
 .option-type-btn {
   margin-top: 10px;
@@ -1162,8 +1089,6 @@ td.row-actions .row-actions-inner {
 }
 
 @media (max-width: 650px) {
-  .stats-grid,
-  .client-grid,
   .catalog-grid {
     grid-template-columns: 1fr;
   }

@@ -65,7 +65,7 @@ export function SettingsPage({
     }
   }
   return (
-    <section className="page-section settings-page">
+    <section className="page-section">
       <div className="section-intro">
         <div>
           <span className="eyebrow">CONFIGURACIÓN</span>
@@ -73,15 +73,15 @@ export function SettingsPage({
           <p>Personaliza Yapper para trabajar a tu manera.</p>
         </div>
       </div>
-      <div className="settings-layout">
-        <form className="panel form-grid settings-form" onSubmit={submit}>
-          <div className="settings-heading">
-            <div className="settings-icon">
+      <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(260px,1fr)] gap-4 max-[650px]:grid-cols-1">
+        <form className="panel form-grid max-w-[620px] max-[650px]:max-w-none" onSubmit={submit}>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="inline-grid place-items-center w-10 h-10 rounded-[11px] text-[#6d3c72] bg-[#f3eaf4]">
               <Settings size={20} />
             </div>
             <div>
-              <h3>Preferencias del negocio</h3>
-              <p>Estos datos se guardan en tu cuenta.</p>
+              <h3 className="text-ink text-[16px]">Preferencias del negocio</h3>
+              <p className="mt-1 text-muted text-[12px] leading-[1.5]">Estos datos se guardan en tu cuenta.</p>
             </div>
           </div>
           <label>
@@ -111,7 +111,7 @@ export function SettingsPage({
           </label>
           <label>
             Umbral de stock bajo
-            <span className="field-help">
+            <span className="text-[#aaa5a8] text-[10px] font-normal">
               Te avisaremos cuando un producto llegue a esta cantidad.
             </span>
             <Input
@@ -129,11 +129,12 @@ export function SettingsPage({
               required
             />
           </label>
-          <fieldset className="public-settings">
-            <legend>Catálogo público</legend>
-            <label className="checkbox-label">
+          <fieldset className="grid gap-3 p-[14px] border border-[#ebe8e4] rounded-[10px]">
+            <legend className="px-[5px] text-[#6d3c72] text-[12px] font-bold">Catálogo público</legend>
+            <label className="!flex grid-cols-[auto_1fr] items-center gap-2">
               <input
                 type="checkbox"
+                className="w-auto"
                 checked={draft.publicCatalogEnabled}
                 onChange={(event) =>
                   setDraft({
@@ -146,7 +147,7 @@ export function SettingsPage({
             </label>
             <label>
               Slug único
-              <span className="field-help">Se verá en /tienda/tu-slug</span>
+              <span className="text-[#aaa5a8] text-[10px] font-normal">Se verá en /tienda/tu-slug</span>
               <Input
                 value={draft.publicSlug}
                 onChange={(event) =>
@@ -158,7 +159,7 @@ export function SettingsPage({
             </label>
             <label>
               WhatsApp de contacto
-              <span className="field-help">
+              <span className="text-[#aaa5a8] text-[10px] font-normal">
                 México: 10 dígitos, por ejemplo 55 1234 5678.
               </span>
               <Input
@@ -182,12 +183,12 @@ export function SettingsPage({
               />
             </label>
             {draft.publicCatalogEnabled && draft.publicSlug && (
-              <p className="field-help">
+              <p className="text-[#aaa5a8] text-[10px] font-normal">
                 Tu enlace: {window.location.origin}/tienda/{draft.publicSlug}
               </p>
             )}
           </fieldset>
-          <div className="modal-actions">
+          <div className="flex justify-end gap-[10px] mt-[9px]">
             <Button
               variant="primary"
               disabled={saving}
@@ -198,20 +199,20 @@ export function SettingsPage({
             </Button>
           </div>
         </form>
-        <aside className="panel account-panel">
+        <aside className="panel self-start">
           <span className="eyebrow">CUENTA</span>
-          <h3>Sesión actual</h3>
-          <p>Tu información está protegida y solo tú puedes acceder a ella.</p>
+          <h3 className="text-ink text-[16px] mt-[7px]">Sesión actual</h3>
+          <p className="mt-1 text-muted text-[12px] leading-[1.5]">Tu información está protegida y solo tú puedes acceder a ella.</p>
           <Button variant="danger" onClick={onSignOut} type="button">
             Cerrar sesión
           </Button>
-          <div className="settings-section-divider" />
+          <div className="h-px bg-[#e8e5e3] my-[18px]" />
           <span className="eyebrow">INVENTARIO</span>
-          <h3>Opciones de producto</h3>
-          <p>Administra tipos como Color, Talla o Capacidad y sus valores.</p>
+          <h3 className="text-ink text-[16px] mt-[7px]">Opciones de producto</h3>
+          <p className="mt-1 text-muted text-[12px] leading-[1.5]">Administra tipos como Color, Talla o Capacidad y sus valores.</p>
           <Button
             variant="secondary"
-            className="option-type-btn"
+            className="mt-[10px]"
             onClick={onOpenOptionTypes}
             type="button"
             icon={<Palette size={16} />}
