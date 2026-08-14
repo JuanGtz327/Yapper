@@ -3,6 +3,7 @@ import { Plus, Search } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import type { Order } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { Button } from '../../components/ui/Button.tsx'
 
 export function OrdersPage({
@@ -91,15 +92,16 @@ export function OrdersPage({
         </div>
       </div>
       <div className="table-filters" aria-label="Filtros de pedidos">
-        <label className="table-filter-search search-box">
-          <Search size={16} aria-hidden="true" />
-          <input
+        <div className="relative w-full max-w-[300px]">
+          <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" aria-hidden="true" />
+          <Input
+            className="pl-8"
             aria-label="Buscar por número de pedido"
             value={orderSearch}
             onChange={(event) => setOrderSearch(event.target.value)}
             placeholder="Buscar número de pedido"
           />
-        </label>
+        </div>
         <label>
           Entrega
           <CustomSelect

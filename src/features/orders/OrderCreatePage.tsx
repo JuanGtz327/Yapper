@@ -12,6 +12,7 @@ import { formatMoney } from '../../lib/format.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Empty } from '../../components/ui/Empty.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 
 function buildVariantOptions(products: Product[]): VariantOption[] {
@@ -214,7 +215,7 @@ export function OrderCreatePage({
                     placeholder="Producto..."
                     ariaLabel="Producto"
                   />
-                  <input
+                  <Input
                     aria-label={`Cantidad ${index + 1}`}
                     value={line.quantity}
                     onChange={(event) =>

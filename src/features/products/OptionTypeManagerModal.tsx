@@ -2,6 +2,7 @@ import { useState, useRef, type FormEvent } from 'react'
 import { Plus, X, Palette, ChevronDown, ChevronRight } from 'lucide-react'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import {
   createOptionType,
@@ -125,7 +126,7 @@ export function OptionTypeManagerModal({
       </p>
 
       <form className="category-add-row" onSubmit={handleCreateType}>
-        <input
+        <Input
           ref={inputRef}
           type="text"
           placeholder="Nuevo tipo (ej. Color, Talla)..."
@@ -212,7 +213,7 @@ export function OptionTypeManagerModal({
                       handleAddValue(type.id)
                     }}
                   >
-                    <input
+                    <Input
                       ref={valueInputRef}
                       type="text"
                       placeholder="Nuevo valor..."

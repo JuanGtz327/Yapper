@@ -446,8 +446,7 @@ h2 {
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 3px solid #c9a3ca;
-  outline-offset: 2px;
+  /* migrated to shadcn Input */
 }
 select {
   appearance: none;
@@ -707,15 +706,13 @@ select {
   font-weight: 700;
 }
 .table-filter-search {
+  display: flex;
   align-items: center;
-  display: flex !important;
   gap: 8px;
-  height: 40px;
-  min-width: 220px !important;
-  padding: 0 11px;
+  width: min(300px, 60%);
 }
 .table-filter-search input {
-  min-width: 0;
+  /* migrated to shadcn Input */
 }
 .table-filters .custom-select {
   min-width: 150px;
@@ -735,23 +732,12 @@ select {
   align-items: center;
   gap: 8px;
   width: min(300px, 60%);
-  padding: 9px 12px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  color: #9e989f;
-  background: #fffefa;
 }
 .search-box input {
-  width: 100%;
-  border: 0;
-  outline: 0;
-  color: var(--ink);
-  background: transparent;
-  font-size: 12px;
+  /* migrated to shadcn Input */
 }
 .search-box:focus-within {
-  border-color: #9d72a0;
-  box-shadow: 0 0 0 3px #9d72a018;
+  /* migrated to shadcn Input */
 }
 .table-card {
   overflow: auto;
@@ -1530,19 +1516,11 @@ td.row-actions .row-actions-inner {
 }
 .form-grid input,
 .form-grid select {
-  width: 100%;
-  padding: 11px 12px;
-  border: 1px solid #ded8dd;
-  border-radius: 8px;
-  outline: none;
-  color: var(--ink);
-  background: #fff;
-  font-size: 13px;
+  /* migrated to shadcn Input */
 }
 .form-grid input:focus,
 .form-grid select:focus {
-  border-color: #9d72a0;
-  box-shadow: 0 0 0 3px #9d72a018;
+  /* migrated to shadcn Input */
 }
 .form-two {
   display: grid;
@@ -1567,18 +1545,10 @@ td.row-actions .row-actions-inner {
   margin-bottom: 14px;
 }
 .category-add-row input {
-  flex: 1;
-  padding: 10px 12px;
-  border: 1px solid #ded8dd;
-  border-radius: 8px;
-  outline: none;
-  color: var(--ink);
-  background: #fff;
-  font-size: 13px;
+  /* migrated to shadcn Input */
 }
 .category-add-row input:focus {
-  border-color: #9d72a0;
-  box-shadow: 0 0 0 3px #9d72a018;
+  /* migrated to shadcn Input */
 }
 .category-add-row .primary-button {
   flex-shrink: 0;
@@ -1793,16 +1763,10 @@ td.row-actions .row-actions-inner {
   margin-top: 8px;
 }
 .option-value-add-row input {
-  flex: 1;
-  padding: 6px 10px;
-  border: 1px solid #e8e5e3;
-  border-radius: 6px;
-  font-size: 12px;
+  /* migrated to shadcn Input */
 }
 .option-value-add-row input:focus {
-  outline: none;
-  border-color: var(--plum);
-  box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.15);
+  /* migrated to shadcn Input */
 }
 .small-button {
   display: inline-flex;
@@ -2169,12 +2133,10 @@ td.row-actions .row-actions-inner {
   grid-template-columns: minmax(0, 1fr) 68px 90px 30px;
 }
 .order-line input {
-  padding: 10px 8px;
-  text-align: center;
+  /* migrated to shadcn Input */
 }
 .order-line input:focus {
-  border-color: #9d72a0;
-  box-shadow: 0 0 0 3px #9d72a018;
+  /* migrated to shadcn Input */
 }
 .order-line-remove {
   justify-self: end;
@@ -2229,7 +2191,7 @@ td.row-actions .row-actions-inner {
     font-size: 10px;
   }
   .order-line input {
-    padding-inline: 5px;
+    /* migrated to shadcn Input */
   }
   .line-total {
     font-size: 12px;
@@ -2286,26 +2248,13 @@ td.row-actions .row-actions-inner {
   font-weight: 700;
 }
 .auth-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 13px;
-  border: 1px solid #ded8dd;
-  border-radius: 9px;
-  color: #a39da3;
-  background: #fff;
+  /* migrated to shadcn Input */
 }
 .auth-input:focus-within {
-  border-color: #9d72a0;
-  box-shadow: 0 0 0 3px #9d72a018;
+  /* migrated to shadcn Input */
 }
 .auth-input input {
-  width: 100%;
-  border: 0;
-  outline: 0;
-  color: var(--ink);
-  background: transparent;
-  font-size: 13px;
+  /* migrated to shadcn Input */
 }
 .auth-submit {
   justify-content: center;
@@ -2684,7 +2633,7 @@ td.row-actions .row-actions-inner {
   margin-top: 2px;
 }
 .input-error {
-  border-color: #aa6259 !important;
+  /* migrated to shadcn Input */
 }
 .variant-edit-form {
   display: grid;
@@ -2893,26 +2842,16 @@ td.row-actions .row-actions-inner {
   font-weight: 700;
 }
 .payment-form-field input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ded8dd;
-  border-radius: 8px;
-  background: #fffefa;
-  font-size: 13px;
-  color: var(--ink);
-  outline: none;
-  transition: border-color 0.15s;
+  /* migrated to shadcn Input */
 }
 .payment-form-field input:focus {
-  border-color: var(--plum);
+  /* migrated to shadcn Input */
 }
 .payment-form-field input::placeholder {
-  color: #b8b3b9;
+  /* migrated to shadcn Input */
 }
 .payment-form-amount-input input {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--plum);
+  /* migrated to shadcn Input */
 }
 .payment-form-error {
   color: #b94b4b;

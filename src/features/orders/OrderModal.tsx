@@ -12,6 +12,7 @@ import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Empty } from '../../components/ui/Empty.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 
 function buildVariantOptions(products: Product[]): VariantOption[] {
@@ -169,7 +170,7 @@ export function OrderModal({
                       placeholder="Producto..."
                       ariaLabel="Producto"
                     />
-                    <input
+                    <Input
                       aria-label="Cantidad"
                       value={line.quantity}
                       onChange={(event) =>

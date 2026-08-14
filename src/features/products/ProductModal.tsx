@@ -3,6 +3,7 @@ import { Check, Pencil, Plus, Trash2 } from 'lucide-react'
 import type { Product, Variant, OptionTypeWithValues } from '../../types.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { CategoryManagerModal } from './CategoryManagerModal.tsx'
 import { VariantManagerModal } from './VariantManagerModal.tsx'
@@ -134,7 +135,7 @@ export function ProductModal({
       <form className="form-grid" onSubmit={submit}>
         <label>
           Nombre del producto
-          <input
+          <Input
             name="name"
             defaultValue={initial?.name}
             placeholder="Ej. Tupper rectangular 1L"
@@ -223,12 +224,12 @@ export function ProductModal({
           <>
             <label>
               SKU
-              <input name="sku" placeholder="Ej. TUP-REC-1L" required />
+              <Input name="sku" placeholder="Ej. TUP-REC-1L" required />
             </label>
             <div className="form-two">
               <label>
                 Precio de venta
-                <input
+                <Input
                   name="salePrice"
                   type="number"
                   min="0"
@@ -239,7 +240,7 @@ export function ProductModal({
               </label>
               <label>
                 Costo de inventario
-                <input
+                <Input
                   name="inventoryCost"
                   type="number"
                   min="0"
@@ -250,7 +251,7 @@ export function ProductModal({
             </div>
             <label>
               Existencias
-              <input
+              <Input
                 name="stock"
                 type="number"
                 min="0"
@@ -281,7 +282,7 @@ export function ProductModal({
           </label>
           <label>
             Imagen pública (URL)
-            <input
+            <Input
               name="imageUrl"
               type="url"
               inputMode="url"

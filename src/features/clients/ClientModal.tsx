@@ -3,6 +3,7 @@ import { Check } from 'lucide-react'
 import type { Client } from '../../types.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 
 export function ClientModal({
   initial,
@@ -30,7 +31,7 @@ export function ClientModal({
       <form className="form-grid" onSubmit={submit}>
         <label>
           Nombre completo
-          <input
+          <Input
             name="name"
             defaultValue={initial?.name}
             placeholder="Ej. Mariana González"
@@ -39,7 +40,7 @@ export function ClientModal({
         </label>
         <label>
           Teléfono
-          <input
+          <Input
             name="phone"
             defaultValue={initial?.phone}
             placeholder="55 1234 5678"
@@ -47,7 +48,7 @@ export function ClientModal({
         </label>
         <label>
           Zona o colonia
-          <input
+          <Input
             name="zone"
             defaultValue={initial?.zone}
             placeholder="Ej. Coyoacán"

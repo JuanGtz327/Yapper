@@ -3,6 +3,7 @@ import { Banknote, Loader2 } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import { calculateRemainingAmount } from '../../lib/payment.ts'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 
 type PaymentMethod = 'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro'
 
@@ -78,7 +79,7 @@ export function PaymentForm({
       <label className="payment-form-field">
         <span>Monto</span>
         <div className="payment-form-amount-input">
-          <input
+          <Input
             type="number"
             min="0.01"
             max={remaining}
@@ -150,7 +151,7 @@ export function PaymentForm({
 
       <label className="payment-form-field">
         <span>Referencia (opcional)</span>
-        <input
+        <Input
           type="text"
           value={reference}
           onChange={(event) => setReference(event.target.value)}
@@ -161,7 +162,7 @@ export function PaymentForm({
 
       <label className="payment-form-field">
         <span>Notas (opcional)</span>
-        <input
+        <Input
           type="text"
           value={notes}
           onChange={(event) => setNotes(event.target.value)}

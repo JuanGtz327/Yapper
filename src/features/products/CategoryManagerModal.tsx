@@ -2,6 +2,7 @@ import { useState, useRef, type FormEvent } from 'react'
 import { Plus, X, Tag } from 'lucide-react'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { createCategory, deleteCategory } from '../../lib/repository.ts'
 import { useToast, toastMessages } from '../../hooks/useToast.ts'
@@ -69,7 +70,7 @@ export function CategoryManagerModal({
   return (
     <ModalFrame title="Categorías" onClose={onClose}>
       <form className="category-add-row" onSubmit={handleCreate}>
-        <input
+        <Input
           ref={inputRef}
           type="text"
           placeholder="Nueva categoría..."

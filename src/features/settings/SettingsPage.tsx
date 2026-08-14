@@ -3,6 +3,7 @@ import { Check, Settings, Palette } from 'lucide-react'
 import type { BusinessSettings } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 
 export function SettingsPage({
@@ -85,7 +86,7 @@ export function SettingsPage({
           </div>
           <label>
             Nombre del negocio
-            <input
+            <Input
               value={draft.businessName}
               onChange={(event) =>
                 setDraft({ ...draft, businessName: event.target.value })
@@ -113,7 +114,7 @@ export function SettingsPage({
             <span className="field-help">
               Te avisaremos cuando un producto llegue a esta cantidad.
             </span>
-            <input
+            <Input
               value={draft.lowStockThreshold}
               onChange={(event) =>
                 setDraft({
@@ -146,7 +147,7 @@ export function SettingsPage({
             <label>
               Slug único
               <span className="field-help">Se verá en /tienda/tu-slug</span>
-              <input
+              <Input
                 value={draft.publicSlug}
                 onChange={(event) =>
                   setDraft({ ...draft, publicSlug: event.target.value })
@@ -160,7 +161,7 @@ export function SettingsPage({
               <span className="field-help">
                 México: 10 dígitos, por ejemplo 55 1234 5678.
               </span>
-              <input
+              <Input
                 value={draft.whatsappNumber}
                 onChange={(event) =>
                   setDraft({ ...draft, whatsappNumber: event.target.value })

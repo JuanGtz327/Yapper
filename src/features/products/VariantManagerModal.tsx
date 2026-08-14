@@ -3,6 +3,7 @@ import { Check } from 'lucide-react'
 import type { Variant, OptionTypeWithValues } from '../../types.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 
 export function VariantManagerModal({
@@ -94,7 +95,7 @@ export function VariantManagerModal({
       <form className="form-grid" onSubmit={submit}>
         <label>
           SKU
-          <input
+          <Input
             name="sku"
             defaultValue={variant?.sku}
             placeholder="Ej. TUP-REC-1L-NEG"
@@ -103,7 +104,7 @@ export function VariantManagerModal({
         </label>
         <label>
           Nombre de variante
-          <input
+          <Input
             name="name"
             defaultValue={variant?.name}
             placeholder="Ej. Negro, 1L"
@@ -112,7 +113,7 @@ export function VariantManagerModal({
         <div className="form-two">
           <label>
             Precio de venta
-            <input
+            <Input
               name="salePrice"
               defaultValue={variant?.salePrice}
               type="number"
@@ -124,7 +125,7 @@ export function VariantManagerModal({
           </label>
           <label>
             Costo de inventario
-            <input
+            <Input
               name="inventoryCost"
               defaultValue={variant?.inventoryCost ?? 0}
               type="number"
@@ -136,7 +137,7 @@ export function VariantManagerModal({
         </div>
         <label>
           Existencias
-          <input
+          <Input
             name="stock"
             defaultValue={variant?.stock}
             type="number"

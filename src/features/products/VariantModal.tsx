@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Check, Plus, X } from 'lucide-react'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 import type { VariantDraft } from './validateProductDraft.ts'
@@ -141,7 +142,7 @@ export function VariantModal({
       <form className="form-grid" onSubmit={submit}>
         <label>
           SKU
-          <input
+          <Input
             value={sku}
             onChange={(e) => setSku(e.target.value)}
             placeholder="Ej. TUP-REC-1L-NEG"
@@ -150,7 +151,7 @@ export function VariantModal({
         </label>
         <label>
           Nombre de variante
-          <input
+          <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Ej. Negro, 1L"
@@ -159,7 +160,7 @@ export function VariantModal({
         <div className="form-two">
           <label>
             Precio de venta
-            <input
+            <Input
               type="number"
               min="0"
               step="1"
@@ -171,7 +172,7 @@ export function VariantModal({
           </label>
           <label>
             Costo de inventario
-            <input
+            <Input
               type="number"
               min="0"
               step="1"
@@ -183,7 +184,7 @@ export function VariantModal({
         </div>
         <label>
           Existencias
-          <input
+          <Input
             type="number"
             min="0"
             step="1"

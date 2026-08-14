@@ -6,6 +6,7 @@ import { VariantModal } from './VariantModal.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 import {
   validateProductDraft,
@@ -233,7 +234,7 @@ export function ProductCreatePage({
             <legend>Información básica</legend>
             <label>
               Nombre del producto
-              <input
+              <Input
                 value={draft.name}
                 onChange={(e) => {
                   setDraft({ ...draft, name: e.target.value })
@@ -359,7 +360,7 @@ export function ProductCreatePage({
             </label>
             <label>
               Imagen pública (URL)
-              <input
+              <Input
                 type="url"
                 inputMode="url"
                 value={draft.imageUrl}

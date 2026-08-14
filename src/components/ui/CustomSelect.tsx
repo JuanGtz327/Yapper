@@ -25,8 +25,10 @@ export function CustomSelect({
   ariaLabel?: string
   onChange: (value: string) => void
 }) {
+  const selectItems = options.map((opt) => ({ value: opt.value, label: opt.label }))
+
   return (
-    <Select value={value} onValueChange={(v) => { if (v) onChange(v) }} disabled={disabled}>
+    <Select value={value} onValueChange={(v) => { if (v) onChange(v) }} disabled={disabled} items={selectItems}>
       <SelectTrigger
         className={className}
         aria-label={ariaLabel}
@@ -35,7 +37,7 @@ export function CustomSelect({
       </SelectTrigger>
       <SelectContent>
         {options.map((opt) => (
-          <SelectItem key={opt.value} value={opt.value}>
+          <SelectItem key={opt.value} value={opt.value} label={opt.label}>
             {opt.label}
           </SelectItem>
         ))}

@@ -2,6 +2,7 @@ import { useState, type KeyboardEvent } from 'react'
 import { Boxes, DollarSign, Plus, Search, Tag } from 'lucide-react'
 import { Empty } from '../../components/ui/Empty.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { formatMoney } from '../../lib/format.ts'
 import type { Product } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
@@ -139,15 +140,16 @@ export function ProductsPage({
         <strong>Ganancia: {formatMoney(totalProfit, currency)}</strong>
       </div>
       <div className="table-filters" aria-label="Filtros de productos">
-        <label className="table-filter-search search-box">
-          <Search size={18} aria-hidden="true" />
-          <input
+        <div className="relative w-full max-w-[300px]">
+          <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" aria-hidden="true" />
+          <Input
+            className="pl-8"
             aria-label="Buscar productos"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Buscar producto"
           />
-        </label>
+        </div>
         <label>
           Categoría
           <CustomSelect

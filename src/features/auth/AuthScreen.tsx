@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { ArrowRight, LockKeyhole, Mail } from 'lucide-react'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import { supabase } from '../../lib/supabase.ts'
 
 export function AuthScreen() {
@@ -51,7 +52,7 @@ export function AuthScreen() {
             <span>Correo electrónico</span>
             <div className="auth-input">
               <Mail size={18} aria-hidden="true" />
-              <input
+              <Input
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
@@ -65,7 +66,7 @@ export function AuthScreen() {
             <span>Contraseña</span>
             <div className="auth-input">
               <LockKeyhole size={18} aria-hidden="true" />
-              <input
+              <Input
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}

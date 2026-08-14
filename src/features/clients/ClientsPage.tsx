@@ -1,6 +1,7 @@
 import { ArrowUpRight, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import { Empty } from '../../components/ui/Empty.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Input } from '../../components/ui/Input.tsx'
 import type { Client } from '../../types.ts'
 
 export function ClientsPage({
@@ -34,15 +35,16 @@ export function ClientsPage({
         </Button>
       </div>
       <div className="toolbar">
-        <label className="search-box">
-          <Search aria-hidden="true" size={18} />
-          <input
+        <div className="relative w-full max-w-[300px]">
+          <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" aria-hidden="true" />
+          <Input
+            className="pl-8"
             aria-label="Buscar cliente"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Buscar cliente"
           />
-        </label>
+        </div>
         <span>{clients.length} clientes</span>
       </div>
       <div className="client-grid">

@@ -122,8 +122,8 @@ export function OrderDetailPage({
               variant="secondary"
               onClick={() => onEdit(order)}
               type="button"
+              icon={<Pencil size={16} aria-hidden="true" />}
             >
-              <Pencil size={16} aria-hidden="true" />
               Editar pedido
             </Button>
           )}
@@ -135,8 +135,8 @@ export function OrderDetailPage({
                 onBack()
               }}
               type="button"
+              icon={<X size={16} aria-hidden="true" />}
             >
-              <X size={16} aria-hidden="true" />
               Cancelar pedido
             </Button>
           )}

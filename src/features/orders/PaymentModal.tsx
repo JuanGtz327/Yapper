@@ -64,8 +64,8 @@ export function PaymentButton({ onClick }: { onClick: () => void }) {
       className="payment-trigger-btn"
       onClick={onClick}
       type="button"
+      icon={<Banknote size={16} aria-hidden="true" />}
     >
-      <Banknote size={16} aria-hidden="true" />
       Registrar abono
     </Button>
   )
