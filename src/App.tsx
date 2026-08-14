@@ -3,7 +3,6 @@ import { useQueryClient } from '@tanstack/react-query'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/ReactToastify.css'
 import './App.css'
-import type { Order } from './types.ts'
 import { AuthScreen } from './features/auth/AuthScreen.tsx'
 import { DashboardPage } from './features/dashboard/DashboardPage.tsx'
 import { ProductsPage } from './features/products/ProductsPage.tsx'
@@ -29,6 +28,7 @@ import { getPublicCatalogSlug } from './lib/routing.ts'
 import { useAuth } from './hooks/useAuth.ts'
 import { useDashboardData } from './hooks/useDashboardData.ts'
 import { useProductEditor } from './hooks/useProductEditor.ts'
+import { useOrderEditor } from './hooks/useOrderEditor.ts'
 
 const publicSlug = getPublicCatalogSlug(window.location.pathname)
 
@@ -70,10 +70,6 @@ function DashboardContent({
 }) {
   const qc = useQueryClient()
   const [page, setPage] = useState<Page>('Inicio')
-  const [orderEditor, setOrderEditor] = useState<Order | null | undefined>(
-    undefined,
-  )
-  const [orderDetail, setOrderDetail] = useState<Order | null>(null)
   const [search, setSearch] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const hamburgerRef = useRef<HTMLButtonElement>(null)
@@ -92,12 +88,6 @@ function DashboardContent({
     addClient: addClientAction,
     removeProduct,
     removeClient,
-    addOrder: addOrderAction,
-    changeOrderStatus,
-    changeOrderPayment,
-    registerPayment,
-    registerPaymentPending,
-    updateExistingOrder,
     updateBusinessSettings,
   } = dashboardData
 
@@ -109,14 +99,27 @@ function DashboardContent({
     handleVariantsChanged,
   } = useProductEditor(user, qc)
 
+  const {
+    orderEditor,
+    orderDetail,
+    openOrderEditor,
+    selectOrder,
+    closeOrderDetail,
+    closeOrderEditor,
+    handleOrderSubmit,
+    handleStatusChange,
+    handlePaymentChange,
+    handleRegisterPayment,
+    handleCancelOrder,
+    registerPaymentPending,
+    resetOrders,
+  } = useOrderEditor(user, dashboardData)
+
   const navigateToPage = (nextPage: Page) => {
     setPage(nextPage)
-    setOrderEditor(undefined)
-    setOrderDetail(null)
+    resetOrders()
     setMobileMenuOpen(false)
   }
-
-  const openOrderEditor = (order?: Order) => setOrderEditor(order ?? null)
 
   return (
     <div className="app-shell">
@@ -191,7 +194,7 @@ function DashboardContent({
             orders={orders}
             currency={settings.currency}
             onAdd={() => openOrderEditor()}
-            onSelectOrder={(order) => setOrderDetail(order)}
+            onSelectOrder={selectOrder}
           />
         )}
         {page === 'Pedidos' && orderDetail && orderEditor === undefined && (
@@ -200,15 +203,15 @@ function DashboardContent({
             products={products}
             currency={settings.currency}
             isSubmittingPayment={registerPaymentPending}
-            onBack={() => setOrderDetail(null)}
+            onBack={closeOrderDetail}
             onEdit={(order) => {
-              setOrderDetail(null)
-              setOrderEditor(order)
+              closeOrderDetail()
+              openOrderEditor(order)
             }}
-            onStatusChange={changeOrderStatus}
-            onPaymentChange={changeOrderPayment}
-            onRegisterPayment={registerPayment}
-            onCancel={(order) => changeOrderStatus(order, 'cancelled')}
+            onStatusChange={handleStatusChange}
+            onPaymentChange={handlePaymentChange}
+            onRegisterPayment={handleRegisterPayment}
+            onCancel={handleCancelOrder}
           />
         )}
         {page === 'Pedidos' && orderEditor !== undefined && (
@@ -217,21 +220,16 @@ function DashboardContent({
             clients={clients}
             products={products}
             currency={settings.currency}
-            onClose={() => setOrderEditor(undefined)}
+            onClose={closeOrderEditor}
             onBackToDetail={
               orderEditor?.databaseId
                 ? () => {
-                    setOrderEditor(undefined)
-                    setOrderDetail(orderEditor)
+                    closeOrderEditor()
+                    selectOrder(orderEditor)
                   }
                 : undefined
             }
-            onSubmit={async (clientId, items, payment) => {
-              if (!orderEditor) {
-                return addOrderAction(clientId, items, payment)
-              }
-              return updateExistingOrder(orderEditor, clientId, items, payment)
-            }}
+            onSubmit={handleOrderSubmit}
           />
         )}
         {page === 'Tienda' && (
