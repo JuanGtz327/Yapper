@@ -1,18 +1,17 @@
 import { useState, type FormEvent } from 'react'
 import { Check, Plus, X } from 'lucide-react'
-import type { Client, OrderItemInput, Product, Variant } from '../../types.ts'
+import type {
+  Client,
+  OrderItemInput,
+  Product,
+  VariantOption,
+  OrderDraftLine,
+} from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Empty } from '../../components/ui/Empty.tsx'
 import { useToast } from '../../hooks/useToast.ts'
-
-export type DraftLine = { variantId: string; quantity: number }
-
-type VariantOption = {
-  variant: Variant
-  productName: string
-}
 
 function buildVariantOptions(products: Product[]): VariantOption[] {
   const options: VariantOption[] = []
@@ -44,7 +43,7 @@ export function OrderModal({
   const variantOptions = buildVariantOptions(products)
   const firstAvailable = variantOptions.find((opt) => opt.variant.stock > 0)
   const [clientId, setClientId] = useState(clients[0]?.id ?? '')
-  const [lines, setLines] = useState<DraftLine[]>(
+  const [lines, setLines] = useState<OrderDraftLine[]>(
     firstAvailable
       ? [{ variantId: firstAvailable.variant.id, quantity: 1 }]
       : [],
@@ -66,7 +65,7 @@ export function OrderModal({
     0,
   )
   const money = { format: (value: number) => formatMoney(value, currency) }
-  const updateLine = (index: number, value: Partial<DraftLine>) =>
+  const updateLine = (index: number, value: Partial<OrderDraftLine>) =>
     setLines((current) =>
       current.map((line, lineIndex) =>
         lineIndex === index ? { ...line, ...value } : line,
@@ -160,9 +159,7 @@ export function OrderModal({
                   >
                     <CustomSelect
                       value={line.variantId}
-                      onChange={(val) =>
-                        updateLine(index, { variantId: val })
-                      }
+                      onChange={(val) => updateLine(index, { variantId: val })}
                       options={variantOptions.map((opt) => ({
                         value: opt.variant.id,
                         label: formatVariantLabel(opt),
@@ -226,9 +223,7 @@ export function OrderModal({
               Estado del pago
               <CustomSelect
                 value={payment}
-                onChange={(val) =>
-                  setPayment(val as 'pending' | 'paid')
-                }
+                onChange={(val) => setPayment(val as 'pending' | 'paid')}
                 options={[
                   { value: 'paid', label: 'Pagado' },
                   { value: 'pending', label: 'Pendiente de pago' },

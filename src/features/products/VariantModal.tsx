@@ -4,12 +4,7 @@ import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 import type { VariantDraft } from './validateProductDraft.ts'
-
-type OptionTypeWithValues = {
-  id: string
-  name: string
-  values: Array<{ id: string; name: string }>
-}
+import type { OptionTypeWithValues } from '../../types.ts'
 
 type OptionSelection = {
   typeId: string
@@ -83,10 +78,7 @@ export function VariantModal({
   })
   const toast = useToast()
 
-  const updateSelection = (
-    index: number,
-    patch: Partial<OptionSelection>,
-  ) => {
+  const updateSelection = (index: number, patch: Partial<OptionSelection>) => {
     setSelections((prev) =>
       prev.map((s, i) => (i === index ? { ...s, ...patch } : s)),
     )
@@ -221,9 +213,7 @@ export function VariantModal({
                   />
                   <CustomSelect
                     value={sel.valueId}
-                    onChange={(val) =>
-                      updateSelection(idx, { valueId: val })
-                    }
+                    onChange={(val) => updateSelection(idx, { valueId: val })}
                     options={valuesForType.map((v) => ({
                       value: v.id,
                       label: v.name,

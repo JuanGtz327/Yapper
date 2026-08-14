@@ -1,6 +1,13 @@
 import type { User } from '@supabase/supabase-js'
 import { useRoute, useLocation } from 'wouter'
-import type { Client, Order, Product, SalesAggregate } from '../../types.ts'
+import type {
+  Client,
+  Order,
+  Product,
+  SalesAggregate,
+  Category,
+  OptionTypeWithValues,
+} from '../../types.ts'
 import { DashboardPage } from '../../features/dashboard/DashboardPage.tsx'
 import { ProductsPage } from '../../features/products/ProductsPage.tsx'
 import { ClientsPage } from '../../features/clients/ClientsPage.tsx'
@@ -16,16 +23,13 @@ import type { BusinessSettings } from '../../types.ts'
 import { routes, routeToPage } from '../../lib/routes.ts'
 import type { ProductDraft } from '../../features/products/validateProductDraft.ts'
 
-type Category = { id: string; name: string }
-type OptionType = { id: string; name: string; values: Array<{ id: string; name: string }> }
-
 type PageRouterProps = {
   user: User | null
   products: Product[]
   clients: Client[]
   orders: Order[]
   categories: Category[]
-  optionTypes: OptionType[]
+  optionTypes: OptionTypeWithValues[]
   settings: BusinessSettings
   sales: SalesAggregate[]
   search: string
@@ -101,10 +105,10 @@ export function PageRouter({
   const orderId = orderParams?.orderId || orderEditParams?.orderId
 
   const editingProduct = productId
-    ? products.find((p) => p.id === productId) ?? null
+    ? (products.find((p) => p.id === productId) ?? null)
     : null
   const editingOrder = orderId
-    ? orders.find((o) => o.id === orderId || o.databaseId === orderId) ?? null
+    ? (orders.find((o) => o.id === orderId || o.databaseId === orderId) ?? null)
     : null
 
   return (
@@ -163,9 +167,7 @@ export function PageRouter({
               setSearch={setSearch}
               onAdd={() => setLocation('/almacen/nuevo')}
               onManageCategories={() => openModal('categories')}
-              onEdit={(product) =>
-                setLocation(`/almacen/${product.id}/editar`)
-              }
+              onEdit={(product) => setLocation(`/almacen/${product.id}/editar`)}
             />
           )
         }

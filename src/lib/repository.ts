@@ -9,65 +9,16 @@ import type {
   PublicCatalog,
   SalesAggregate,
   Variant,
+  ProductRow,
+  VariantRow,
+  CategoryRow,
+  OptionTypeRow,
+  OptionValueRow,
+  ClientRow,
+  OrderRow,
+  OrderItemRow,
 } from '../types.ts'
 import { safeImageUrl } from './security.ts'
-
-type ProductRow = {
-  id: string
-  name: string
-  category_id: string | null
-  published: boolean
-  public_description: string
-  image_url: string | null
-}
-
-type VariantRow = {
-  id: string
-  product_id: string
-  sku: string
-  name: string
-  inventory_cost: number
-  sale_price: number
-  stock: number
-  option_values: Array<{ option_type: string; value: string }> | null
-}
-
-type CategoryRow = { id: string; name: string }
-
-type OptionTypeRow = { id: string; name: string }
-
-type OptionValueRow = { id: string; option_type_id: string; name: string }
-
-type ClientRow = {
-  id: string
-  name: string
-  phone: string
-  address: string
-}
-
-type OrderRow = {
-  id: string
-  client_id: string | null
-  status: 'pending' | 'delivered' | 'cancelled'
-  payment_status: 'pending' | 'partial' | 'paid'
-  total: number
-  paid_amount: number
-  created_at: string
-  order_number: string | null
-  client_name_snapshot: string
-}
-
-type OrderItemRow = {
-  order_id: string
-  variant_id: string
-  quantity: number
-  sku_snapshot: string
-  product_name_snapshot: string
-  variant_label_snapshot: string
-  unit_price: number
-  unit_cost_snapshot: number
-  line_total: number
-}
 
 const colors = ['coral', 'mint', 'sky', 'lavender'] as const
 
@@ -91,7 +42,7 @@ export async function loadProducts(user: User): Promise<Product[]> {
     .order('created_at', { ascending: false })
   if (productError) throw productError
 
-  const products = productRows as unknown as ProductRow[]
+  const products = productRows as ProductRow[]
   if (!products.length) return []
 
   const productIds = products.map((p) => p.id)
@@ -710,9 +661,7 @@ export async function registerPayment(
   return data
 }
 
-export async function loadOrderPayments(
-  orderId: string,
-): Promise<
+export async function loadOrderPayments(orderId: string): Promise<
   Array<{
     id: string
     orderId: string
@@ -725,7 +674,9 @@ export async function loadOrderPayments(
 > {
   const { data, error } = await supabase
     .from('order_payments')
-    .select('id, order_id, amount, payment_method, reference, notes, created_at')
+    .select(
+      'id, order_id, amount, payment_method, reference, notes, created_at',
+    )
     .eq('order_id', orderId)
     .order('created_at', { ascending: true })
   if (error) throw error
@@ -733,7 +684,8 @@ export async function loadOrderPayments(
     id: row.id,
     orderId: row.order_id,
     amount: row.amount,
-    paymentMethod: row.payment_method as 'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro',
+    paymentMethod: row.payment_method as
+      'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro',
     reference: row.reference,
     notes: row.notes,
     createdAt: row.created_at,

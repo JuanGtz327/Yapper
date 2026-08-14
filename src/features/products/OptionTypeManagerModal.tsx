@@ -9,19 +9,14 @@ import {
   deleteOptionValue,
 } from '../../lib/repository.ts'
 import { useToast, toastMessages } from '../../hooks/useToast.ts'
-
-type OptionType = {
-  id: string
-  name: string
-  values: Array<{ id: string; name: string }>
-}
+import type { OptionTypeWithValues } from '../../types.ts'
 
 export function OptionTypeManagerModal({
   optionTypes,
   onRefresh,
   onClose,
 }: {
-  optionTypes: OptionType[]
+  optionTypes: OptionTypeWithValues[]
   onRefresh: () => void
   onClose: () => void
 }) {
@@ -163,9 +158,7 @@ export function OptionTypeManagerModal({
               <div className="option-type-header">
                 <button
                   className="option-type-toggle"
-                  onClick={() =>
-                    setExpandedTypeId(isExpanded ? null : type.id)
-                  }
+                  onClick={() => setExpandedTypeId(isExpanded ? null : type.id)}
                   type="button"
                   aria-expanded={isExpanded}
                 >
@@ -210,9 +203,7 @@ export function OptionTypeManagerModal({
                       </li>
                     ))}
                     {type.values.length === 0 && (
-                      <li className="option-value-empty">
-                        Sin valores aún
-                      </li>
+                      <li className="option-value-empty">Sin valores aún</li>
                     )}
                   </ul>
                   <form

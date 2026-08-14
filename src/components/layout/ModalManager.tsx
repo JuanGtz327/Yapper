@@ -7,13 +7,11 @@ import { CategoryManagerModal } from '../../features/products/CategoryManagerMod
 import { OptionTypeManagerModal } from '../../features/products/OptionTypeManagerModal.tsx'
 import { ConfirmModal } from '../ui/ConfirmModal.tsx'
 import { qk } from '../../lib/queryKeys.ts'
-
-type Category = { id: string; name: string }
-type OptionType = { id: string; name: string; values: Array<{ id: string; name: string }> }
+import type { Category, OptionTypeWithValues } from '../../types.ts'
 
 type ModalManagerProps = {
   categories: Category[]
-  optionTypes: OptionType[]
+  optionTypes: OptionTypeWithValues[]
   user: User | null
   addClientAction: (
     event: FormEvent<HTMLFormElement>,
@@ -27,7 +25,8 @@ export function ModalManager({
   user,
   addClientAction,
 }: ModalManagerProps) {
-  const { modal, editingClient, confirmState, closeModal, clearConfirm } = useModal()
+  const { modal, editingClient, confirmState, closeModal, clearConfirm } =
+    useModal()
   const qc = useQueryClient()
 
   if (modal === 'client') {

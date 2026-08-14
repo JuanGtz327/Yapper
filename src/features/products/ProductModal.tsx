@@ -1,18 +1,16 @@
 import { useState, type FormEvent } from 'react'
 import { Check, Pencil, Plus, Trash2 } from 'lucide-react'
-import type { Product, Variant } from '../../types.ts'
+import type { Product, Variant, OptionTypeWithValues } from '../../types.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { CategoryManagerModal } from './CategoryManagerModal.tsx'
 import { VariantManagerModal } from './VariantManagerModal.tsx'
-import { createVariant, updateVariant, deleteVariant } from '../../lib/repository.ts'
+import {
+  createVariant,
+  updateVariant,
+  deleteVariant,
+} from '../../lib/repository.ts'
 import { useToast, toastMessages } from '../../hooks/useToast.ts'
-
-type OptionTypeWithValues = {
-  id: string
-  name: string
-  values: Array<{ id: string; name: string }>
-}
 
 export function ProductModal({
   initial,
@@ -186,8 +184,8 @@ export function ProductModal({
                   <div className="variant-info">
                     <strong>{variant.sku}</strong>
                     <span className="variant-meta">
-                      {variant.name && `${variant.name} · `}
-                      ${variant.salePrice} · {variant.stock} uds
+                      {variant.name && `${variant.name} · `}${variant.salePrice}{' '}
+                      · {variant.stock} uds
                     </span>
                     {variant.optionValues.length > 0 && (
                       <span className="variant-options-badge">
@@ -227,11 +225,7 @@ export function ProductModal({
           <>
             <label>
               SKU
-              <input
-                name="sku"
-                placeholder="Ej. TUP-REC-1L"
-                required
-              />
+              <input name="sku" placeholder="Ej. TUP-REC-1L" required />
             </label>
             <div className="form-two">
               <label>

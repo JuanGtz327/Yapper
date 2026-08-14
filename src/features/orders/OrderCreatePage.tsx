@@ -5,20 +5,14 @@ import type {
   Order,
   OrderItemInput,
   Product,
-  Variant,
+  VariantOption,
+  OrderDraftLine,
 } from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Empty } from '../../components/ui/Empty.tsx'
 import { Button } from '../../components/ui/Button.tsx'
 import { useToast } from '../../hooks/useToast.ts'
-
-type VariantOption = { variant: Variant; productName: string }
-export type OrderDraftLine = {
-  variantId: string
-  quantity: number
-  unitPrice?: number
-}
 
 function buildVariantOptions(products: Product[]): VariantOption[] {
   return products.flatMap((product) =>

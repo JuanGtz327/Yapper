@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { ArrowLeft, Check, Image, Pencil, Plus, Trash2 } from 'lucide-react'
-import type { Product } from '../../types.ts'
+import type { Product, OptionTypeWithValues } from '../../types.ts'
 import { CategoryManagerModal } from './CategoryManagerModal.tsx'
 import { VariantModal } from './VariantModal.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
@@ -12,12 +12,6 @@ import {
   type ProductDraft,
   type VariantDraft,
 } from './validateProductDraft.ts'
-
-type OptionTypeWithValues = {
-  id: string
-  name: string
-  values: Array<{ id: string; name: string }>
-}
 
 function newDraft(): ProductDraft {
   return {

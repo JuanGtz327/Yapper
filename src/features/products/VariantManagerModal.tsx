@@ -1,14 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { Check } from 'lucide-react'
-import type { Variant } from '../../types.ts'
+import type { Variant, OptionTypeWithValues } from '../../types.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { useToast } from '../../hooks/useToast.ts'
-
-type OptionTypeWithValues = {
-  id: string
-  name: string
-  values: Array<{ id: string; name: string }>
-}
 
 export function VariantManagerModal({
   variant,
@@ -43,9 +37,8 @@ export function VariantManagerModal({
     }
   }
 
-  const [selectedOptions, setSelectedOptions] = useState<
-    Record<string, string>
-  >(initialOptionValues)
+  const [selectedOptions, setSelectedOptions] =
+    useState<Record<string, string>>(initialOptionValues)
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -188,7 +181,11 @@ export function VariantManagerModal({
             type="submit"
           >
             <Check size={18} aria-hidden="true" />
-            {saving ? 'Guardando...' : variant ? 'Guardar variante' : 'Añadir variante'}
+            {saving
+              ? 'Guardando...'
+              : variant
+                ? 'Guardar variante'
+                : 'Añadir variante'}
           </button>
         </div>
       </form>
