@@ -4,25 +4,15 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/ReactToastify.css'
 import './App.css'
 import { AuthScreen } from './features/auth/AuthScreen.tsx'
-import { DashboardPage } from './features/dashboard/DashboardPage.tsx'
-import { ProductsPage } from './features/products/ProductsPage.tsx'
-import { ClientsPage } from './features/clients/ClientsPage.tsx'
-import { OrdersPage } from './features/orders/OrdersPage.tsx'
-import { OrderDetailPage } from './features/orders/OrderDetailPage.tsx'
-import { OrderCreatePage } from './features/orders/OrderCreatePage.tsx'
-import { CatalogPage } from './features/catalog/CatalogPage.tsx'
-import { StatsPage } from './features/stats/StatsPage.tsx'
-import { SettingsPage } from './features/settings/SettingsPage.tsx'
 import { PublicCatalogPage } from './features/catalog/PublicCatalogPage.tsx'
-import { ProductCreatePage } from './features/products/ProductCreatePage.tsx'
 import { Spinner } from './components/ui/Spinner.tsx'
 import { AppSidebar } from './components/layout/AppSidebar.tsx'
 import { Topbar } from './components/layout/Topbar.tsx'
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer.tsx'
 import { ModalManager } from './components/layout/ModalManager.tsx'
+import { PageRouter } from './components/layout/PageRouter.tsx'
 import { ModalProvider, useModal } from './context/ModalContext.tsx'
 import { isSupabaseConfigured } from './lib/supabase.ts'
-import { qk } from './lib/queryKeys.ts'
 import type { Page } from './lib/navigation.ts'
 import { getPublicCatalogSlug } from './lib/routing.ts'
 import { useAuth } from './hooks/useAuth.ts'
@@ -143,113 +133,43 @@ function DashboardContent({
             datos...
           </div>
         )}
-        {page === 'Inicio' && (
-          <DashboardPage
-            orders={orders}
-            products={products}
-            sales={sales}
-            threshold={settings.lowStockThreshold}
-            currency={settings.currency}
-            onNavigate={navigateToPage}
-          />
-        )}
-        {page === 'Almacén' && !productEditor && (
-          <ProductsPage
-            products={products}
-            threshold={settings.lowStockThreshold}
-            currency={settings.currency}
-            search={search}
-            setSearch={setSearch}
-            onAdd={() => openProductEditor()}
-            onManageCategories={() => openModal('categories')}
-            onEdit={(product) => openProductEditor(product)}
-          />
-        )}
-        {productEditor && (
-          <ProductCreatePage
-            initial={productEditor.product}
-            categories={categories}
-            optionTypes={optionTypes}
-            onCategoryCreated={() => {
-              void qc.invalidateQueries({ queryKey: qk.categories(user) })
-            }}
-            onVariantsChanged={handleVariantsChanged}
-            onClose={closeProductEditor}
-            onRemove={removeProduct}
-            onSubmit={handleProductSubmit}
-          />
-        )}
-        {page === 'Clientes' && (
-          <ClientsPage
-            clients={clients}
-            search={search}
-            setSearch={setSearch}
-            onAdd={() => openModal('client')}
-            onEdit={(client) => openModal('client', client)}
-            onRemove={removeClient}
-          />
-        )}
-        {page === 'Pedidos' && orderEditor === undefined && !orderDetail && (
-          <OrdersPage
-            orders={orders}
-            currency={settings.currency}
-            onAdd={() => openOrderEditor()}
-            onSelectOrder={selectOrder}
-          />
-        )}
-        {page === 'Pedidos' && orderDetail && orderEditor === undefined && (
-          <OrderDetailPage
-            order={orders.find((o) => o.id === orderDetail.id) ?? orderDetail}
-            products={products}
-            currency={settings.currency}
-            isSubmittingPayment={registerPaymentPending}
-            onBack={closeOrderDetail}
-            onEdit={(order) => {
-              closeOrderDetail()
-              openOrderEditor(order)
-            }}
-            onStatusChange={handleStatusChange}
-            onPaymentChange={handlePaymentChange}
-            onRegisterPayment={handleRegisterPayment}
-            onCancel={handleCancelOrder}
-          />
-        )}
-        {page === 'Pedidos' && orderEditor !== undefined && (
-          <OrderCreatePage
-            initial={orderEditor}
-            clients={clients}
-            products={products}
-            currency={settings.currency}
-            onClose={closeOrderEditor}
-            onBackToDetail={
-              orderEditor?.databaseId
-                ? () => {
-                    closeOrderEditor()
-                    selectOrder(orderEditor)
-                  }
-                : undefined
-            }
-            onSubmit={handleOrderSubmit}
-          />
-        )}
-        {page === 'Tienda' && (
-          <CatalogPage
-            products={products}
-            currency={settings.currency}
-            settings={settings}
-          />
-        )}
-        {page === 'Estadísticas' && (
-          <StatsPage user={user} currency={settings.currency} />
-        )}
-        {page === 'Ajustes' && (
-          <SettingsPage
-            settings={settings}
-            onSave={updateBusinessSettings}
-            onSignOut={signOut}
-            onOpenOptionTypes={() => openModal('optionTypes')}
-          />
-        )}
+        <PageRouter
+          page={page}
+          user={user}
+          products={products}
+          clients={clients}
+          orders={orders}
+          categories={categories}
+          optionTypes={optionTypes}
+          settings={settings}
+          sales={sales}
+          search={search}
+          setSearch={setSearch}
+          productEditor={productEditor}
+          orderEditor={orderEditor}
+          orderDetail={orderDetail}
+          registerPaymentPending={registerPaymentPending}
+          qc={qc}
+          openModal={openModal}
+          onNavigate={navigateToPage}
+          openProductEditor={openProductEditor}
+          closeProductEditor={closeProductEditor}
+          handleProductSubmit={handleProductSubmit}
+          handleVariantsChanged={handleVariantsChanged}
+          openOrderEditor={openOrderEditor}
+          selectOrder={selectOrder}
+          closeOrderDetail={closeOrderDetail}
+          closeOrderEditor={closeOrderEditor}
+          handleOrderSubmit={handleOrderSubmit}
+          handleStatusChange={handleStatusChange}
+          handlePaymentChange={handlePaymentChange}
+          handleRegisterPayment={handleRegisterPayment}
+          handleCancelOrder={handleCancelOrder}
+          removeProduct={removeProduct}
+          removeClient={removeClient}
+          updateBusinessSettings={updateBusinessSettings}
+          signOut={signOut}
+        />
       </main>
       {mobileMenuOpen && (
         <MobileNavDrawer
