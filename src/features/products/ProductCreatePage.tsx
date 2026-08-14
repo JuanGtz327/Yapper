@@ -375,7 +375,7 @@ export function ProductCreatePage({
           </fieldset>
 
           {/* ── ACTIONS ─────────────────────────────────────── */}
-          <div className="modal-actions">
+          <div className="flex justify-end gap-[10px] mt-[9px]">
             <Button
               variant="primary"
               disabled={saving}

@@ -7,8 +7,10 @@
  *   - Clients (.client-*)
  *   - Settings, Stats, Catalog pages
  *   - Forms (.modal, .modal-heading, .modal-actions, input/select styles)
+ *   - Eyebrow (.eyebrow), section-intro (.section-intro, .section-actions)
  *   - Data notice (.data-notice, used by StatsPage)
  *   - Responsive/mobile styles (page-specific)
+ *   - .visually-hidden (still used by StatsPage)
  *
  * MIGRATED to Tailwind (18b - Layout restyle):
  *   - .app-shell, .sidebar, .brand, .brand-mark, .nav-label, .main-nav, .nav-item
@@ -58,9 +60,20 @@
  *   - .payment-action-section, .payment-trigger-btn
  *   - .spin
  *
+ * MIGRATED to Tailwind (18d4 - Shared classes):
+ *   - .table-card, .table-filters, .table-filter-count -> Tailwind on ProductsPage, OrdersPage
+ *   - table/thead/th/td element selectors -> Tailwind on ProductsPage, OrdersPage
+ *   - .table-emphasis, .table-sub, .zebra-stripe, .row-hover -> Tailwind
+ *   - .form-two -> Tailwind (grid grid-cols-2 gap-[15px])
+ *   - .modal-actions -> Tailwind (flex justify-end gap-[10px] mt-[9px])
+ *   - .badge.success/warning/danger/info -> shadcn Badge component
+ *   - .segmented-control, .segmented-control-button -> Tailwind
+ *   - .visually-hidden -> sr-only (ProductsPage, OrdersPage, OrderCreatePage)
+ *   - Added .eyebrow CSS definition (was missing)
+ *
  * DEAD (no longer referenced - can be removed in 18f):
  *   - .btn, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost (-> shadcn Button)
- *   - .loading-inline, .spinner, .visually-hidden (-> Tailwind)
+ *   - .loading-inline, .spinner (-> Tailwind)
  *   - .empty-state (-> Tailwind)
  *   - .stat-card, .stat-heading (-> Tailwind)
  *   - .panel-heading, .text-button (-> Tailwind)
@@ -330,6 +343,14 @@ select {
     opacity: 1;
   }
 }
+.eyebrow {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--muted);
+}
 .section-intro {
   display: flex;
   align-items: flex-end;
@@ -359,42 +380,6 @@ select {
   color: #aaa5a8;
   font-size: 11px;
 }
-.table-filters {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.table-filters label {
-  display: grid;
-  gap: 6px;
-  min-width: 150px;
-  color: #716b72;
-  font-size: 11px;
-  font-weight: 700;
-}
-.table-filter-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: min(300px, 60%);
-}
-.table-filter-search input {
-  /* migrated to shadcn Input */
-}
-.table-filters .custom-select {
-  min-width: 150px;
-}
-.table-filters .custom-select-trigger {
-  height: 40px;
-  padding-block: 0;
-}
-.table-filter-count {
-  margin-left: auto;
-  padding-bottom: 10px;
-  color: var(--muted);
-  font-size: 11px;
-}
 .search-box {
   display: flex;
   align-items: center;
@@ -406,81 +391,6 @@ select {
 }
 .search-box:focus-within {
   /* migrated to shadcn Input */
-}
-.table-card {
-  overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  background: #fffefa;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 650px;
-  font-size: 12px;
-}
-thead tr {
-  background: var(--plum);
-}
-th {
-  padding: 14px 18px;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.7px;
-}
-th.col-left {
-  text-align: left;
-}
-th.col-right {
-  text-align: right;
-}
-thead th:first-child {
-  border-top-left-radius: 12px;
-}
-thead th:last-child {
-  border-top-right-radius: 12px;
-}
-td {
-  padding: 15px 18px;
-  border-bottom: 1px solid #f0eeec;
-  color: #837e84;
-  vertical-align: middle;
-  text-align: center;
-}
-tr:last-child td {
-  border-bottom: 0;
-}
-td.col-left {
-  text-align: left;
-  color: var(--ink);
-}
-td.col-right {
-  text-align: right;
-}
-.table-card tbody tr.zebra-stripe {
-  background: #f9f6fa;
-}
-.table-card tbody tr.row-hover {
-  background: #f3eef4;
-  cursor: pointer;
-}
-.table-card tbody tr[tabindex='0']:focus-visible {
-  outline: 2px solid var(--plum);
-  outline-offset: -2px;
-}
-.table-emphasis {
-  color: var(--ink);
-  font-weight: 700;
-  text-align: right;
-}
-.table-sub {
-  display: block;
-  margin-top: 3px;
-  color: #aaa5a8;
-  font-size: 10px;
 }
 .client-grid {
   display: grid;
@@ -527,29 +437,6 @@ td.col-right {
   text-align: center;
   font-size: 13px;
   background: #fffefa;
-}
-.badge {
-  display: inline-block;
-  padding: 5px 8px;
-  border-radius: 20px;
-  font-size: 10px;
-  font-weight: 700;
-}
-.badge.success {
-  color: #579078;
-  background: #e3f2e7;
-}
-.badge.warning {
-  color: #b97740;
-  background: #fdf0df;
-}
-.badge.danger {
-  color: #b94b4b;
-  background: #fbe4e2;
-}
-.badge.info {
-  color: #4a7fb5;
-  background: #e3eef8;
 }
 .status-select {
   padding: 6px 8px;
@@ -1096,33 +983,6 @@ td.row-actions .row-actions-inner {
   padding: 10px 14px;
   font-size: 12px;
 }
-.segmented-control {
-  display: flex;
-  padding: 3px;
-  border: 1px solid #ded8dd;
-  border-radius: 9px;
-  background: #faf7f9;
-}
-.segmented-control-button {
-  flex: 1;
-  min-height: 36px;
-  padding: 7px 9px;
-  border: 0;
-  border-radius: 7px;
-  color: var(--muted);
-  background: transparent;
-  font-size: 11px;
-  font-weight: 700;
-}
-.segmented-control-button:hover {
-  color: var(--plum);
-  background: #f3eaf4;
-}
-.segmented-control-button.is-active {
-  color: var(--plum);
-  background: #fffefa;
-  box-shadow: 0 1px 4px #30272e14;
-}
 .order-detail-lines {
   margin-top: 22px;
 }
@@ -1313,19 +1173,6 @@ td.row-actions .row-actions-inner {
     gap: 17px;
   }
   /* secondary-button - migrated to shadcn Button */
-  .table-filters {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .table-filters label,
-  .table-filters .custom-select {
-    width: 100%;
-    min-width: 0;
-  }
-  .table-filter-count {
-    margin-left: 0;
-    padding-bottom: 0;
-  }
   .auth-page {
     display: block;
   }

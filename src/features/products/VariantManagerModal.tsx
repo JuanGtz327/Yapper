@@ -110,7 +110,7 @@ export function VariantManagerModal({
             placeholder="Ej. Negro, 1L"
           />
         </label>
-        <div className="form-two">
+        <div className="grid grid-cols-2 gap-[15px]">
           <label>
             Precio de venta
             <Input
@@ -173,7 +173,7 @@ export function VariantManagerModal({
             ))}
           </fieldset>
         )}
-        <div className="modal-actions">
+        <div className="flex justify-end gap-[10px] mt-[9px]">
           <Button
             variant="primary"
             disabled={saving}

@@ -7,6 +7,7 @@ import { PaymentHistory } from './PaymentHistory.tsx'
 import { PaymentModal, PaymentButton } from './PaymentModal.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Badge } from '../../components/ui/badge.tsx'
 import { useState } from 'react'
 
 export function OrderDetailPage({
@@ -217,7 +218,7 @@ export function OrderDetailPage({
             <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">Estado</h3>
             {order.status === 'Cancelado' ? (
               <div className="flex items-center gap-2 py-2.5 px-3 rounded-[8px] bg-[#faf7f9] text-muted-foreground text-xs font-bold">
-                <span className="badge danger">Cancelado</span>
+                <Badge variant="danger">Cancelado</Badge>
                 Pedido cancelado
               </div>
             ) : (
@@ -225,12 +226,12 @@ export function OrderDetailPage({
                 <fieldset className="min-w-0 m-0 p-0 border-0">
                   <legend className="block mb-1.5 text-muted-foreground text-[11px] font-bold">Entrega</legend>
                   <div
-                    className="segmented-control"
+                    className="flex p-[3px] border border-[#ded8dd] rounded-[9px] bg-[#faf7f9]"
                     role="radiogroup"
                     aria-label="Estado de entrega"
                   >
                     <button
-                      className={`segmented-control-button${order.status === 'Pendiente' ? ' is-active' : ''}`}
+                      className={`flex-1 min-h-[36px] py-[7px] px-[9px] border-0 rounded-[7px] bg-transparent text-[11px] font-bold ${order.status === 'Pendiente' ? 'text-[#6d3c72] bg-white shadow-[0_1px_4px_#30272e14]' : 'text-muted-foreground hover:text-[#6d3c72] hover:bg-[#f3eaf4]'}`}
                       onClick={() => onStatusChange(order, 'pending')}
                       type="button"
                       role="radio"
@@ -239,7 +240,7 @@ export function OrderDetailPage({
                       Pendiente
                     </button>
                     <button
-                      className={`segmented-control-button${order.status === 'Entregado' ? ' is-active' : ''}`}
+                      className={`flex-1 min-h-[36px] py-[7px] px-[9px] border-0 rounded-[7px] bg-transparent text-[11px] font-bold ${order.status === 'Entregado' ? 'text-[#6d3c72] bg-white shadow-[0_1px_4px_#30272e14]' : 'text-muted-foreground hover:text-[#6d3c72] hover:bg-[#f3eaf4]'}`}
                       onClick={() => onStatusChange(order, 'delivered')}
                       type="button"
                       role="radio"
@@ -253,20 +254,20 @@ export function OrderDetailPage({
                   <legend className="block mb-1.5 text-muted-foreground text-[11px] font-bold">Pago</legend>
                   {order.payment === 'Pagado' ? (
                     <div className="flex items-center">
-                      <span className="badge success">Pagado</span>
+                      <Badge variant="success">Pagado</Badge>
                     </div>
                   ) : order.payment === 'Parcial' ? (
                     <div className="flex items-center">
-                      <span className="badge info">Parcial</span>
+                      <Badge variant="info">Parcial</Badge>
                     </div>
                   ) : (
                     <div
-                      className="segmented-control"
+                      className="flex p-[3px] border border-[#ded8dd] rounded-[9px] bg-[#faf7f9]"
                       role="radiogroup"
                       aria-label="Estado de pago"
                     >
                       <button
-                        className={`segmented-control-button${order.payment === 'Pendiente' ? ' is-active' : ''}`}
+                        className={`flex-1 min-h-[36px] py-[7px] px-[9px] border-0 rounded-[7px] bg-transparent text-[11px] font-bold ${order.payment === 'Pendiente' ? 'text-[#6d3c72] bg-white shadow-[0_1px_4px_#30272e14]' : 'text-muted-foreground hover:text-[#6d3c72] hover:bg-[#f3eaf4]'}`}
                         onClick={() => onPaymentChange(order, 'pending')}
                         type="button"
                         role="radio"
@@ -275,7 +276,7 @@ export function OrderDetailPage({
                         Pendiente
                       </button>
                       <button
-                        className="segmented-control-button"
+                        className="flex-1 min-h-[36px] py-[7px] px-[9px] border-0 rounded-[7px] bg-transparent text-[11px] font-bold text-muted-foreground hover:text-[#6d3c72] hover:bg-[#f3eaf4]"
                         onClick={() => setConfirmPaid(true)}
                         type="button"
                         role="radio"

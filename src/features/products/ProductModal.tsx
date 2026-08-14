@@ -226,7 +226,7 @@ export function ProductModal({
               SKU
               <Input name="sku" placeholder="Ej. TUP-REC-1L" required />
             </label>
-            <div className="form-two">
+            <div className="grid grid-cols-2 gap-[15px]">
               <label>
                 Precio de venta
                 <Input
@@ -292,7 +292,7 @@ export function ProductModal({
             />
           </label>
         </fieldset>
-        <div className="modal-actions">
+        <div className="flex justify-end gap-[10px] mt-[9px]">
           <Button
             variant="primary"
             disabled={saving}

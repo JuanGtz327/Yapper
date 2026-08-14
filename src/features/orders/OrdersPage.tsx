@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Plus, Search } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
+import { cn } from '../../lib/utils.ts'
+import { Badge } from '../../components/ui/badge.tsx'
 import type { Order } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Input } from '../../components/ui/Input.tsx'
@@ -91,7 +93,7 @@ export function OrdersPage({
           </strong>
         </div>
       </div>
-      <div className="table-filters" aria-label="Filtros de pedidos">
+      <div className="flex items-end gap-[10px] mb-[14px] max-[650px]:flex-col max-[650px]:items-stretch" aria-label="Filtros de pedidos">
         <div className="relative w-full max-w-[300px]">
           <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" aria-hidden="true" />
           <Input
@@ -102,7 +104,7 @@ export function OrdersPage({
             placeholder="Buscar número de pedido"
           />
         </div>
-        <label>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold max-[650px]:w-full max-[650px]:min-w-0">
           Entrega
           <CustomSelect
             value={deliveryFilter}
@@ -116,7 +118,7 @@ export function OrdersPage({
             ]}
           />
         </label>
-        <label>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold max-[650px]:w-full max-[650px]:min-w-0">
           Pago
           <CustomSelect
             value={paymentFilter}
@@ -129,30 +131,33 @@ export function OrdersPage({
             ]}
           />
         </label>
-        <span className="table-filter-count">
+        <span className="ml-auto pb-[10px] text-[#aaa5a8] text-[10px] max-[650px]:ml-0 max-[650px]:pb-0">
           {filteredOrders.length}{' '}
           {filteredOrders.length === 1 ? 'pedido' : 'pedidos'}
         </span>
       </div>
-      <div className="table-card max-[650px]:hidden">
-        <table>
-          <caption className="visually-hidden">
+      <div className="overflow-auto border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] max-[650px]:hidden">
+        <table className="w-full border-collapse min-w-[650px] text-xs">
+          <caption className="sr-only">
             Lista de pedidos. Selecciona un pedido para ver sus detalles.
           </caption>
           <thead>
-            <tr>
-              <th>Pedido</th>
-              <th>Cliente</th>
-              <th>Fecha</th>
-              <th>Total</th>
-              <th>Entrega</th>
-              <th>Pago</th>
+            <tr className="bg-[#6d3c72]">
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] rounded-tl-[12px]">Pedido</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Cliente</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Fecha</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Total</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Entrega</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] rounded-tr-[12px]">Pago</th>
             </tr>
           </thead>
           <tbody>
             {filteredOrders.map((order, idx) => (
               <tr
-                className={`cursor-pointer hover:bg-[#fcf9fc] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[#c9a3ca] focus-visible:outline-offset-[-3px]${idx % 2 === 1 ? ' zebra-stripe' : ''}`}
+                className={cn(
+                  'py-[15px] px-[18px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle cursor-pointer hover:bg-[#fcf9fc] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[#c9a3ca] focus-visible:outline-offset-[-3px]',
+                  idx % 2 === 1 ? 'bg-[#f9f6fa]' : '',
+                )}
                 tabIndex={0}
                 key={order.id}
                 onClick={() => onSelectOrder(order)}
@@ -169,45 +174,39 @@ export function OrdersPage({
                   }
                 }}
               >
-                <td className="table-emphasis">{order.id}</td>
-                <td>
+                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-ink font-bold text-right">{order.id}</td>
+                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
                   <strong>{order.client}</strong>
-                  <small className="table-sub">{order.items} productos</small>
+                  <small className="block mt-[3px] text-[#aaa5a8] text-[10px]">{order.items} productos</small>
                 </td>
-                <td>{order.date}</td>
-                <td className="table-emphasis">
+                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">{order.date}</td>
+                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-ink font-bold text-right">
                   {formatMoney(order.total, currency)}
                 </td>
-                <td>
+                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
                   {order.status === 'Cancelado' ? (
-                    <span className="badge danger">Cancelado</span>
+                    <Badge variant="danger">Cancelado</Badge>
                   ) : (
-                    <span
-                      className={
-                        order.status === 'Entregado'
-                          ? 'badge success'
-                          : 'badge warning'
-                      }
-                    >
+                    <Badge variant={order.status === 'Entregado' ? 'success' : 'warning'}>
                       {order.status}
-                    </span>
+                    </Badge>
                   )}
                 </td>
-                <td>
+                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
                   {order.status === 'Cancelado' ? (
-                    <span className="badge danger">Cancelado</span>
+                    <Badge variant="danger">Cancelado</Badge>
                   ) : (
-                    <span
-                      className={
+                    <Badge
+                      variant={
                         order.payment === 'Pagado'
-                          ? 'badge success'
+                          ? 'success'
                           : order.payment === 'Parcial'
-                            ? 'badge info'
-                            : 'badge warning'
+                            ? 'info'
+                            : 'warning'
                       }
                     >
                       {order.payment}
-                    </span>
+                    </Badge>
                   )}
                 </td>
               </tr>
@@ -216,7 +215,7 @@ export function OrdersPage({
         </table>
       </div>
       <div className="hidden max-[650px]:grid max-[650px]:gap-3" aria-label="Pedidos">
-        <p className="visually-hidden">
+        <p className="sr-only">
           Selecciona un pedido para ver sus detalles.
         </p>
         {filteredOrders.map((order) => (
@@ -240,17 +239,17 @@ export function OrdersPage({
           >
             <div className="flex items-center justify-between gap-3">
               <strong className="text-foreground">{order.id}</strong>
-              <span
-                className={
+              <Badge
+                variant={
                   order.status === 'Cancelado'
-                    ? 'badge danger'
+                    ? 'danger'
                     : order.status === 'Entregado'
-                      ? 'badge success'
-                      : 'badge warning'
+                      ? 'success'
+                      : 'warning'
                 }
               >
                 {order.status}
-              </span>
+              </Badge>
             </div>
             <div className="flex flex-col gap-1 items-start">
               <strong className="text-foreground text-[14px]">{order.client}</strong>

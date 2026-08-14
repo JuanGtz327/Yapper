@@ -238,7 +238,7 @@ export function OrderModal({
               <span>Total del pedido</span>
               <strong className="text-primary text-[22px]">{money.format(total)}</strong>
             </div>
-            <div className="modal-actions">
+            <div className="flex justify-end gap-[10px] mt-[9px]">
               <Button
                 variant="primary"
                 disabled={saving}

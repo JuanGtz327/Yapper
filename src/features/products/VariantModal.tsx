@@ -157,7 +157,7 @@ export function VariantModal({
             placeholder="Ej. Negro, 1L"
           />
         </label>
-        <div className="form-two">
+        <div className="grid grid-cols-2 gap-[15px]">
           <label>
             Precio de venta
             <Input
@@ -248,7 +248,7 @@ export function VariantModal({
             )}
           </fieldset>
         )}
-        <div className="modal-actions">
+        <div className="flex justify-end gap-[10px] mt-[9px]">
           <Button variant="primary" type="submit" icon={<Check size={18} aria-hidden="true" />}>
             {variant ? 'Guardar variante' : 'Añadir variante'}
           </Button>

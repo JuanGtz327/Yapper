@@ -187,7 +187,7 @@ export function OrderCreatePage({
               <span>Productos</span>
               <span>Cantidad</span>
               <span>Total</span>
-              <span className="visually-hidden">Acciones</span>
+              <span className="sr-only">Acciones</span>
             </div>
             {lines.map((line, index) => {
               const selected = findVariant(line.variantId)
@@ -291,7 +291,7 @@ export function OrderCreatePage({
             <span>Total del pedido</span>
             <strong className="text-primary text-[22px]">{money(total)}</strong>
           </div>
-          <div className="modal-actions">
+          <div className="flex justify-end gap-[10px] mt-[9px]">
             <Button
               variant="primary"
               disabled={saving}

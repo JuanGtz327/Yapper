@@ -5,6 +5,7 @@ import type { Order, Product } from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { Badge } from '../../components/ui/badge.tsx'
 import { useOrderPaymentsQuery } from '../../hooks/queries/useOrderPayments.ts'
 import { PaymentProgress } from './PaymentProgress.tsx'
 import { PaymentHistory } from './PaymentHistory.tsx'
@@ -207,7 +208,7 @@ export function OrderTicketModal({
               <fieldset>
                 <legend>Estado de entrega</legend>
                 <div
-                  className="segmented-control"
+                  className="flex p-[3px] border border-[#ded8dd] rounded-[9px] bg-[#faf7f9]"
                   role="group"
                   aria-label={`Estado de entrega de ${order.id}`}
                 >
@@ -232,7 +233,7 @@ export function OrderTicketModal({
               <fieldset>
                 <legend>Estado del pago</legend>
                 <div
-                  className="segmented-control"
+                  className="flex p-[3px] border border-[#ded8dd] rounded-[9px] bg-[#faf7f9]"
                   role="group"
                   aria-label={`Estado de pago de ${order.id}`}
                 >
@@ -255,7 +256,7 @@ export function OrderTicketModal({
                 </div>
               </fieldset>
             </div>
-            <div className="modal-actions justify-end m-0 max-[650px]:flex-wrap">
+            <div className="flex justify-end gap-[10px] m-0 max-[650px]:flex-wrap">
               {onEdit && (
                 <Button
                   variant="primary"
@@ -307,19 +308,19 @@ export function OrderTicketModal({
 
 function StatusBadge({ value }: { value: string }) {
   return (
-    <span
-      className={
+    <Badge
+      variant={
         value === 'Pagado' || value === 'Entregado'
-          ? 'badge success'
+          ? 'success'
           : value === 'Cancelado'
-            ? 'badge danger'
+            ? 'danger'
             : value === 'Parcial'
-              ? 'badge info'
-              : 'badge warning'
+              ? 'info'
+              : 'warning'
       }
     >
       {value}
-    </span>
+    </Badge>
   )
 }
 
@@ -334,7 +335,7 @@ function StatusButton({
 }) {
   return (
     <button
-      className={`segmented-control-button${active ? ' is-active' : ''}`}
+      className={`flex-1 min-h-[36px] py-[7px] px-[9px] border-0 rounded-[7px] bg-transparent text-[11px] font-bold ${active ? 'text-[#6d3c72] bg-white shadow-[0_1px_4px_#30272e14]' : 'text-muted-foreground hover:text-[#6d3c72] hover:bg-[#f3eaf4]'}`}
       aria-pressed={active}
       onClick={onClick}
       type="button"

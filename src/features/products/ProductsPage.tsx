@@ -147,7 +147,7 @@ export function ProductsPage({
         <span className="text-muted-foreground">Inventario: {formatMoney(totalSaleValue, currency)}</span>
         <strong className="ml-auto text-foreground text-[15px]">Ganancia: {formatMoney(totalProfit, currency)}</strong>
       </div>
-      <div className="table-filters" aria-label="Filtros de productos">
+      <div className="flex items-end gap-[10px] mb-[14px] max-[650px]:flex-col max-[650px]:items-stretch" aria-label="Filtros de productos">
         <div className="relative w-full max-w-[300px]">
           <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" aria-hidden="true" />
           <Input
@@ -158,7 +158,7 @@ export function ProductsPage({
             placeholder="Buscar producto"
           />
         </div>
-        <label>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Categoría
           <CustomSelect
             value={categoryFilter}
@@ -173,7 +173,7 @@ export function ProductsPage({
             ]}
           />
         </label>
-        <label>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Existencias
           <CustomSelect
             value={stockFilter}
@@ -187,22 +187,22 @@ export function ProductsPage({
             ]}
           />
         </label>
-        <span className="table-filter-count">
+        <span className="ml-auto pb-[10px] text-[#aaa5a8] text-[10px] max-[650px]:ml-0 max-[650px]:pb-0">
           {filtered.length} {filtered.length === 1 ? 'producto' : 'productos'}
         </span>
       </div>
-      <div className="table-card">
-        <table>
+      <div className="overflow-auto border border-[#ebe8e4] rounded-[13px] bg-[#fffefa]">
+        <table className="w-full border-collapse min-w-[650px] text-xs">
           <thead>
-            <tr>
-              <th className="col-left">Producto</th>
-              <th className="col-left">Categoría</th>
-              <th>SKU</th>
-              <th>Costo</th>
-              <th>Precio</th>
-              <th>Existencias</th>
-              <th>Valor</th>
-              <th>Ganancia</th>
+            <tr className="bg-[#6d3c72]">
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] text-left rounded-tl-[12px]">Producto</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] text-left">Categoría</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">SKU</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Costo</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Precio</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Existencias</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Valor</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] rounded-tr-[12px]">Ganancia</th>
             </tr>
           </thead>
           <tbody>
@@ -218,12 +218,11 @@ export function ProductsPage({
                   key={`${row.product.id}-${row.variant?.id ?? idx}`}
                   tabIndex={0}
                   aria-label={`Abrir ${row.product.name}`}
-                  className={[
-                    row.productIndex % 2 === 1 ? 'zebra-stripe' : '',
-                    hoveredProductId === row.product.id ? 'row-hover' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
+                  className={cn(
+                    'py-[15px] px-[18px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle focus-visible:outline-2 focus-visible:outline-[#6d3c72] focus-visible:outline-offset-[-2px]',
+                    row.productIndex % 2 === 1 ? 'bg-[#f9f6fa]' : '',
+                    hoveredProductId === row.product.id ? 'bg-[#f3eef4] cursor-pointer' : '',
+                  )}
                   onClick={() => onEdit(row.product)}
                   onKeyDown={(event: KeyboardEvent<HTMLTableRowElement>) => {
                     if (event.key === 'Enter' || event.key === ' ') {
@@ -236,36 +235,36 @@ export function ProductsPage({
                 >
                   {row.isFirst && (
                     <>
-                      <td className="col-left" rowSpan={row.rowSpan}>
+                      <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-left text-ink" rowSpan={row.rowSpan}>
                         <div className={cn('inline-grid place-items-center w-[34px] h-[34px] mr-[10px] rounded-[9px]', productDotColors[row.product.color] ?? '')}>
                           <Boxes size={18} aria-hidden="true" />
                         </div>
                         <strong>{row.product.name}</strong>
                       </td>
-                      <td className="col-left" rowSpan={row.rowSpan}>
+                      <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-left text-ink" rowSpan={row.rowSpan}>
                         {row.product.category}
                       </td>
                     </>
                   )}
-                  <td>
+                  <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
                     {row.variant?.sku || '—'}
                     {label && <span className="block text-[11px] font-normal text-muted-foreground mt-[2px]">{label}</span>}
                   </td>
-                  <td className="col-right">{formatMoney(cost, currency)}</td>
-                  <td className="table-emphasis">
+                  <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-right">{formatMoney(cost, currency)}</td>
+                  <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-ink font-bold text-right">
                     {formatMoney(price, currency)}
                   </td>
-                  <td>
+                  <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
                     <span
                       className={stock <= threshold ? 'font-bold text-[#c5804a]' : 'font-bold text-[#5f9e7c]'}
                     >
                       {stock}
                     </span>
                   </td>
-                  <td className="table-emphasis">
+                  <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-ink font-bold text-right">
                     {formatMoney(value, currency)}
                   </td>
-                  <td className="table-emphasis">
+                  <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-ink font-bold text-right">
                     {formatMoney(profit, currency)}
                   </td>
                 </tr>
