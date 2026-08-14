@@ -29,7 +29,7 @@
 - [ ] 18. **Full restyle** - migrate from App.css monolith to Tailwind utility classes, add shadcn/ui components
   - [x] 18a. Theme & shadcn/ui setup - install shadcn/ui, configure tokens, create base component primitives
   - [x] 18b. Layout restyle - app shell, sidebar, topbar, mobile nav drawer to Tailwind
-  - [ ] 18c. Dashboard restyle - welcome card, stats grid, charts, quick actions
+  - [x] 18c. Dashboard restyle - welcome card, stats grid, charts, quick actions
   - [ ] 18d. Products & Orders restyle - product forms, order forms, variants, payment tracking
   - [ ] 18e. Clients, Settings, Stats, Catalog restyle - remaining pages + public catalog + auth screen
   - [ ] 18f. Cleanup - remove App.css, verify responsive behavior, final pass

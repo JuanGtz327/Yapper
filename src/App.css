@@ -4,7 +4,6 @@
  * STILL ACTIVE (used by un-migrated components):
  *   - :root variables (used by page-specific rules below)
  *   - Auth screen (.auth-*)
- *   - Dashboard (.welcome-card, .stats-grid, .chart-*, .quick-actions)
  *   - Products (.product-*, .variant-*, .option-*)
  *   - Orders (.order-*, .line-item-*, .order-summary)
  *   - Payments (.payment-*)
@@ -21,6 +20,13 @@
  *   - .mobile-drawer-overlay, .mobile-drawer, .mobile-drawer-heading
  *   - .icon-button (close button in mobile drawer)
  *   - .auth-loading
+ *
+ * MIGRATED to Tailwind (18c - Dashboard restyle):
+ *   - .welcome-card, .welcome-tag, .welcome-decoration
+ *   - .stats-grid, .content-grid, .panel
+ *   - .chart-placeholder, .chart-y-axis, .chart-area, .chart-lines
+ *   - .bar-chart, .chart-days
+ *   - .quick-actions
  *
  * DEAD (no longer referenced - can be removed in 18f):
  *   - .btn, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost (-> shadcn Button)
@@ -42,13 +48,6 @@
   --sidebar: #fffefa;
 }
 
-.welcome-tag {
-  margin: 0 0 9px;
-  color: #aaa4aa;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.25px;
-}
 h1,
 h2,
 p {
@@ -86,241 +85,18 @@ h2 {
   cursor: not-allowed;
   opacity: 0.65;
 }
-.welcome-card {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 145px;
-  padding: 30px 35px;
-  margin-bottom: 22px;
-  border-radius: 14px;
-  color: #fff;
-  background: #744b78;
-}
-.welcome-card::after {
-  content: '';
-  position: absolute;
-  width: 270px;
-  height: 270px;
-  right: 65px;
-  top: -108px;
-  border: 1px solid #ffffff20;
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 30px #ffffff10,
-    0 0 0 60px #ffffff08;
-}
-.welcome-card h2 {
-  position: relative;
-  z-index: 1;
-  color: #fff;
-  font-size: 25px;
-  margin-bottom: 7px;
-}
-.welcome-card p {
-  position: relative;
-  z-index: 1;
-  color: #e1cedf;
-  font-size: 13px;
-}
-.welcome-tag {
-  color: #dec6dc;
-}
-.welcome-decoration {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding-right: 40px;
-  color: #e5c9df;
-  font-size: 26px;
-}
-.welcome-decoration span:nth-child(2) {
-  font-size: 15px;
-}
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 22px;
 }
-.stat-card,
 .panel {
   border: 1px solid var(--line);
   border-radius: 13px;
   background: #fffefa;
-}
-.stat-card {
-  padding: 20px 22px 19px;
-}
-.stat-heading {
-  display: flex;
-  justify-content: space-between;
-  color: #858087;
-  font-size: 12px;
-  margin-bottom: 15px;
-}
-.stat-heading svg {
-  color: #aaa4a8;
-}
-.stat-card > strong {
-  display: block;
-  color: var(--ink);
-  font-size: 27px;
-  letter-spacing: -0.8px;
-}
-.stat-card small {
-  color: #aaa5a8;
-  font-size: 11px;
-}
-.stat-card small.positive {
-  color: #5f9e7c;
-}
-.content-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
-  gap: 16px;
-}
-.panel {
   padding: 23px 24px;
 }
-.panel-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-.panel-heading p {
-  color: #aaa5a8;
-  font-size: 11px;
-  margin-top: 5px;
-}
-.text-button {
-  border: 0;
-  padding: 4px 0;
-  color: var(--plum);
-  background: none;
-  font-size: 11px;
-  font-weight: 700;
-}
-.chart-placeholder {
-  display: flex;
-  height: 220px;
-  padding-top: 28px;
-}
-.chart-y-axis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-bottom: 23px;
-  color: #aaa5a8;
-  font-size: 10px;
-}
-.chart-area {
-  position: relative;
-  flex: 1;
-  margin-left: 14px;
-}
-.chart-lines {
-  position: absolute;
-  inset: 0 0 23px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.chart-lines i {
-  display: block;
-  border-top: 1px dashed #ece8e6;
-}
-.chart-area svg {
-  position: absolute;
-  inset: 0 0 23px;
-  width: 100%;
-  height: calc(100% - 23px);
-  overflow: visible;
-}
-.bar-chart {
-  position: absolute;
-  inset: 0 0 23px;
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  padding: 8px 2px 0;
-}
-.bar-chart > span {
-  flex: 1;
-  min-width: 4px;
-  border-radius: 5px 5px 0 0;
-  background: #c99fca;
-  transition: height 0.3s ease;
-}
-.bar-chart > .empty-state {
-  width: 100%;
-  padding: 20px 8px;
-  border: 0;
-  font-size: 11px;
-}
-.chart-area path {
-  fill: none;
-  stroke: #85558a;
-  stroke-width: 3;
-  vector-effect: non-scaling-stroke;
-}
-.chart-days {
-  position: absolute;
-  display: flex;
-  justify-content: space-between;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  color: #aaa5a8;
-  font-size: 10px;
-}
-.quick-actions {
-  margin-top: 17px;
-}
-.quick-actions button {
-  color: inherit;
-}
-.quick-actions button:first-child {
-}
-.quick-actions button > span:nth-child(2) {
-  flex: 1;
-}
-.quick-actions strong,
-.quick-actions small {
-  display: block;
-}
-.quick-actions strong {
-  color: #464149;
-  font-size: 12px;
-}
-.quick-actions small {
-  margin-top: 3px;
-  font-size: 10px;
-}
-.action-icon {
-  display: grid;
-  place-items: center;
-  width: 37px;
-  height: 37px;
-  border-radius: 10px;
-}
-.peach {
-  color: #b06b57;
-  background: #f9e5dc;
-}
-.mint {
-  color: #579078;
-  background: #dff1e6;
-}
-.lavender {
-  color: #7963a2;
-  background: #ece5f7;
-}
-
 .nav-item {
   width: 100%;
   border: 0;
@@ -2194,23 +1970,10 @@ td.row-actions .row-actions-inner {
 
 @media (max-width: 650px) {
   .stats-grid,
-  .content-grid,
   .client-grid,
   .catalog-grid,
   .order-summary {
     grid-template-columns: 1fr;
-  }
-  .welcome-card {
-    padding: 25px;
-  }
-  .welcome-decoration {
-    display: none;
-  }
-  .sales-panel {
-    min-width: 0;
-  }
-  .quick-panel {
-    min-width: 0;
   }
   .section-intro {
     align-items: flex-start;

@@ -167,7 +167,7 @@ describe('DashboardPage', () => {
   describe('Gráfico de ventas', () => {
     it('debería renderizar barras del gráfico por cada día', () => {
       const { container } = render(<DashboardPage {...defaultProps} />)
-      const barChart = container.querySelector('.bar-chart')
+      const barChart = container.querySelector('[aria-label="Ventas por día"]')
       expect(barChart).toBeInTheDocument()
       expect(barChart!.querySelectorAll('span')).toHaveLength(
         defaultSales.length,
