@@ -1,16 +1,16 @@
 import { useEffect, useRef, type RefObject } from 'react'
+import { Link } from 'wouter'
 import { Settings, X } from 'lucide-react'
 import type { Page } from '../../lib/navigation.ts'
 import { navItems } from '../../lib/navigation.ts'
+import { pageToPathname } from '../../lib/routes.ts'
 
 export function MobileNavDrawer({
   page,
-  onSelect,
   onClose,
   hamburgerRef,
 }: {
   page: Page
-  onSelect: (page: Page) => void
   onClose: () => void
   hamburgerRef: RefObject<HTMLButtonElement | null>
 }) {
@@ -96,26 +96,26 @@ export function MobileNavDrawer({
             MENÚ PRINCIPAL
           </p>
           {navItems.map(({ label, icon: Icon }) => (
-            <button
+            <Link
+              key={label}
+              href={pageToPathname(label)}
               aria-current={page === label ? 'page' : undefined}
               className={page === label ? 'nav-item active' : 'nav-item'}
-              key={label}
-              onClick={() => onSelect(label as Page)}
-              type="button"
+              onClick={onClose}
             >
               <Icon size={20} aria-hidden="true" />
               <span>{label}</span>
-            </button>
+            </Link>
           ))}
-          <button
+          <Link
+            href={pageToPathname('Ajustes')}
             aria-current={page === 'Ajustes' ? 'page' : undefined}
             className={page === 'Ajustes' ? 'nav-item active' : 'nav-item'}
-            onClick={() => onSelect('Ajustes')}
-            type="button"
+            onClick={onClose}
           >
             <Settings size={20} aria-hidden="true" />
             <span>Ajustes</span>
-          </button>
+          </Link>
         </nav>
       </aside>
     </>

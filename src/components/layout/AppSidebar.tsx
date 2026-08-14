@@ -1,15 +1,15 @@
+import { Link } from 'wouter'
 import { Settings } from 'lucide-react'
 import type { Page } from '../../lib/navigation.ts'
 import { navItems } from '../../lib/navigation.ts'
+import { pageToPathname } from '../../lib/routes.ts'
 
 export function AppSidebar({
   page,
-  onNavigate,
   businessName,
   accountLabel,
 }: {
   page: Page
-  onNavigate: (page: Page) => void
   businessName: string
   accountLabel: string
 }) {
@@ -25,30 +25,26 @@ export function AppSidebar({
       <nav className="main-nav" aria-label="Navegación principal">
         <p className="nav-label">MENÚ PRINCIPAL</p>
         {navItems.map(({ label, icon: Icon }) => (
-          <button
-            aria-label={label}
-            className={page === label ? 'nav-item active' : 'nav-item'}
+          <Link
             key={label}
-            onClick={() => onNavigate(label as Page)}
+            href={pageToPathname(label)}
+            className={page === label ? 'nav-item active' : 'nav-item'}
             title={label}
-            type="button"
           >
             <Icon size={20} aria-hidden="true" />
             <span>{label}</span>
-          </button>
+          </Link>
         ))}
       </nav>
       <div className="sidebar-bottom">
-        <button
-          aria-label="Ajustes"
+        <Link
+          href={pageToPathname('Ajustes')}
           className={page === 'Ajustes' ? 'nav-item active' : 'nav-item'}
-          onClick={() => onNavigate('Ajustes')}
           title="Ajustes"
-          type="button"
         >
           <Settings size={20} aria-hidden="true" />
           <span>Ajustes</span>
-        </button>
+        </Link>
         <div className="profile">
           <div className="avatar">{businessName.slice(0, 2).toUpperCase()}</div>
           <div>

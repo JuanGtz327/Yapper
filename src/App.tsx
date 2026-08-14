@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { Route, Switch, useLocation } from 'wouter'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/ReactToastify.css'
 import './App.css'
@@ -13,17 +14,25 @@ import { ModalManager } from './components/layout/ModalManager.tsx'
 import { PageRouter } from './components/layout/PageRouter.tsx'
 import { ModalProvider, useModal } from './context/ModalContext.tsx'
 import { isSupabaseConfigured } from './lib/supabase.ts'
+import { qk } from './lib/queryKeys.ts'
 import type { Page } from './lib/navigation.ts'
-import { getPublicCatalogSlug } from './lib/routing.ts'
+import { pageToPathname, routeToPage, routes } from './lib/routes.ts'
 import { useAuth } from './hooks/useAuth.ts'
 import { useDashboardData } from './hooks/useDashboardData.ts'
 import { useProductEditor } from './hooks/useProductEditor.ts'
 import { useOrderEditor } from './hooks/useOrderEditor.ts'
 
-const publicSlug = getPublicCatalogSlug(window.location.pathname)
-
 function App() {
-  return publicSlug ? <PublicCatalogPage slug={publicSlug} /> : <DashboardApp />
+  return (
+    <Switch>
+      <Route path={routes.publicCatalog}>
+        {(params) => <PublicCatalogPage slug={params.slug} />}
+      </Route>
+      <Route>
+        <DashboardApp />
+      </Route>
+    </Switch>
+  )
 }
 
 function DashboardApp() {
@@ -59,7 +68,8 @@ function DashboardContent({
   dashboardData: ReturnType<typeof useDashboardData>
 }) {
   const qc = useQueryClient()
-  const [page, setPage] = useState<Page>('Inicio')
+  const [location, setLocation] = useLocation()
+  const page: Page = routeToPage(location)
   const [search, setSearch] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const hamburgerRef = useRef<HTMLButtonElement>(null)
@@ -82,40 +92,27 @@ function DashboardContent({
   } = dashboardData
 
   const {
-    productEditor,
-    openProductEditor,
-    closeProductEditor,
     handleProductSubmit,
     handleVariantsChanged,
   } = useProductEditor(user, qc)
 
   const {
-    orderEditor,
-    orderDetail,
-    openOrderEditor,
-    selectOrder,
-    closeOrderDetail,
-    closeOrderEditor,
     handleOrderSubmit,
     handleStatusChange,
     handlePaymentChange,
     handleRegisterPayment,
     handleCancelOrder,
     registerPaymentPending,
-    resetOrders,
   } = useOrderEditor(user, dashboardData)
 
-  const navigateToPage = (nextPage: Page) => {
-    setPage(nextPage)
-    resetOrders()
-    setMobileMenuOpen(false)
+  const handleNavigateFromPage = (nextPage: Page) => {
+    setLocation(pageToPathname(nextPage))
   }
 
   return (
     <div className="app-shell">
       <AppSidebar
         page={page}
-        onNavigate={navigateToPage}
         businessName={settings.businessName}
         accountLabel={user?.email || 'Modo demo'}
       />
@@ -134,7 +131,6 @@ function DashboardContent({
           </div>
         )}
         <PageRouter
-          page={page}
           user={user}
           products={products}
           clients={clients}
@@ -145,21 +141,14 @@ function DashboardContent({
           sales={sales}
           search={search}
           setSearch={setSearch}
-          productEditor={productEditor}
-          orderEditor={orderEditor}
-          orderDetail={orderDetail}
           registerPaymentPending={registerPaymentPending}
-          qc={qc}
           openModal={openModal}
-          onNavigate={navigateToPage}
-          openProductEditor={openProductEditor}
-          closeProductEditor={closeProductEditor}
+          onNavigate={handleNavigateFromPage}
+          onProductCreated={() => {
+            void qc.invalidateQueries({ queryKey: qk.categories(user) })
+          }}
           handleProductSubmit={handleProductSubmit}
           handleVariantsChanged={handleVariantsChanged}
-          openOrderEditor={openOrderEditor}
-          selectOrder={selectOrder}
-          closeOrderDetail={closeOrderDetail}
-          closeOrderEditor={closeOrderEditor}
           handleOrderSubmit={handleOrderSubmit}
           handleStatusChange={handleStatusChange}
           handlePaymentChange={handlePaymentChange}
@@ -174,7 +163,6 @@ function DashboardContent({
       {mobileMenuOpen && (
         <MobileNavDrawer
           page={page}
-          onSelect={navigateToPage}
           onClose={() => setMobileMenuOpen(false)}
           hamburgerRef={hamburgerRef}
         />
