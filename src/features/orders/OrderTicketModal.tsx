@@ -109,24 +109,24 @@ export function OrderTicketModal({
   return (
     <ModalFrame title={`Detalles del pedido ${order.id}`} onClose={onClose}>
       <div className="order-ticket">
-        <dl className="order-detail-grid">
-          <div>
-            <dt>Cliente</dt>
-            <dd>{order.client}</dd>
+        <dl className="grid grid-cols-2 gap-3.5 m-0">
+          <div className="p-3 rounded-[9px] bg-[#faf7f9]">
+            <dt className="text-muted-foreground text-[10px] font-bold">Cliente</dt>
+            <dd className="mt-[5px] text-foreground text-[13px] font-bold">{order.client}</dd>
           </div>
-          <div>
-            <dt>Fecha</dt>
-            <dd>{order.date}</dd>
+          <div className="p-3 rounded-[9px] bg-[#faf7f9]">
+            <dt className="text-muted-foreground text-[10px] font-bold">Fecha</dt>
+            <dd className="mt-[5px] text-foreground text-[13px] font-bold">{order.date}</dd>
           </div>
-          <div>
-            <dt>Entrega</dt>
-            <dd>
+          <div className="p-3 rounded-[9px] bg-[#faf7f9]">
+            <dt className="text-muted-foreground text-[10px] font-bold">Entrega</dt>
+            <dd className="mt-[5px] text-foreground text-[13px] font-bold">
               <StatusBadge value={order.status} />
             </dd>
           </div>
-          <div>
-            <dt>Pago</dt>
-            <dd>
+          <div className="p-3 rounded-[9px] bg-[#faf7f9]">
+            <dt className="text-muted-foreground text-[10px] font-bold">Pago</dt>
+            <dd className="mt-[5px] text-foreground text-[13px] font-bold">
               <StatusBadge value={order.payment} />
             </dd>
           </div>
@@ -139,53 +139,53 @@ export function OrderTicketModal({
         />
 
         <section
-          className="ticket-lines"
+          className="mt-[22px] p-4 border border-[#e8e0e7] rounded-xl bg-white max-[650px]:p-3"
           aria-labelledby="ticket-products-title"
         >
-          <div className="ticket-heading">
-            <h3 id="ticket-products-title">Productos</h3>
-            <span>
+          <div className="flex items-center justify-between mb-3.5">
+            <h3 id="ticket-products-title" className="m-0 text-foreground text-sm">Productos</h3>
+            <span className="text-muted-foreground text-[11px]">
               {lineItems.reduce((sum, line) => sum + line.quantity, 0)} piezas
             </span>
           </div>
           {lineItems.length ? (
             <>
-              <div className="ticket-columns" aria-hidden="true">
-                <span>Producto</span>
-                <span>Cant.</span>
-                <span>Precio</span>
-                <span>Total</span>
+              <div className="grid grid-cols-[minmax(0,1fr)_44px_76px_76px] items-center gap-[10px] max-[650px]:grid-cols-[minmax(0,1fr)_34px_64px_64px] max-[650px]:gap-[6px] pb-2 border-b border-border text-[#aaa5a8] text-[9px] font-bold tracking-[0.6px] uppercase max-[650px]:text-[8px]" aria-hidden="true">
+                <span className="text-right">Producto</span>
+                <span className="text-right">Cant.</span>
+                <span className="text-right">Precio</span>
+                <span className="text-right">Total</span>
               </div>
-              <ul>
+              <ul className="grid gap-0 p-0 m-0 list-none">
                 {lineItems.map((line, index) => (
-                  <li key={`${line.name}-${index}`}>
+                  <li className="grid grid-cols-[minmax(0,1fr)_44px_76px_76px] items-center gap-[10px] max-[650px]:grid-cols-[minmax(0,1fr)_34px_64px_64px] max-[650px]:gap-[6px] py-3 border-b border-dashed border-[#e8e0e7] text-[#5e5960] text-[11px] last:border-b-0" key={`${line.name}-${index}`}>
                     <div className="ticket-product">
-                      <strong>{line.name}</strong>
+                      <strong className="block text-foreground text-xs max-[650px]:text-[11px]">{line.name}</strong>
                       {line.variantLabel && (
-                        <span className="detail-muted">
+                        <span className="block mt-[3px] text-muted-foreground text-[10px] text-muted-foreground text-xs">
                           {line.variantLabel}
                         </span>
                       )}
-                      <span>
+                      <span className="block mt-[3px] text-muted-foreground text-[10px] mt-[2px] text-[9px]">
                         {formatMoney(line.unitPrice, currency)} por unidad
                       </span>
                     </div>
-                    <span className="ticket-quantity">{line.quantity}</span>
-                    <span>{formatMoney(line.unitPrice, currency)}</span>
-                    <strong>{formatMoney(line.total, currency)}</strong>
+                    <span className="text-foreground font-bold text-right">{line.quantity}</span>
+                    <span className="text-right">{formatMoney(line.unitPrice, currency)}</span>
+                    <strong className="text-right text-primary">{formatMoney(line.total, currency)}</strong>
                   </li>
                 ))}
               </ul>
             </>
           ) : (
-            <p className="detail-muted">
+            <p className="text-muted-foreground text-xs">
               No hay productos detallados para este pedido.
             </p>
           )}
         </section>
-        <div className="ticket-total">
+        <div className="flex items-center justify-between mt-[18px] pt-4 border-t-2 border-primary text-foreground text-sm font-bold">
           <span>Total del pedido</span>
-          <strong>{formatMoney(total, currency)}</strong>
+          <strong className="text-primary text-[24px] max-[650px]:text-[21px]">{formatMoney(total, currency)}</strong>
         </div>
 
         {orderPayments.length > 0 && (
@@ -200,7 +200,7 @@ export function OrderTicketModal({
 
         {order.status !== 'Cancelado' && (
           <section
-            className="order-detail-actions"
+            className="grid gap-[18px] mt-[23px] pt-5 border-t border-border"
             aria-label="Acciones del pedido"
           >
             <div className="order-status-controls">
@@ -255,10 +255,11 @@ export function OrderTicketModal({
                 </div>
               </fieldset>
             </div>
-            <div className="modal-actions order-actions-footer">
+            <div className="modal-actions justify-end m-0 max-[650px]:flex-wrap">
               {onEdit && (
                 <Button
                   variant="primary"
+                  className="max-[650px]:flex-1"
                   onClick={(event) => {
                     event.stopPropagation()
                     onEdit(order)
@@ -272,6 +273,7 @@ export function OrderTicketModal({
               )}
               <Button
                 variant="danger"
+                className="max-[650px]:flex-1"
                 onClick={(event) => {
                   event.stopPropagation()
                   onCancel(order)

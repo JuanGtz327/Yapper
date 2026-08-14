@@ -63,25 +63,25 @@ export function OrdersPage({
           Crear pedido
         </Button>
       </div>
-      <div className="order-summary">
-        <div>
-          <span>Este mes</span>
-          <strong>
+      <div className="grid grid-cols-3 gap-[13px] mb-[23px] max-[650px]:grid-cols-1">
+        <div className="p-[17px_19px] border border-border rounded-[11px] bg-sidebar">
+          <span className="block text-muted-foreground text-[11px]">Este mes</span>
+          <strong className="block mt-2 text-foreground text-[21px]">
             {formatMoney(
               thisMonth.reduce((sum, order) => sum + order.total, 0),
               currency,
             )}
           </strong>
         </div>
-        <div>
-          <span>Pendientes</span>
-          <strong>
+        <div className="p-[17px_19px] border border-border rounded-[11px] bg-sidebar">
+          <span className="block text-muted-foreground text-[11px]">Pendientes</span>
+          <strong className="block mt-2 text-foreground text-[21px]">
             {active.filter((order) => order.status === 'Pendiente').length}
           </strong>
         </div>
-        <div>
-          <span>Por cobrar</span>
-          <strong>
+        <div className="p-[17px_19px] border border-border rounded-[11px] bg-sidebar">
+          <span className="block text-muted-foreground text-[11px]">Por cobrar</span>
+          <strong className="block mt-2 text-foreground text-[21px]">
             {formatMoney(
               active
                 .filter((order) => order.payment === 'Pendiente')
@@ -134,7 +134,7 @@ export function OrdersPage({
           {filteredOrders.length === 1 ? 'pedido' : 'pedidos'}
         </span>
       </div>
-      <div className="table-card orders-table">
+      <div className="table-card max-[650px]:hidden">
         <table>
           <caption className="visually-hidden">
             Lista de pedidos. Selecciona un pedido para ver sus detalles.
@@ -152,7 +152,7 @@ export function OrdersPage({
           <tbody>
             {filteredOrders.map((order, idx) => (
               <tr
-                className={`order-row${idx % 2 === 1 ? ' zebra-stripe' : ''}`}
+                className={`cursor-pointer hover:bg-[#fcf9fc] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[#c9a3ca] focus-visible:outline-offset-[-3px]${idx % 2 === 1 ? ' zebra-stripe' : ''}`}
                 tabIndex={0}
                 key={order.id}
                 onClick={() => onSelectOrder(order)}
@@ -215,13 +215,13 @@ export function OrdersPage({
           </tbody>
         </table>
       </div>
-      <div className="orders-cards" aria-label="Pedidos">
+      <div className="hidden max-[650px]:grid max-[650px]:gap-3" aria-label="Pedidos">
         <p className="visually-hidden">
           Selecciona un pedido para ver sus detalles.
         </p>
         {filteredOrders.map((order) => (
           <article
-            className="order-card"
+            className="grid gap-[15px] p-[17px] border border-border rounded-[13px] bg-sidebar shadow-[0_5px_18px_rgba(48,39,46,0.03)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[#c9a3ca] focus-visible:outline-offset-2"
             tabIndex={0}
             key={order.id}
             onClick={() => onSelectOrder(order)}
@@ -238,8 +238,8 @@ export function OrdersPage({
               }
             }}
           >
-            <div className="order-card-heading">
-              <strong>{order.id}</strong>
+            <div className="flex items-center justify-between gap-3">
+              <strong className="text-foreground">{order.id}</strong>
               <span
                 className={
                   order.status === 'Cancelado'
@@ -252,20 +252,20 @@ export function OrdersPage({
                 {order.status}
               </span>
             </div>
-            <div className="order-card-client">
-              <strong>{order.client}</strong>
-              <span>{order.date}</span>
+            <div className="flex flex-col gap-1 items-start">
+              <strong className="text-foreground text-[14px]">{order.client}</strong>
+              <span className="text-muted-foreground text-[11px]">{order.date}</span>
             </div>
-            <div className="order-card-meta">
-              <span>{order.items} productos</span>
-              <strong>{formatMoney(order.total, currency)}</strong>
+            <div className="flex items-center justify-between gap-3 pt-3 border-t border-border">
+              <span className="text-muted-foreground text-[11px]">{order.items} productos</span>
+              <strong className="text-foreground">{formatMoney(order.total, currency)}</strong>
             </div>
-            <div className="order-card-statuses">
+            <div className="flex justify-between gap-3 pt-3 border-t border-border text-muted-foreground text-[11px]">
               <span>
-                Entrega <strong>{order.status}</strong>
+                Entrega <strong className="ml-[3px] text-foreground">{order.status}</strong>
               </span>
               <span>
-                Pago <strong>{order.payment}</strong>
+                Pago <strong className="ml-[3px] text-foreground">{order.payment}</strong>
               </span>
             </div>
           </article>

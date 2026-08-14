@@ -135,8 +135,8 @@ export function OrderCreatePage({
   }
 
   return (
-    <section className="page-section order-editor-page">
-      <div className="section-intro">
+    <section className="page-section w-full">
+      <div className="section-intro mb-[26px] max-[520px]:mb-5">
         <div>
           <span className="eyebrow">VENTAS</span>
           <h2>{initial ? 'Editar pedido' : 'Nuevo pedido'}</h2>
@@ -166,7 +166,7 @@ export function OrderCreatePage({
         <Empty text="Necesitas al menos un cliente y un producto para crear un pedido." />
       ) : (
         <form
-          className="form-grid order-form order-editor-card"
+          className="form-grid gap-4 w-full p-[clamp(18px,3vw,30px)] border border-border rounded-[14px] bg-sidebar shadow-[0_10px_28px_rgba(70,46,65,0.06)] max-[520px]:px-[18px] max-[520px]:py-[18px]"
           onSubmit={submit}
         >
           <label>
@@ -182,8 +182,8 @@ export function OrderCreatePage({
               ariaLabel="Cliente"
             />
           </label>
-          <div className="order-lines">
-            <div className="line-heading">
+          <div className="grid gap-[9px]">
+            <div className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] text-[#716b72] text-[11px] font-bold max-[520px]:grid-cols-[minmax(0,1fr)_56px_76px_30px] max-[520px]:gap-[5px] max-[520px]:text-[10px]">
               <span>Productos</span>
               <span>Cantidad</span>
               <span>Total</span>
@@ -192,7 +192,7 @@ export function OrderCreatePage({
             {lines.map((line, index) => {
               const selected = findVariant(line.variantId)
               return (
-                <div className="order-line" key={`${line.variantId}-${index}`}>
+                <div className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] max-[520px]:grid-cols-[minmax(0,1fr)_56px_76px_30px] max-[520px]:gap-[5px]" key={`${line.variantId}-${index}`}>
                   <CustomSelect
                     value={line.variantId}
                     onChange={(value) =>
@@ -232,14 +232,14 @@ export function OrderCreatePage({
                     max={availableStock(line.variantId)}
                     step="1"
                   />
-                  <span className="line-total">
+                  <span className="text-foreground text-[13px] font-bold text-right whitespace-nowrap max-[520px]:text-xs">
                     {money(priceFor(line) * line.quantity)}
                   </span>
                   <Button
                     variant="danger"
                     icon={<X size={16} aria-hidden="true" />}
                     size="sm"
-                    className="order-line-remove"
+                    className="justify-self-end max-[520px]:p-[6px]"
                     onClick={() =>
                       setLines((current) =>
                         current.filter((_, itemIndex) => itemIndex !== index),
@@ -248,7 +248,7 @@ export function OrderCreatePage({
                     aria-label="Quitar producto"
                     type="button"
                   />
-                  <small className="order-line-stock">
+                  <small className="col-start-1 col-end-2 text-[#716b72] text-[10px]">
                     {selected
                       ? `${availableStock(line.variantId)} disponibles`
                       : 'Producto no disponible'}
@@ -257,7 +257,7 @@ export function OrderCreatePage({
               )
             })}
             <button
-              className="add-line"
+              className="flex items-center justify-center gap-[5px] py-[9px] border border-dashed border-[#d8c8d8] rounded-[8px] text-primary bg-[#fbf7fb] text-[11px] font-bold"
               onClick={() => {
                 const next = variantOptions.find(
                   (option) =>
@@ -287,9 +287,9 @@ export function OrderCreatePage({
               ariaLabel="Estado del pago"
             />
           </label>
-          <div className="order-total">
+          <div className="flex items-center justify-between pt-[15px] border-t border-border text-[#716b72] text-xs">
             <span>Total del pedido</span>
-            <strong>{money(total)}</strong>
+            <strong className="text-primary text-[22px]">{money(total)}</strong>
           </div>
           <div className="modal-actions">
             <Button

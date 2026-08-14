@@ -104,7 +104,7 @@ export function OrderDetailPage({
   const canEdit = order.status !== 'Cancelado' && !isPaid
 
   return (
-    <section className="page-section order-detail-page">
+    <section className="page-section max-w-[1100px]">
       <div className="section-intro">
         <div>
           <span className="eyebrow">VENTAS</span>
@@ -143,49 +143,49 @@ export function OrderDetailPage({
         </div>
       </div>
 
-      <div className="order-detail-layout">
-        <div className="order-detail-main">
-          <div className="order-detail-card">
-            <h3>Resumen</h3>
-            <dl className="order-detail-grid-full">
-              <div>
-                <dt>Pedido</dt>
-                <dd className="order-detail-id">{order.id}</dd>
+      <div className="grid grid-cols-[1fr_340px] gap-6 items-start max-[860px]:grid-cols-1">
+        <div className="grid gap-5">
+          <div className="p-5 border border-border rounded-xl bg-sidebar">
+            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">Resumen</h3>
+            <dl className="grid grid-cols-2 gap-3.5 m-0">
+              <div className="p-3 rounded-[9px] bg-[#faf7f9]">
+                <dt className="text-muted-foreground text-[10px] font-bold">Pedido</dt>
+                <dd className="mt-[5px] text-foreground text-[13px] font-bold font-mono tracking-[0.5px]">{order.id}</dd>
               </div>
-              <div>
-                <dt>Cliente</dt>
-                <dd>{order.client}</dd>
+              <div className="p-3 rounded-[9px] bg-[#faf7f9]">
+                <dt className="text-muted-foreground text-[10px] font-bold">Cliente</dt>
+                <dd className="mt-[5px] text-foreground text-[13px] font-bold">{order.client}</dd>
               </div>
-              <div>
-                <dt>Fecha</dt>
-                <dd>{order.date}</dd>
+              <div className="p-3 rounded-[9px] bg-[#faf7f9]">
+                <dt className="text-muted-foreground text-[10px] font-bold">Fecha</dt>
+                <dd className="mt-[5px] text-foreground text-[13px] font-bold">{order.date}</dd>
               </div>
-              <div>
-                <dt>Total</dt>
-                <dd className="order-detail-total">
+              <div className="p-3 rounded-[9px] bg-[#faf7f9]">
+                <dt className="text-muted-foreground text-[10px] font-bold">Total</dt>
+                <dd className="mt-[5px] text-foreground text-[13px] font-bold !text-primary !text-lg">
                   {formatMoney(total, currency)}
                 </dd>
               </div>
             </dl>
           </div>
 
-          <div className="order-detail-card">
-            <h3>Productos</h3>
+          <div className="p-5 border border-border rounded-xl bg-sidebar">
+            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">Productos</h3>
             {lineItems.length ? (
-              <div className="order-detail-products">
-                <div className="ticket-columns" aria-hidden="true">
+              <div>
+                <div className="grid grid-cols-[1fr_60px_100px_100px] gap-2 py-2 border-b border-border text-muted-foreground text-[10px] font-bold" aria-hidden="true">
                   <span>Producto</span>
                   <span>Cant.</span>
                   <span>Precio</span>
                   <span>Total</span>
                 </div>
-                <ul>
+                <ul className="list-none m-0 p-0">
                   {lineItems.map((line, index) => (
-                    <li key={`${line.name}-${index}`}>
-                      <div className="ticket-product">
-                        <strong>{line.name}</strong>
+                    <li key={`${line.name}-${index}`} className="grid grid-cols-[1fr_60px_100px_100px] gap-2 items-start py-2.5 border-b border-border text-[13px] text-foreground last:border-b-0">
+                      <div className="grid gap-[2px]">
+                        <strong className="text-[13px]">{line.name}</strong>
                         {line.variantLabel && (
-                          <span className="detail-muted">
+                          <span className="text-muted-foreground text-[11px]">
                             {line.variantLabel}
                           </span>
                         )}
@@ -193,37 +193,37 @@ export function OrderDetailPage({
                           {formatMoney(line.unitPrice, currency)} por unidad
                         </span>
                       </div>
-                      <span className="ticket-quantity">{line.quantity}</span>
+                      <span className="font-bold">{line.quantity}</span>
                       <span>{formatMoney(line.unitPrice, currency)}</span>
                       <strong>{formatMoney(line.total, currency)}</strong>
                     </li>
                   ))}
                 </ul>
-                <div className="ticket-total">
+                <div className="flex justify-between items-center mt-3 pt-3 border-t-2 border-primary text-sm font-bold">
                   <span>Total</span>
-                  <strong>{formatMoney(total, currency)}</strong>
+                  <strong className="text-primary text-[18px]">{formatMoney(total, currency)}</strong>
                 </div>
               </div>
             ) : (
-              <p className="detail-muted">
+              <p className="text-muted-foreground text-xs">
                 No hay productos detallados para este pedido.
               </p>
             )}
           </div>
         </div>
 
-        <div className="order-detail-sidebar">
-          <div className="order-detail-card">
-            <h3>Estado</h3>
+        <div className="grid gap-5 sticky top-6 max-[860px]:static">
+          <div className="p-5 border border-border rounded-xl bg-sidebar">
+            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">Estado</h3>
             {order.status === 'Cancelado' ? (
-              <div className="status-card-cancelled">
+              <div className="flex items-center gap-2 py-2.5 px-3 rounded-[8px] bg-[#faf7f9] text-muted-foreground text-xs font-bold">
                 <span className="badge danger">Cancelado</span>
                 Pedido cancelado
               </div>
             ) : (
-              <div className="status-card-rows">
-                <fieldset className="status-card-row">
-                  <legend>Entrega</legend>
+                <div className="grid gap-3.5">
+                <fieldset className="min-w-0 m-0 p-0 border-0">
+                  <legend className="block mb-1.5 text-muted-foreground text-[11px] font-bold">Entrega</legend>
                   <div
                     className="segmented-control"
                     role="radiogroup"
@@ -249,14 +249,14 @@ export function OrderDetailPage({
                     </button>
                   </div>
                 </fieldset>
-                <fieldset className="status-card-row">
-                  <legend>Pago</legend>
+                <fieldset className="min-w-0 m-0 p-0 border-0">
+                  <legend className="block mb-1.5 text-muted-foreground text-[11px] font-bold">Pago</legend>
                   {order.payment === 'Pagado' ? (
-                    <div className="status-card-readonly">
+                    <div className="flex items-center">
                       <span className="badge success">Pagado</span>
                     </div>
                   ) : order.payment === 'Parcial' ? (
-                    <div className="status-card-readonly">
+                    <div className="flex items-center">
                       <span className="badge info">Parcial</span>
                     </div>
                   ) : (
@@ -290,8 +290,8 @@ export function OrderDetailPage({
             )}
           </div>
 
-          <div className="order-detail-card">
-            <h3>Pago</h3>
+          <div className="p-5 border border-border rounded-xl bg-sidebar">
+            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">Pago</h3>
             <PaymentProgress
               total={total}
               paidAmount={paidAmount}
@@ -303,7 +303,7 @@ export function OrderDetailPage({
           </div>
 
           {orderPayments.length > 0 && (
-            <div className="order-detail-card">
+            <div className="p-5 border border-border rounded-xl bg-sidebar">
               <PaymentHistory payments={orderPayments} currency={currency} />
             </div>
           )}

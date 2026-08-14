@@ -4,7 +4,6 @@
  * STILL ACTIVE (used by un-migrated components):
  *   - :root variables (used by page-specific rules below)
  *   - Auth screen (.auth-*)
- *   - Orders (.order-*, .line-item-*, .order-summary)
  *   - Payments (.payment-*)
  *   - Clients (.client-*)
  *   - Settings, Stats, Catalog pages
@@ -40,6 +39,19 @@
  *   - .option-type-list, .option-type-item/header/toggle/name/count/values
  *   - .option-value-list/item/empty/add-row
  *   - .form-two, .input-error, .public-description-gap
+ *
+ * MIGRATED to Tailwind (18e - Orders restyle):
+ *   - .order-*, .line-item-*, .order-summary
+ *   - .order-row, .orders-cards, .order-card-*
+ *   - .order-detail-grid, .order-detail-actions, .order-status-controls
+ *   - .order-actions-footer, .order-card-statuses
+ *   - .order-form, .order-editor-page, .order-editor-card
+ *   - .order-lines, .order-line, .line-heading, .line-total, .add-line, .order-total
+ *   - .detail-muted
+ *   - .ticket-*, .modal:has(.order-ticket), .modal:has(.order-details)
+ *   - .order-detail-page, .order-detail-layout, .order-detail-main/sidebar/card
+ *   - .order-detail-grid-full, .order-detail-id, .order-detail-total
+ *   - .order-detail-products, .status-card-*
  *
  * DEAD (no longer referenced - can be removed in 18f):
  *   - .btn, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost (-> shadcn Button)
@@ -511,31 +523,6 @@ td.col-right {
   font-size: 13px;
   background: #fffefa;
 }
-.order-summary {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 13px;
-  margin-bottom: 23px;
-}
-.order-summary div {
-  padding: 17px 19px;
-  border: 1px solid var(--line);
-  border-radius: 11px;
-  background: #fffefa;
-}
-.order-summary span,
-.order-summary strong {
-  display: block;
-}
-.order-summary span {
-  color: #aaa5a8;
-  font-size: 11px;
-}
-.order-summary strong {
-  margin-top: 8px;
-  color: var(--ink);
-  font-size: 21px;
-}
 .badge {
   display: inline-block;
   padding: 5px 8px;
@@ -571,9 +558,7 @@ td.col-right {
 .status-select:focus {
   border-color: #9d72a0;
 }
-.row-actions .btn,
-.orders-table td:last-child .btn,
-.order-card-actions .btn {
+.row-actions .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -607,88 +592,7 @@ td.row-actions .row-actions-inner {
 .row-actions .btn:last-child::after {
   content: 'Eliminar';
 }
-.orders-table td:last-child .btn::after,
-.order-card-actions .btn::after {
-  content: 'Cancelar';
-}
-.row-actions,
-.orders-table td:last-child,
-.order-card-actions {
-  white-space: nowrap;
-}
-.order-row {
-  cursor: pointer;
-}
-.order-row:hover td {
-  background: #fcf9fc;
-}
-.order-row:focus-visible {
-  outline: 3px solid #c9a3ca;
-  outline-offset: -3px;
-}
-.orders-cards {
-  display: none;
-}
-.order-card {
-  display: grid;
-  gap: 15px;
-  padding: 17px;
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  background: #fffefa;
-  box-shadow: 0 5px 18px #30272e08;
-}
-.order-card:focus-visible {
-  outline: 3px solid #c9a3ca;
-  outline-offset: 2px;
-}
-.order-card-heading,
-.order-card-client,
-.order-card-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.order-card-heading > strong,
-.order-card-meta > strong {
-  color: var(--ink);
-}
-.order-card-client {
-  align-items: flex-start;
-  flex-direction: column;
-  gap: 4px;
-}
-.order-card-client strong {
-  color: var(--ink);
-  font-size: 14px;
-}
-.order-card-client span,
-.order-card-meta span {
-  color: var(--muted);
-  font-size: 11px;
-}
-.order-card-meta {
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-}
-.order-card-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  align-items: end;
-  gap: 9px;
-}
-.order-card-actions label {
-  display: grid;
-  gap: 5px;
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 700;
-}
-.order-card-actions .icon-button {
-  width: 36px;
-  height: 36px;
-}
+
 .catalog-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1187,61 +1091,6 @@ td.row-actions .row-actions-inner {
   padding: 10px 14px;
   font-size: 12px;
 }
-.modal:has(.order-details) {
-  width: min(560px, 100%);
-  max-height: min(720px, calc(100vh - 40px));
-  overflow-y: auto;
-}
-.order-detail-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin: 0;
-}
-.order-detail-grid div {
-  padding: 12px;
-  border-radius: 9px;
-  background: #faf7f9;
-}
-.order-detail-grid dt {
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 700;
-}
-.order-detail-grid dd {
-  margin: 5px 0 0;
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 700;
-}
-.order-detail-total {
-  color: var(--plum) !important;
-  font-size: 17px !important;
-}
-.order-detail-actions {
-  display: grid;
-  gap: 18px;
-  margin-top: 23px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-}
-.order-status-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-.order-status-controls fieldset {
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-.order-status-controls legend {
-  margin-bottom: 7px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
-}
 .segmented-control {
   display: flex;
   padding: 3px;
@@ -1268,29 +1117,6 @@ td.row-actions .row-actions-inner {
   color: var(--plum);
   background: #fffefa;
   box-shadow: 0 1px 4px #30272e14;
-}
-.order-actions-footer {
-  justify-content: flex-end;
-  margin-top: 0;
-}
-.order-actions-footer .primary-button,
-.order-actions-footer .cancel-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-.order-card-statuses {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 11px;
-}
-.order-card-statuses strong {
-  margin-left: 3px;
-  color: var(--ink);
 }
 .order-detail-lines {
   margin-top: 22px;
@@ -1319,10 +1145,6 @@ td.row-actions .row-actions-inner {
 .order-detail-lines li strong {
   color: var(--plum);
 }
-.detail-muted {
-  color: var(--muted);
-  font-size: 12px;
-}
 .danger-action {
   display: inline-flex;
   align-items: center;
@@ -1332,107 +1154,6 @@ td.row-actions .row-actions-inner {
 }
 .danger-action:hover {
   background: #fbe5e1;
-}
-.modal:has(.order-ticket) {
-  width: min(600px, 100%);
-  max-height: min(760px, calc(100vh - 40px));
-  overflow-y: auto;
-}
-.ticket-lines {
-  margin-top: 22px;
-  padding: 16px;
-  border: 1px solid #e8e0e7;
-  border-radius: 12px;
-  background: #fff;
-}
-.ticket-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.ticket-heading h3 {
-  margin: 0;
-  color: var(--ink);
-  font-size: 14px;
-}
-.ticket-heading span {
-  color: var(--muted);
-  font-size: 11px;
-}
-.ticket-columns,
-.ticket-lines li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 44px 76px 76px;
-  align-items: center;
-  gap: 10px;
-}
-.ticket-columns {
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
-  color: #aaa5a8;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-}
-.ticket-columns span:not(:first-child),
-.ticket-lines li > span,
-.ticket-lines li > strong {
-  text-align: right;
-}
-.ticket-lines ul {
-  display: grid;
-  gap: 0;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-.ticket-lines li {
-  padding: 12px 0;
-  border-bottom: 1px dashed #e8e0e7;
-  color: #5e5960;
-  font-size: 11px;
-}
-.ticket-lines li:last-child {
-  border-bottom: 0;
-}
-.ticket-product strong {
-  display: block;
-  color: var(--ink);
-  font-size: 12px;
-}
-.ticket-product span {
-  display: block;
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: 10px;
-}
-.ticket-product span + span {
-  margin-top: 2px;
-  font-size: 9px;
-}
-.ticket-quantity {
-  color: var(--ink);
-  font-weight: 700;
-}
-.ticket-lines li > strong {
-  color: var(--plum);
-}
-.ticket-total {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 18px;
-  padding: 16px 2px 2px;
-  border-top: 2px solid var(--plum);
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 700;
-}
-.ticket-total strong {
-  color: var(--plum);
-  font-size: 24px;
 }
 .visually-hidden {
   position: absolute;
@@ -1445,15 +1166,6 @@ td.row-actions .row-actions-inner {
   white-space: nowrap;
   border: 0;
 }
-.order-form {
-  gap: 16px;
-}
-.order-editor-page {
-  width: 100%;
-}
-.order-editor-page .section-intro {
-  margin-bottom: 26px;
-}
 .back-button {
   display: inline-flex;
   align-items: center;
@@ -1465,125 +1177,6 @@ td.row-actions .row-actions-inner {
   background: transparent;
   font-size: 12px;
   font-weight: 700;
-}
-.order-editor-card {
-  width: 100%;
-  padding: clamp(18px, 3vw, 30px);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: #fffefa;
-  box-shadow: 0 10px 28px rgba(70, 46, 65, 0.06);
-}
-.order-line-stock {
-  grid-column: 1 / 2;
-  color: #716b72;
-  font-size: 10px;
-}
-.order-lines {
-  display: grid;
-  gap: 9px;
-}
-.line-heading {
-  display: flex;
-  justify-content: space-between;
-  color: #716b72;
-  font-size: 11px;
-  font-weight: 700;
-}
-.order-editor-card .line-heading {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 68px 90px 30px;
-  align-items: center;
-  gap: 7px;
-}
-.order-editor-card .line-heading span:not(:first-child) {
-  text-align: right;
-}
-.order-editor-card .line-heading span:nth-child(2) {
-  text-align: center;
-}
-.order-line {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 68px 30px;
-  align-items: center;
-  gap: 7px;
-}
-.order-editor-card .order-line {
-  grid-template-columns: minmax(0, 1fr) 68px 90px 30px;
-}
-.order-line input {
-  /* migrated to shadcn Input */
-}
-.order-line input:focus {
-  /* migrated to shadcn Input */
-}
-.order-line-remove {
-  justify-self: end;
-}
-.line-total {
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 700;
-  text-align: right;
-  white-space: nowrap;
-}
-.add-line {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 9px;
-  border: 1px dashed #d8c8d8;
-  border-radius: 8px;
-  color: var(--plum);
-  background: #fbf7fb;
-  font-size: 11px;
-  font-weight: 700;
-}
-.order-total {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 15px;
-  border-top: 1px solid var(--line);
-  color: #716b72;
-  font-size: 12px;
-}
-.order-total strong {
-  color: var(--plum);
-  font-size: 22px;
-}
-
-@media (max-width: 520px) {
-  .order-editor-page .section-intro {
-    margin-bottom: 20px;
-  }
-  .order-editor-card {
-    padding: 18px 15px;
-  }
-  .order-editor-card .line-heading,
-  .order-editor-card .order-line {
-    grid-template-columns: minmax(0, 1fr) 56px 76px 30px;
-    gap: 5px;
-  }
-  .line-heading {
-    font-size: 10px;
-  }
-  .order-line input {
-    /* migrated to shadcn Input */
-  }
-  .line-total {
-    font-size: 12px;
-  }
-  .order-line-remove {
-    padding: 6px;
-  }
-  .order-editor-card .modal-actions {
-    flex-wrap: wrap;
-  }
-  .order-editor-card .modal-actions > * {
-    flex: 1;
-  }
 }
 .auth-page {
   display: grid;
@@ -1706,8 +1299,7 @@ td.row-actions .row-actions-inner {
 @media (max-width: 650px) {
   .stats-grid,
   .client-grid,
-  .catalog-grid,
-  .order-summary {
+  .catalog-grid {
     grid-template-columns: 1fr;
   }
   .section-intro {
@@ -1744,49 +1336,11 @@ td.row-actions .row-actions-inner {
   }
 }
 @media (max-width: 650px) {
-  .orders-table {
-    display: none;
-  }
-  .orders-cards {
-    display: grid;
-    gap: 12px;
-  }
-  .order-detail-grid {
-    grid-template-columns: 1fr 1fr;
-  }
   .modal-backdrop {
     padding: 12px;
   }
   .modal {
     padding: 20px;
-  }
-  .order-status-controls {
-    grid-template-columns: 1fr;
-  }
-  .order-actions-footer {
-    flex-wrap: wrap;
-  }
-  .order-actions-footer > button {
-    flex: 1 1 100%;
-  }
-}
-@media (max-width: 650px) {
-  .ticket-lines {
-    padding: 12px;
-  }
-  .ticket-columns,
-  .ticket-lines li {
-    grid-template-columns: minmax(0, 1fr) 34px 64px 64px;
-    gap: 6px;
-  }
-  .ticket-columns {
-    font-size: 8px;
-  }
-  .ticket-product strong {
-    font-size: 11px;
-  }
-  .ticket-total strong {
-    font-size: 21px;
   }
 }
 @media (max-width: 650px) {
@@ -2169,164 +1723,3 @@ td.row-actions .row-actions-inner {
   justify-content: center;
 }
 
-/* ─── ORDER DETAIL STATUS ──────────────────────────────── */
-.status-card-rows {
-  display: grid;
-  gap: 14px;
-}
-.status-card-row {
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-.status-card-row legend {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
-}
-.status-card-cancelled {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: #faf7f9;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-}
-.status-card-readonly {
-  display: flex;
-  align-items: center;
-}
-
-/* ─── ORDER DETAIL PAGE ─────────────────────────────────── */
-.order-detail-page {
-  max-width: 1100px;
-}
-.order-detail-layout {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 24px;
-  align-items: start;
-}
-.order-detail-main {
-  display: grid;
-  gap: 20px;
-}
-.order-detail-sidebar {
-  display: grid;
-  gap: 20px;
-  position: sticky;
-  top: 24px;
-}
-.order-detail-card {
-  padding: 20px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fffefa;
-}
-.order-detail-card h3 {
-  margin: 0 0 16px;
-  color: var(--ink);
-  font-size: 14px;
-  letter-spacing: -0.3px;
-}
-.order-detail-grid-full {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin: 0;
-}
-.order-detail-grid-full div {
-  padding: 12px;
-  border-radius: 9px;
-  background: #faf7f9;
-}
-.order-detail-grid-full dt {
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 700;
-}
-.order-detail-grid-full dd {
-  margin: 5px 0 0;
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 700;
-}
-.order-detail-id {
-  font-family: monospace;
-  letter-spacing: 0.5px;
-}
-.order-detail-total {
-  color: var(--plum) !important;
-  font-size: 17px !important;
-}
-.order-detail-products .ticket-columns {
-  display: grid;
-  grid-template-columns: 1fr 60px 100px 100px;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 700;
-}
-.order-detail-products ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.order-detail-products li {
-  display: grid;
-  grid-template-columns: 1fr 60px 100px 100px;
-  gap: 8px;
-  align-items: start;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
-  color: var(--ink);
-}
-.order-detail-products li:last-child {
-  border-bottom: 0;
-}
-.order-detail-products .ticket-product {
-  display: grid;
-  gap: 2px;
-}
-.order-detail-products .ticket-product strong {
-  font-size: 13px;
-}
-.order-detail-products .detail-muted {
-  color: var(--muted);
-  font-size: 11px;
-}
-.order-detail-products .ticket-quantity {
-  font-weight: 700;
-}
-.order-detail-products .ticket-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 2px solid var(--plum);
-  font-size: 14px;
-  font-weight: 700;
-}
-.order-detail-products .ticket-total strong {
-  color: var(--plum);
-  font-size: 18px;
-}
-
-@media (max-width: 860px) {
-  .order-detail-layout {
-    grid-template-columns: 1fr;
-  }
-  .order-detail-sidebar {
-    position: static;
-  }
-}

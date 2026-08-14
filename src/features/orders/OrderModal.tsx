@@ -128,7 +128,7 @@ export function OrderModal({
 
   return (
     <ModalFrame title="Crear pedido" onClose={onClose}>
-      <form className="form-grid order-form" onSubmit={submit}>
+      <form className="form-grid gap-4" onSubmit={submit}>
         {!clients.length || !variantOptions.length ? (
           <Empty text="Necesitas al menos un cliente y un producto para crear un pedido." />
         ) : (
@@ -146,8 +146,8 @@ export function OrderModal({
                 ariaLabel="Cliente"
               />
             </label>
-            <div className="order-lines">
-              <div className="line-heading">
+            <div className="grid gap-[9px]">
+              <div className="flex justify-between text-[#716b72] text-[11px] font-bold">
                 <span>Productos</span>
                 <span>Total</span>
               </div>
@@ -157,7 +157,7 @@ export function OrderModal({
                 )
                 return (
                   <div
-                    className="order-line"
+                    className="grid grid-cols-[minmax(0,1fr)_68px_30px] items-center gap-[7px]"
                     key={`${line.variantId}-${index}`}
                   >
                     <CustomSelect
@@ -183,7 +183,7 @@ export function OrderModal({
                       max={selectedOpt?.variant.stock ?? 1}
                       step="1"
                     />
-                    <span className="line-total">
+                    <span className="text-foreground text-[13px] font-bold text-right whitespace-nowrap">
                       {money.format(
                         (selectedOpt?.variant.salePrice ?? 0) * line.quantity,
                       )}
@@ -203,7 +203,7 @@ export function OrderModal({
                 )
               })}
               <button
-                className="add-line"
+                className="flex items-center justify-center gap-[5px] py-[9px] border border-dashed border-[#d8c8d8] rounded-[8px] text-primary bg-[#fbf7fb] text-[11px] font-bold"
                 onClick={() => {
                   const next = variantOptions.find(
                     (opt) =>
@@ -234,9 +234,9 @@ export function OrderModal({
                 ariaLabel="Estado del pago"
               />
             </label>
-            <div className="order-total">
+            <div className="flex items-center justify-between pt-[15px] border-t border-border text-[#716b72] text-xs">
               <span>Total del pedido</span>
-              <strong>{money.format(total)}</strong>
+              <strong className="text-primary text-[22px]">{money.format(total)}</strong>
             </div>
             <div className="modal-actions">
               <Button
