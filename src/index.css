@@ -153,6 +153,13 @@ button {
     calc(var(--radius) * 2.2);
   --radius-4xl:
     calc(var(--radius) * 2.6);
+  --color-nav-hover: #f8f2f8;
+  --color-nav-active: #f3eaf4;
+  --color-avatar-bg: #f3d7cb;
+  --color-avatar-text: #734b4c;
+  --color-muted-text: #aaa4aa;
+  --color-nav-text: #8a858b;
+  --color-profile-sub: #9b969d;
 }
 
 .dark {

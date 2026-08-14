@@ -1,0 +1,37 @@
+# Build Plan
+
+## Shipped
+
+- [x] 1. **Project scaffolding** - Vite + React 19 + TypeScript setup with oxlint, Prettier, and Tailwind CSS v4
+- [x] 2. **Supabase integration** - client setup, env vars, and database connection
+- [x] 3. **Auth** - email/password authentication with Supabase Auth
+- [x] 4. **Dashboard** - summary of sales, recent orders, and low-stock products
+- [x] 5. **Product management** - CRUD with categories, option types, and variants
+- [x] 6. **Client management** - CRUD with phone, zone, and order history
+- [x] 7. **Order management** - create/edit orders with line items, status (Pendiente/Entregado/Cancelado)
+- [x] 8. **Payment tracking** - register payments with method (Efectivo/Transferencia/Tarjeta/Otro), reference, and notes
+- [x] 9. **Public catalog** - slug-based public page with WhatsApp link
+- [x] 10. **Stats pages** - sales aggregates and reports
+- [x] 11. **Business settings** - name, currency, low-stock threshold, catalog config
+- [x] 12. **PWA** - installable with auto-update via vite-plugin-pwa
+- [x] 13. **Toast notifications** - success/error feedback via react-toastify
+- [x] 14. **Basic tests** - Vitest + Testing Library with tests in lib/ and hooks/
+
+## Next
+
+- [x] 15. **Refactor App.tsx** - break up the monolith into route-level components, extract state to hooks/contexts
+  - [x] 15a. Extract modal manager - move modal state and rendering to ModalContext + ModalManager
+  - [x] 15b. Extract product editor hook - move product editor state and handlers to useProductEditor
+  - [x] 15c. Extract order editor hook - move order editor/detail state and handlers to useOrderEditor
+  - [x] 15d. Split page sections - extract each page block into named components
+- [x] 16. **Real routing** - replace useState-based page switching with wouter routes
+- [x] 17. **Type cleanup** - consolidate types.ts and types/supabase.ts, add missing types, remove loose `any`s
+- [ ] 18. **Full restyle** - migrate from App.css monolith to Tailwind utility classes, add shadcn/ui components
+  - [x] 18a. Theme & shadcn/ui setup - install shadcn/ui, configure tokens, create base component primitives
+  - [x] 18b. Layout restyle - app shell, sidebar, topbar, mobile nav drawer to Tailwind
+  - [ ] 18c. Dashboard restyle - welcome card, stats grid, charts, quick actions
+  - [ ] 18d. Products & Orders restyle - product forms, order forms, variants, payment tracking
+  - [ ] 18e. Clients, Settings, Stats, Catalog restyle - remaining pages + public catalog + auth screen
+  - [ ] 18f. Cleanup - remove App.css, verify responsive behavior, final pass
+- [ ] 19. **Test coverage** - expand tests for critical business logic (orders, payments, product mutations)
+- [ ] 20. **Deploy readiness** - Vercel or Render config, env vars, production build verification

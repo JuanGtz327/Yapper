@@ -16,11 +16,11 @@ export function Topbar({
   onOpenMenu: () => void
 }) {
   return (
-    <header className="topbar">
-      <div className="topbar-heading">
+    <header className="flex items-end justify-between">
+      <div className="flex items-center gap-[14px]">
         <button
           ref={hamburgerRef}
-          className="mobile-menu-button"
+          className="hidden max-[850px]:grid place-items-center w-[44px] h-[44px] p-0 border border-[#ded5df] rounded-[10px] text-primary bg-sidebar"
           aria-label="Abrir menú de navegación"
           aria-controls="mobile-navigation"
           aria-expanded={menuOpen}
@@ -30,7 +30,7 @@ export function Topbar({
           <Menu size={23} aria-hidden="true" />
         </button>
         <div>
-          <p className="eyebrow">
+          <p className="mb-[9px] text-muted-text text-[10px] font-bold tracking-[1.25px] uppercase">
             {new Intl.DateTimeFormat('es-MX', {
               weekday: 'long',
               day: 'numeric',

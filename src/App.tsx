@@ -45,9 +45,11 @@ function DashboardApp() {
 
   if (authLoading)
     return (
-      <main className="auth-loading">
-        <div className="brand-mark">Y</div>
-        <p>
+      <main className="grid place-content-center justify-items-center min-h-screen gap-3 text-muted-text">
+        <div className="grid place-items-center w-[38px] h-[38px] rounded-xl bg-primary text-primary-foreground text-[23px] font-bold -rotate-7">
+          Y
+        </div>
+        <p className="text-[13px]">
           <Spinner label="Cargando Yapper" /> Cargando Yapper...
         </p>
       </main>
@@ -114,13 +116,13 @@ function DashboardContent({
   }
 
   return (
-    <div className="app-shell">
+    <div className="flex min-h-screen bg-background">
       <AppSidebar
         page={page}
         businessName={settings.businessName}
         accountLabel={user?.email || 'Modo demo'}
       />
-      <main className="main-content">
+      <main className="w-full max-w-[1200px] mx-auto px-[54px] pt-[47px] pb-[60px] max-[850px]:w-full max-[850px]:px-[25px] max-[850px]:pt-[35px] max-[850px]:pb-[50px] max-[650px]:px-[16px] max-[650px]:pt-[25px]">
         <Topbar
           page={page}
           businessName={settings.businessName}
@@ -129,7 +131,7 @@ function DashboardContent({
           onOpenMenu={() => setMobileMenuOpen(true)}
         />
         {dataLoading && (
-          <div className="data-notice">
+          <div className="-mt-[17px] mb-[18px] px-[13px] py-[10px] border border-[#d9eadf] rounded-lg text-[#579078] bg-[#eff9f1] text-xs">
             <Spinner label="Sincronizando tus datos" /> Sincronizando tus
             datos...
           </div>
