@@ -52,7 +52,9 @@ describe('Contrato del trigger validate_order_item_owner', () => {
       const { deleteProduct } = await import('./repository.ts')
       // Should not throw — the trigger skips ownership check when the variant
       // was CASCADE-deleted during product removal.
-      await expect(deleteProduct('product-with-orders')).resolves.toBeUndefined()
+      await expect(
+        deleteProduct('product-with-orders'),
+      ).resolves.toBeUndefined()
       expect(supabaseFromMock).toHaveBeenCalledWith('products')
       expect(eqMock).toHaveBeenCalledWith('id', 'product-with-orders')
     })
@@ -81,10 +83,14 @@ describe('Contrato del trigger validate_order_item_owner', () => {
       mockRpc.mockResolvedValue({ data: 'order-new', error: null })
 
       const { createOrder } = await import('./repository.ts')
-      const result = await createOrder('client-1', [
-        { variantId: 'v1', quantity: 2 },
-        { variantId: 'v2', quantity: 1 },
-      ], 'paid')
+      const result = await createOrder(
+        'client-1',
+        [
+          { variantId: 'v1', quantity: 2 },
+          { variantId: 'v2', quantity: 1 },
+        ],
+        'paid',
+      )
 
       expect(mockRpc).toHaveBeenCalledWith('create_order', {
         p_client_id: 'client-1',
@@ -102,15 +108,20 @@ describe('Contrato del trigger validate_order_item_owner', () => {
       mockRpc.mockResolvedValue({
         data: null,
         error: {
-          message:
-            'Order item must use a variant owned by the order owner',
+          message: 'Order item must use a variant owned by the order owner',
         },
       })
 
       const { createOrder } = await import('./repository.ts')
       await expect(
-        createOrder('client-1', [{ variantId: 'stolen-variant', quantity: 1 }], 'paid'),
-      ).rejects.toThrow('Order item must use a variant owned by the order owner')
+        createOrder(
+          'client-1',
+          [{ variantId: 'stolen-variant', quantity: 1 }],
+          'paid',
+        ),
+      ).rejects.toThrow(
+        'Order item must use a variant owned by the order owner',
+      )
     })
 
     it('debería funcionar con variant_id NULL (items legacy sin variant)', async () => {
@@ -148,9 +159,9 @@ describe('Contrato del trigger validate_order_item_owner', () => {
       })
 
       const { updateOrderStatus } = await import('./repository.ts')
-      await expect(updateOrderStatus('nonexistent', 'delivered')).rejects.toThrow(
-        'Order not found',
-      )
+      await expect(
+        updateOrderStatus('nonexistent', 'delivered'),
+      ).rejects.toThrow('Order not found')
     })
   })
 
@@ -174,7 +185,9 @@ describe('Contrato del trigger validate_order_item_owner', () => {
 
       const { cancelOrder } = await import('./repository.ts')
       // Should not throw — the RPC skips stock restoration for deleted variants
-      await expect(cancelOrder('order-with-deleted-variant')).resolves.toBeUndefined()
+      await expect(
+        cancelOrder('order-with-deleted-variant'),
+      ).resolves.toBeUndefined()
     })
 
     it('debería propagar error si la variante existe pero pertenece a otro usuario', async () => {
@@ -234,9 +247,7 @@ describe('Contrato del trigger validate_order_item_owner', () => {
         })
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
-            in: vi
-              .fn()
-              .mockResolvedValue({ data: mockItems, error: null }),
+            in: vi.fn().mockResolvedValue({ data: mockItems, error: null }),
           }),
         })
 

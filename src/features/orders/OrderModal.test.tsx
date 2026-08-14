@@ -89,8 +89,12 @@ describe('OrderModal', () => {
       const clientLabel = within(dialog).getByText('Cliente').closest('label')!
       const trigger = clientLabel.querySelector('.custom-select-trigger')!
       await user.click(trigger)
-      expect(screen.getByRole('option', { name: 'Juan Pérez' })).toBeInTheDocument()
-      expect(screen.getByRole('option', { name: 'María García' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('option', { name: 'Juan Pérez' }),
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('option', { name: 'María García' }),
+      ).toBeInTheDocument()
     })
 
     it('debería mostrar el select de estado de pago', () => {
@@ -104,7 +108,9 @@ describe('OrderModal', () => {
       const trigger = screen.getByRole('button', { name: /estado del pago/i })
       await user.click(trigger)
       expect(screen.getByRole('option', { name: 'Pagado' })).toBeInTheDocument()
-      expect(screen.getByRole('option', { name: 'Pendiente de pago' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('option', { name: 'Pendiente de pago' }),
+      ).toBeInTheDocument()
     })
 
     it('debería mostrar el total del pedido', () => {
@@ -175,10 +181,14 @@ describe('OrderModal', () => {
       const user = userEvent.setup()
       render(<OrderModal {...defaultProps} />)
       const dialog = screen.getByRole('dialog')
-      const paymentLabel = within(dialog).getByText('Estado del pago').closest('label')!
+      const paymentLabel = within(dialog)
+        .getByText('Estado del pago')
+        .closest('label')!
       const trigger = paymentLabel.querySelector('.custom-select-trigger')!
       await user.click(trigger)
-      await user.click(screen.getByRole('option', { name: 'Pendiente de pago' }))
+      await user.click(
+        screen.getByRole('option', { name: 'Pendiente de pago' }),
+      )
       expect(trigger).toHaveTextContent('Pendiente de pago')
     })
   })
@@ -245,18 +255,14 @@ describe('OrderModal', () => {
     it('debería mostrar mensaje cuando no hay clientes', () => {
       render(<OrderModal {...defaultProps} clients={[]} />)
       expect(
-        screen.getByText(
-          /Necesitas al menos un cliente y un producto/,
-        ),
+        screen.getByText(/Necesitas al menos un cliente y un producto/),
       ).toBeInTheDocument()
     })
 
     it('debería mostrar mensaje cuando no hay productos', () => {
       render(<OrderModal {...defaultProps} products={[]} />)
       expect(
-        screen.getByText(
-          /Necesitas al menos un cliente y un producto/,
-        ),
+        screen.getByText(/Necesitas al menos un cliente y un producto/),
       ).toBeInTheDocument()
     })
   })
@@ -266,7 +272,7 @@ describe('OrderModal', () => {
       const onSubmit = vi.fn()
       // When clients is empty, the Empty component is shown instead of the form
       render(<OrderModal {...defaultProps} clients={[]} onSubmit={onSubmit} />)
-      
+
       // The Empty component should be shown
       expect(
         screen.getByText(/Necesitas al menos un cliente y un producto/),
@@ -278,7 +284,7 @@ describe('OrderModal', () => {
       const onSubmit = vi.fn()
       // When products is empty, the Empty component is shown instead of the form
       render(<OrderModal {...defaultProps} products={[]} onSubmit={onSubmit} />)
-      
+
       // The Empty component should be shown
       expect(
         screen.getByText(/Necesitas al menos un cliente y un producto/),
@@ -290,7 +296,7 @@ describe('OrderModal', () => {
       render(<OrderModal {...defaultProps} />)
       const quantityInput = screen.getByLabelText('Cantidad')
       fireEvent.change(quantityInput, { target: { value: '5' } })
-      
+
       // 150 * 5 = 750
       const totals = screen.getAllByText('$750.00')
       expect(totals.length).toBeGreaterThanOrEqual(1)
@@ -298,14 +304,14 @@ describe('OrderModal', () => {
 
     it('debería calcular total correctamente con múltiples variantes', () => {
       render(<OrderModal {...defaultProps} />)
-      
+
       // Initial total: 150 * 1 = 150
       const initialTotals = screen.getAllByText('$150.00')
       expect(initialTotals.length).toBeGreaterThanOrEqual(1)
-      
+
       // Add another product
       fireEvent.click(screen.getByText('Añadir otro producto'))
-      
+
       // After adding: first line 150 * 1 + second line 150 * 1 = 300
       expect(screen.getByText('$300.00')).toBeInTheDocument()
     })

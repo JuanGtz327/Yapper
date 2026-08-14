@@ -46,7 +46,7 @@ describe('Lógica de pagos parciales', () => {
     })
 
     it('debería manejar montos decimales', () => {
-      expect(calculateRemainingAmount(100.50, 30.25)).toBeCloseTo(70.25)
+      expect(calculateRemainingAmount(100.5, 30.25)).toBeCloseTo(70.25)
     })
   })
 

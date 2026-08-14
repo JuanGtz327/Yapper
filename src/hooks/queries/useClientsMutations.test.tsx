@@ -54,9 +54,7 @@ function createWrapper() {
 
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     )
   }
 }
@@ -258,9 +256,7 @@ describe('useClientsMutations', () => {
 
     it('debería lanzar error cuando deleteClient falla', async () => {
       // Arrange
-      mockDeleteClient.mockRejectedValue(
-        new Error('No se puede eliminar'),
-      )
+      mockDeleteClient.mockRejectedValue(new Error('No se puede eliminar'))
       const wrapper = createWrapper()
       const { result } = renderHook(() => useClientsMutations(mockUser), {
         wrapper,
@@ -300,9 +296,7 @@ describe('useClientsMutations', () => {
           mutations: { retry: false },
         },
       })
-      const existingClients: Client[] = [
-        { ...mockClient, id: 'existing-1' },
-      ]
+      const existingClients: Client[] = [{ ...mockClient, id: 'existing-1' }]
       queryClient.setQueryData(
         ['users', mockUser.id, 'clients'],
         existingClients,
@@ -327,9 +321,11 @@ describe('useClientsMutations', () => {
 
       // Assert
       await waitFor(() => {
-        const cached = queryClient.getQueryData<Client[]>(
-          ['users', mockUser.id, 'clients'],
-        )
+        const cached = queryClient.getQueryData<Client[]>([
+          'users',
+          mockUser.id,
+          'clients',
+        ])
         expect(cached).toHaveLength(2)
         expect(cached?.[1]).toEqual(mockSavedClient)
       })
@@ -369,9 +365,11 @@ describe('useClientsMutations', () => {
 
       // Assert
       await waitFor(() => {
-        const cached = queryClient.getQueryData<Client[]>(
-          ['users', mockUser.id, 'clients'],
-        )
+        const cached = queryClient.getQueryData<Client[]>([
+          'users',
+          mockUser.id,
+          'clients',
+        ])
         expect(cached).toHaveLength(1)
         expect(cached?.[0].name).toBe('Mariana G. Actualizada')
       })
@@ -413,9 +411,11 @@ describe('useClientsMutations', () => {
 
       // Assert
       await waitFor(() => {
-        const cached = queryClient.getQueryData<Client[]>(
-          ['users', mockUser.id, 'clients'],
-        )
+        const cached = queryClient.getQueryData<Client[]>([
+          'users',
+          mockUser.id,
+          'clients',
+        ])
         expect(cached).toHaveLength(1)
         expect(cached?.[0].id).toBe('client-other')
       })
@@ -449,9 +449,11 @@ describe('useClientsMutations', () => {
 
       // Assert
       await waitFor(() => {
-        const cached = queryClient.getQueryData<Client[]>(
-          ['users', mockUser.id, 'clients'],
-        )
+        const cached = queryClient.getQueryData<Client[]>([
+          'users',
+          mockUser.id,
+          'clients',
+        ])
         expect(cached).toEqual([mockSavedClient])
       })
     })

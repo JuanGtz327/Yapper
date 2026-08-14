@@ -14,7 +14,11 @@ export function PaymentProgress({
   const isFullyPaid = paidAmount >= total
 
   return (
-    <div className="payment-progress" role="group" aria-label="Progreso de pago">
+    <div
+      className="payment-progress"
+      role="group"
+      aria-label="Progreso de pago"
+    >
       <div className="payment-progress-header">
         <span className="payment-progress-label">
           {isFullyPaid ? 'Pagado total' : 'Abonado'}

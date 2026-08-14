@@ -333,44 +333,26 @@ describe('Repositorio de productos', () => {
       ]
       const mockCategories = [{ id: 'cat1', name: 'Ropa' }]
 
-      const selectFn1 = vi
-        .fn()
-        .mockReturnValue({
-          eq: vi
-            .fn()
-            .mockReturnValue({
-              order: vi
-                .fn()
-                .mockResolvedValue({ data: mockProducts, error: null }),
-            }),
-        })
-      const selectFn2 = vi
-        .fn()
-        .mockReturnValue({
-          in: vi
-            .fn()
-            .mockReturnValue({
-              eq: vi
-                .fn()
-                .mockReturnValue({
-                  order: vi
-                    .fn()
-                    .mockResolvedValue({ data: mockVariants, error: null }),
-                }),
-            }),
-        })
-      const selectFn3 = vi
-        .fn()
-        .mockReturnValue({
-          in: vi
-            .fn()
-            .mockResolvedValue({ data: mockOptionValues, error: null }),
-        })
-      const selectFn4 = vi
-        .fn()
-        .mockReturnValue({
-          eq: vi.fn().mockResolvedValue({ data: mockCategories, error: null }),
-        })
+      const selectFn1 = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({ data: mockProducts, error: null }),
+        }),
+      })
+      const selectFn2 = vi.fn().mockReturnValue({
+        in: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi
+              .fn()
+              .mockResolvedValue({ data: mockVariants, error: null }),
+          }),
+        }),
+      })
+      const selectFn3 = vi.fn().mockReturnValue({
+        in: vi.fn().mockResolvedValue({ data: mockOptionValues, error: null }),
+      })
+      const selectFn4 = vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ data: mockCategories, error: null }),
+      })
 
       const fns = [selectFn1, selectFn2, selectFn3, selectFn4]
       let i = 0
@@ -418,36 +400,22 @@ describe('Repositorio de productos', () => {
         },
       ]
 
-      const selectFn1 = vi
-        .fn()
-        .mockReturnValue({
-          eq: vi
-            .fn()
-            .mockReturnValue({
-              order: vi
-                .fn()
-                .mockResolvedValue({ data: mockProducts, error: null }),
-            }),
-        })
-      const selectFn2 = vi
-        .fn()
-        .mockReturnValue({
-          in: vi
-            .fn()
-            .mockReturnValue({
-              eq: vi
-                .fn()
-                .mockReturnValue({
-                  order: vi.fn().mockResolvedValue({ data: [], error: null }),
-                }),
-            }),
-        })
+      const selectFn1 = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({ data: mockProducts, error: null }),
+        }),
+      })
+      const selectFn2 = vi.fn().mockReturnValue({
+        in: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+        }),
+      })
       // variantIds is empty → 3rd from() (variant_option_values) is skipped, so 3rd fn is categories
-      const selectFn3 = vi
-        .fn()
-        .mockReturnValue({
-          eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-        })
+      const selectFn3 = vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+      })
 
       const fns = [selectFn1, selectFn2, selectFn3]
       let i = 0
@@ -465,12 +433,10 @@ describe('Repositorio de productos', () => {
       supabaseFromMock.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            order: vi
-              .fn()
-              .mockResolvedValue({
-                data: null,
-                error: { message: 'DB error' },
-              }),
+            order: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'DB error' },
+            }),
           }),
         }),
       })
@@ -814,7 +780,13 @@ describe('Repositorio de pagos parciales', () => {
       mockRpc.mockResolvedValue({ data: { id: 'pay-1' }, error: null })
       const { registerPayment } = await import('./repository.ts')
 
-      await registerPayment('order-1', 100, 'Transferencia', 'REF-123', 'Primer abono')
+      await registerPayment(
+        'order-1',
+        100,
+        'Transferencia',
+        'REF-123',
+        'Primer abono',
+      )
 
       expect(mockRpc).toHaveBeenCalledWith('register_payment', {
         p_order_id: 'order-1',
@@ -832,9 +804,9 @@ describe('Repositorio de pagos parciales', () => {
       })
       const { registerPayment } = await import('./repository.ts')
 
-      await expect(
-        registerPayment('order-1', 50, 'Efectivo'),
-      ).rejects.toThrow('Order is cancelled')
+      await expect(registerPayment('order-1', 50, 'Efectivo')).rejects.toThrow(
+        'Order is cancelled',
+      )
     })
 
     it('debería lanzar error cuando el monto excede el saldo', async () => {
@@ -844,9 +816,9 @@ describe('Repositorio de pagos parciales', () => {
       })
       const { registerPayment } = await import('./repository.ts')
 
-      await expect(
-        registerPayment('order-1', 500, 'Efectivo'),
-      ).rejects.toThrow('Payment amount exceeds remaining balance')
+      await expect(registerPayment('order-1', 500, 'Efectivo')).rejects.toThrow(
+        'Payment amount exceeds remaining balance',
+      )
     })
   })
 
@@ -875,9 +847,7 @@ describe('Repositorio de pagos parciales', () => {
 
       const orderMock = vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          order: vi
-            .fn()
-            .mockResolvedValue({ data: mockPayments, error: null }),
+          order: vi.fn().mockResolvedValue({ data: mockPayments, error: null }),
         }),
       })
       supabaseFromMock.mockReturnValue({ select: orderMock })
@@ -895,9 +865,7 @@ describe('Repositorio de pagos parciales', () => {
     it('debería devolver array vacío cuando no hay abonos', async () => {
       const orderMock = vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          order: vi
-            .fn()
-            .mockResolvedValue({ data: [], error: null }),
+          order: vi.fn().mockResolvedValue({ data: [], error: null }),
         }),
       })
       supabaseFromMock.mockReturnValue({ select: orderMock })
@@ -932,9 +900,7 @@ describe('Repositorio de pagos parciales', () => {
 
       const orderMock = vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          order: vi
-            .fn()
-            .mockResolvedValue({ data: mockPayments, error: null }),
+          order: vi.fn().mockResolvedValue({ data: mockPayments, error: null }),
         }),
       })
       supabaseFromMock.mockReturnValue({ select: orderMock })
@@ -949,12 +915,10 @@ describe('Repositorio de pagos parciales', () => {
     it('debería lanzar error cuando supabase falla', async () => {
       const orderMock = vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          order: vi
-            .fn()
-            .mockResolvedValue({
-              data: null,
-              error: { message: 'DB error' },
-            }),
+          order: vi.fn().mockResolvedValue({
+            data: null,
+            error: { message: 'DB error' },
+          }),
         }),
       })
       supabaseFromMock.mockReturnValue({ select: orderMock })

@@ -58,8 +58,8 @@ export function CatalogPage({
       <div className="catalog-grid">
         {products.filter((product) => product.published).length === 0 ? (
           <div className="empty-state">
-            No hay productos publicados aún. Publica productos desde el
-            almacén para que aparezcan aquí.
+            No hay productos publicados aún. Publica productos desde el almacén
+            para que aparezcan aquí.
           </div>
         ) : (
           products

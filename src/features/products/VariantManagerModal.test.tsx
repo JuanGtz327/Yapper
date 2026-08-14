@@ -67,7 +67,9 @@ describe('VariantManagerModal', () => {
   describe('Renderizado - Nueva variante', () => {
     it('debería mostrar título "Añadir variante" para nueva variante', () => {
       render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByRole('heading', { name: 'Añadir variante' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { name: 'Añadir variante' }),
+      ).toBeInTheDocument()
     })
 
     it('debería mostrar campo de SKU', () => {
@@ -97,7 +99,9 @@ describe('VariantManagerModal', () => {
 
     it('debería mostrar botón de guardar variante', () => {
       render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByRole('button', { name: /añadir variante/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /añadir variante/i }),
+      ).toBeInTheDocument()
     })
 
     it('debería mostrar botón de cancelar', () => {
@@ -123,7 +127,9 @@ describe('VariantManagerModal', () => {
     it('debería poblar el campo nombre con el valor existente', () => {
       const variant = createMockVariant()
       render(<VariantManagerModal {...defaultProps} variant={variant} />)
-      const input = screen.getByLabelText('Nombre de variante') as HTMLInputElement
+      const input = screen.getByLabelText(
+        'Nombre de variante',
+      ) as HTMLInputElement
       expect(input.value).toBe('Negro')
     })
 
@@ -237,9 +243,11 @@ describe('VariantManagerModal', () => {
     })
 
     it('debería mostrar "Guardando..." durante el envío', async () => {
-      const onSave = vi.fn().mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100)),
-      )
+      const onSave = vi
+        .fn()
+        .mockImplementation(
+          () => new Promise((resolve) => setTimeout(resolve, 100)),
+        )
       render(<VariantManagerModal {...defaultProps} onSave={onSave} />)
 
       fireEvent.change(screen.getByLabelText('SKU'), {
@@ -260,9 +268,11 @@ describe('VariantManagerModal', () => {
     })
 
     it('debería deshabilitar el botón durante el envío', async () => {
-      const onSave = vi.fn().mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100)),
-      )
+      const onSave = vi
+        .fn()
+        .mockImplementation(
+          () => new Promise((resolve) => setTimeout(resolve, 100)),
+        )
       render(<VariantManagerModal {...defaultProps} onSave={onSave} />)
 
       fireEvent.change(screen.getByLabelText('SKU'), {
@@ -275,7 +285,9 @@ describe('VariantManagerModal', () => {
         target: { value: '50' },
       })
 
-      const submitButton = screen.getByRole('button', { name: /añadir variante/i })
+      const submitButton = screen.getByRole('button', {
+        name: /añadir variante/i,
+      })
       fireEvent.click(submitButton)
 
       await waitFor(() => {
@@ -422,7 +434,9 @@ describe('VariantManagerModal', () => {
         target: { value: '50' },
       })
 
-      const submitButton = screen.getByRole('button', { name: /añadir variante/i })
+      const submitButton = screen.getByRole('button', {
+        name: /añadir variante/i,
+      })
       fireEvent.click(submitButton)
 
       await waitFor(() => {

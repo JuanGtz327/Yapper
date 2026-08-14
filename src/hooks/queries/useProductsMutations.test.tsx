@@ -275,9 +275,9 @@ describe('useProductsMutations', () => {
         variants: [],
       }
 
-      await expect(
-        result.current.update.mutateAsync(product),
-      ).rejects.toThrow('DB error')
+      await expect(result.current.update.mutateAsync(product)).rejects.toThrow(
+        'DB error',
+      )
     })
 
     it('debería propagar errores de deleteProduct', async () => {
@@ -288,9 +288,9 @@ describe('useProductsMutations', () => {
         wrapper: createWrapper(),
       })
 
-      await expect(
-        result.current.remove.mutateAsync('p1'),
-      ).rejects.toThrow('DB error')
+      await expect(result.current.remove.mutateAsync('p1')).rejects.toThrow(
+        'DB error',
+      )
     })
   })
 

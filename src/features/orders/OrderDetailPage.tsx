@@ -162,7 +162,9 @@ export function OrderDetailPage({
               </div>
               <div>
                 <dt>Total</dt>
-                <dd className="order-detail-total">{formatMoney(total, currency)}</dd>
+                <dd className="order-detail-total">
+                  {formatMoney(total, currency)}
+                </dd>
               </div>
             </dl>
           </div>
@@ -183,9 +185,13 @@ export function OrderDetailPage({
                       <div className="ticket-product">
                         <strong>{line.name}</strong>
                         {line.variantLabel && (
-                          <span className="detail-muted">{line.variantLabel}</span>
+                          <span className="detail-muted">
+                            {line.variantLabel}
+                          </span>
                         )}
-                        <span>{formatMoney(line.unitPrice, currency)} por unidad</span>
+                        <span>
+                          {formatMoney(line.unitPrice, currency)} por unidad
+                        </span>
                       </div>
                       <span className="ticket-quantity">{line.quantity}</span>
                       <span>{formatMoney(line.unitPrice, currency)}</span>
@@ -292,9 +298,7 @@ export function OrderDetailPage({
               currency={currency}
             />
             {hasRemainingBalance && (
-              <PaymentButton
-                onClick={() => setShowPaymentModal(true)}
-              />
+              <PaymentButton onClick={() => setShowPaymentModal(true)} />
             )}
           </div>
 

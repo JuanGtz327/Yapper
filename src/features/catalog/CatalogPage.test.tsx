@@ -72,13 +72,17 @@ describe('CatalogPage', () => {
     it('debería ocultar la barra de compartir cuando el catálogo está deshabilitado', () => {
       const settings = { ...defaultSettings, publicCatalogEnabled: false }
       render(<CatalogPage {...defaultProps} settings={settings} />)
-      expect(screen.queryByText('Catálogo público listo')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Catálogo público listo'),
+      ).not.toBeInTheDocument()
     })
 
     it('debería ocultar la barra de compartir cuando no hay slug', () => {
       const settings = { ...defaultSettings, publicSlug: '' }
       render(<CatalogPage {...defaultProps} settings={settings} />)
-      expect(screen.queryByText('Catálogo público listo')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Catálogo público listo'),
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -89,11 +93,11 @@ describe('CatalogPage', () => {
     })
 
     it('debería mostrar mensaje cuando no hay productos publicados', () => {
-      const products = [
-        createMockProduct({ id: 'p1', published: false }),
-      ]
+      const products = [createMockProduct({ id: 'p1', published: false })]
       render(<CatalogPage {...defaultProps} products={products} />)
-      expect(screen.getByText(/No hay productos publicados/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/No hay productos publicados/),
+      ).toBeInTheDocument()
     })
 
     it('debería ocultar productos no publicados', () => {

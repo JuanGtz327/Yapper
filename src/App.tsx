@@ -91,10 +91,10 @@ function DashboardContent({
     updateBusinessSettings,
   } = dashboardData
 
-  const {
-    handleProductSubmit,
-    handleVariantsChanged,
-  } = useProductEditor(user, qc)
+  const { handleProductSubmit, handleVariantsChanged } = useProductEditor(
+    user,
+    qc,
+  )
 
   const {
     handleOrderSubmit,

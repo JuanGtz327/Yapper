@@ -71,7 +71,10 @@ export function CustomSelect({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (disabled) return
-    if (!open && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === ' ')) {
+    if (
+      !open &&
+      (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === ' ')
+    ) {
       e.preventDefault()
       setOpen(true)
       setFocusIdx(0)
@@ -91,7 +94,9 @@ export function CustomSelect({
   }
 
   return (
-    <div className={`custom-select${open ? ' custom-select--open' : ''} ${className}`}>
+    <div
+      className={`custom-select${open ? ' custom-select--open' : ''} ${className}`}
+    >
       <button
         ref={triggerRef}
         type="button"

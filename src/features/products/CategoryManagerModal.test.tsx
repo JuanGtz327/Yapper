@@ -76,9 +76,7 @@ describe('CategoryManagerModal', () => {
   describe('Estado vacío', () => {
     it('debería mostrar mensaje cuando no hay categorías', () => {
       render(<CategoryManagerModal {...defaultProps} categories={[]} />)
-      expect(
-        screen.getByText('No hay categorías todavía'),
-      ).toBeInTheDocument()
+      expect(screen.getByText('No hay categorías todavía')).toBeInTheDocument()
     })
   })
 

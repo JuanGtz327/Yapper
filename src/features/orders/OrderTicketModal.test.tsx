@@ -4,7 +4,9 @@ import { OrderTicketModal } from './OrderTicketModal'
 import type { Order, Product } from '../../types.ts'
 
 vi.mock('../../hooks/queries/useOrderPayments.ts', () => ({
-  useOrderPaymentsQuery: vi.fn().mockReturnValue({ data: [], isLoading: false }),
+  useOrderPaymentsQuery: vi
+    .fn()
+    .mockReturnValue({ data: [], isLoading: false }),
 }))
 
 const mockProducts: Product[] = [

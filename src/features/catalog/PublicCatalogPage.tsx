@@ -54,8 +54,8 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
       <section className="public-products" aria-label="Productos publicados">
         {catalog.products.length === 0 ? (
           <div className="empty-state">
-            Aún no hay productos publicados. Vuelve pronto para conocer
-            nuestros productos.
+            Aún no hay productos publicados. Vuelve pronto para conocer nuestros
+            productos.
           </div>
         ) : (
           catalog.products.map((product) => {
@@ -76,7 +76,9 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
                   <span>{product.category}</span>
                   <h2>{product.name}</h2>
                   <p>{product.publicDescription}</p>
-                  <strong>{formatMoney(product.price, catalog.currency)}</strong>
+                  <strong>
+                    {formatMoney(product.price, catalog.currency)}
+                  </strong>
                   {normalizeMexicanWhatsApp(catalog.whatsappNumber) && (
                     <a
                       className="whatsapp-button"

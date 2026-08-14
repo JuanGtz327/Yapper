@@ -26,7 +26,11 @@ export function PaymentHistory({
   }
 
   return (
-    <div className="payment-history" role="list" aria-label="Historial de abonos">
+    <div
+      className="payment-history"
+      role="list"
+      aria-label="Historial de abonos"
+    >
       <div className="payment-history-header">
         <FileText size={14} aria-hidden="true" />
         <h4>Abonos ({payments.length})</h4>
@@ -40,10 +44,14 @@ export function PaymentHistory({
             <div className="payment-history-details">
               <div className="payment-history-main">
                 <strong>{formatMoney(payment.amount, currency)}</strong>
-                <span className="payment-history-method">{payment.paymentMethod}</span>
+                <span className="payment-history-method">
+                  {payment.paymentMethod}
+                </span>
               </div>
               {payment.reference && (
-                <span className="payment-history-ref">Ref: {payment.reference}</span>
+                <span className="payment-history-ref">
+                  Ref: {payment.reference}
+                </span>
               )}
               {payment.notes && (
                 <span className="payment-history-notes">{payment.notes}</span>

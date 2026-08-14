@@ -193,9 +193,7 @@ export function OrderTicketModal({
 
         {hasRemainingBalance && (
           <div className="payment-action-section">
-            <PaymentButton
-              onClick={() => setShowPaymentModal(true)}
-            />
+            <PaymentButton onClick={() => setShowPaymentModal(true)} />
           </div>
         )}
 

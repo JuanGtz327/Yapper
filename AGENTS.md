@@ -1,39 +1,34 @@
-# Agent Guide
+# AGENTS.md
 
-## Commands
+Instructions for AI coding agents working in this project.
 
-- Install with `npm install`; use the committed `package-lock.json`.
-- Run the dev server with `npm run dev`.
-- Run lint with `npm run lint` (Oxlint, configured in `.oxlintrc.json`).
-- Format the codebase with `npm run format` (Prettier, configured in `.prettierrc.json`); verify formatting without writing with `npm run format:check`.
-- Run the production check with `npm run build`; this runs `tsc -b` before `vite build`.
-- Preview a completed production build with `npm run preview`.
-- Run tests with `npm run test:run`; run in watch mode with `npm run test`; check coverage with `npm run test:coverage`.
+## What this is
 
-## Structure
+**Yapper** - un gestor de ventas para pequeños negocios. Crea productos, gestiona
+clientes y registra pedidos. El catálogo público ayuda a mostrar productos y
+mejorar ventas por WhatsApp. No es un sistema de venta online; la transacción
+ocurre fuera de la app.
 
-- `src/main.tsx` is the browser entrypoint and mounts `src/App.tsx`.
-- `src/App.tsx` contains the current dashboard UI; `src/App.css` and `src/index.css` provide its styling.
-- `src/lib/supabase.ts` is the Supabase client boundary. It reads `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from Vite environment files and uses placeholders when unset.
-- `vite.config.ts` enables React, Tailwind CSS, and `vite-plugin-pwa`; production builds generate the service worker and manifest in `dist/`.
-
-## Agents
-
-- `testing-expert`: Ejecuta todas las pruebas (`npm run test:run`), verifica cobertura de tests por cada funcionalidad nueva, y corre lint + typecheck. **Prioriza tests de lógica de negocio del lado del back** (utilidades puras, hooks de mutación, repositorio, orquestación) sobre tests de frontend (componentes UI). Usa el subagente `testing-expert` para validar que todo funcione.
-- `code-reviewer`: Revisión exhaustiva de código (correctitud, seguridad, tipado, convenciones, rendimiento). **Siempre** delega la validación de tests al `testing-expert` antes de emitir veredicto. No aprueba cambios con tests fallidos o tests faltantes.
+Stack: Vite 8 + React 19 + TypeScript 6 + Tailwind CSS v4 + Supabase + TanStack
+React Query v5. PWA con vite-plugin-pwa.
 
 ## Conventions
 
-- TypeScript is checked through the root project references; source is under `src`, and unused locals/parameters are errors.
-- Follow the existing explicit `.tsx` import style (for example, `./App.tsx`).
-- For Supabase-backed work, put local credentials in `.env.local` using the names in `.env.example`; do not commit local env files.
+Follow the coding standards in `blueprint/context/coding-standards.md`.
 
-## Database Migrations
+## Commands
 
-- The Supabase project ref is `ylbcjnyovrtxkohyrtvf`; the CLI config is in `supabase/config.toml`.
-- `supabase/migrations/20260805000000_initial_schema.sql` is the canonical v1 baseline. It was already applied manually to the remote development database; do not run it against that database again.
-- Before the first remote push, authenticate with `supabase login`, link with `supabase link --project-ref ylbcjnyovrtxkohyrtvf`, then mark the baseline applied with `supabase migration repair 20260805000000 --status applied`.
-- Create every later schema, function, policy, index, permission, or RPC change with `npm run db:migration -- <description>` and commit the generated file under `supabase/migrations/`.
-- Apply reviewed migrations with `npm run db:push`; do not make persistent schema changes by pasting SQL into the Supabase dashboard.
-- Regenerate database types after schema changes with `npm run db:types`; the generated output belongs in `src/types/supabase.ts`.
-- The initial baseline contains a development reset (`drop ... cascade`) because the remote database was intentionally cleaned. New migrations must be incremental and must not reset existing data.
+- Dev server: `npm run dev` (http://localhost:5173)
+- Build: `npm run build`
+- Preview: `npm run preview`
+- Lint: `npm run lint`
+- Format: `npm run format`
+- Format check: `npm run format:check`
+- Test (watch): `npm test`
+- Test (single): `npm run test:run`
+- Test coverage: `npm run test:coverage`
+- DB migration: `npm run db:migration`
+- DB push: `npm run db:push`
+- DB types: `npm run db:types`
+
+Testing is configured (Vitest + Testing Library) and is a gate for logic-bearing steps.

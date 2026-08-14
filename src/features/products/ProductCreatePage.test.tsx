@@ -96,9 +96,7 @@ describe('ProductCreatePage', () => {
 
     it('debería mostrar mensaje de variantes vacías', () => {
       render(<ProductCreatePage {...defaultProps} />)
-      expect(
-        screen.getByText(/Aún no tienes variantes/),
-      ).toBeInTheDocument()
+      expect(screen.getByText(/Aún no tienes variantes/)).toBeInTheDocument()
     })
 
     it('debería mostrar sección de catálogo público', () => {
@@ -245,9 +243,9 @@ describe('ProductCreatePage', () => {
       expect(
         screen.getByRole('dialog', { name: 'Editar variante' }),
       ).toBeInTheDocument()
-      expect(
-        (screen.getByLabelText('SKU') as HTMLInputElement).value,
-      ).toBe('PLA-BAS-NEG')
+      expect((screen.getByLabelText('SKU') as HTMLInputElement).value).toBe(
+        'PLA-BAS-NEG',
+      )
     })
 
     it('debería cerrar modal al cancelar', async () => {
@@ -255,9 +253,9 @@ describe('ProductCreatePage', () => {
       render(<ProductCreatePage {...defaultProps} />)
       await user.click(screen.getByRole('button', { name: 'Añadir variante' }))
       const modal = screen.getByRole('dialog')
-      const cancelBtn = Array.from(
-        modal.querySelectorAll('button'),
-      ).find((b) => b.textContent?.includes('Cancelar'))!
+      const cancelBtn = Array.from(modal.querySelectorAll('button')).find((b) =>
+        b.textContent?.includes('Cancelar'),
+      )!
       await user.click(cancelBtn)
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })

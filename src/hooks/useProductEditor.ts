@@ -31,9 +31,7 @@ export function useProductEditor(user: User | null, qc: QueryClient) {
     })
   }
 
-  const handleProductSubmit = async (
-    draft: ProductDraft,
-  ): Promise<boolean> => {
+  const handleProductSubmit = async (draft: ProductDraft): Promise<boolean> => {
     if (productEditor?.mode === 'edit' && productEditor.product) {
       try {
         await productMutations.update.mutateAsync({

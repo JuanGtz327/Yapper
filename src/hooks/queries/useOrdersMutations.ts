@@ -313,7 +313,9 @@ export function useOrdersMutations(user: User | null) {
     }) => registerPayment(orderId, amount, paymentMethod, reference, notes),
     onSuccess: async (_data, variables) => {
       await qc.invalidateQueries({ queryKey: qk.orders(user) })
-      await qc.invalidateQueries({ queryKey: qk.orderPayments(variables.orderId) })
+      await qc.invalidateQueries({
+        queryKey: qk.orderPayments(variables.orderId),
+      })
       await qc.invalidateQueries({ queryKey: qk.sales(user, '7d') })
     },
   })

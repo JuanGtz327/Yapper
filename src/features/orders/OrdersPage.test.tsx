@@ -5,7 +5,9 @@ import { OrdersPage } from './OrdersPage'
 import type { Order } from '../../types.ts'
 
 vi.mock('../../hooks/queries/useOrderPayments.ts', () => ({
-  useOrderPaymentsQuery: vi.fn().mockReturnValue({ data: [], isLoading: false }),
+  useOrderPaymentsQuery: vi
+    .fn()
+    .mockReturnValue({ data: [], isLoading: false }),
 }))
 
 const createMockOrder = (overrides: Partial<Order> = {}): Order => ({

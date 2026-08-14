@@ -36,7 +36,9 @@ export function PaymentModal({
         </div>
         <div className="payment-modal-row">
           <span>Ya abonado</span>
-          <strong className="text-plum">{formatMoney(paidAmount, currency)}</strong>
+          <strong className="text-plum">
+            {formatMoney(paidAmount, currency)}
+          </strong>
         </div>
         <div className="payment-modal-row payment-modal-remaining">
           <span>Saldo restante</span>
@@ -54,11 +56,7 @@ export function PaymentModal({
   )
 }
 
-export function PaymentButton({
-  onClick,
-}: {
-  onClick: () => void
-}) {
+export function PaymentButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       className="secondary-button payment-trigger-btn"

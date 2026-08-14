@@ -67,10 +67,7 @@ export function validateProductDraft(draft: ProductDraft): {
         'Introduce un precio de venta válido mayor o igual a cero.'
     }
 
-    if (
-      !Number.isFinite(variant.inventoryCost) ||
-      variant.inventoryCost < 0
-    ) {
+    if (!Number.isFinite(variant.inventoryCost) || variant.inventoryCost < 0) {
       errors[`${prefix}_inventoryCost`] =
         'El costo debe ser un número mayor o igual a cero.'
     }

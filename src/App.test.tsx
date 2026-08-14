@@ -149,11 +149,15 @@ describe('editingProduct state synchronization (App.tsx bug fix)', () => {
 
         const handleVariantsChanged = () => {
           // FIX: Update editingProduct from the fresh cache data (simulating async invalidation)
-          void queryClient.invalidateQueries({ queryKey: qk.products(null) }).then(() => {
-            const fresh = queryClient.getQueryData<Product[]>(qk.products(null))
-            const updated = fresh?.find((p) => p.id === staleProduct.id)
-            if (updated) setEditingProduct(updated)
-          })
+          void queryClient
+            .invalidateQueries({ queryKey: qk.products(null) })
+            .then(() => {
+              const fresh = queryClient.getQueryData<Product[]>(
+                qk.products(null),
+              )
+              const updated = fresh?.find((p) => p.id === staleProduct.id)
+              if (updated) setEditingProduct(updated)
+            })
         }
 
         return (
@@ -218,11 +222,15 @@ describe('editingProduct state synchronization (App.tsx bug fix)', () => {
 
         const handleVariantsChanged = () => {
           // FIX: read fresh data from cache and update state (simulating async invalidation)
-          void queryClient.invalidateQueries({ queryKey: qk.products(null) }).then(() => {
-            const fresh = queryClient.getQueryData<Product[]>(qk.products(null))
-            const updated = fresh?.find((p) => p.id === staleProduct.id)
-            if (updated) setEditingProduct(updated)
-          })
+          void queryClient
+            .invalidateQueries({ queryKey: qk.products(null) })
+            .then(() => {
+              const fresh = queryClient.getQueryData<Product[]>(
+                qk.products(null),
+              )
+              const updated = fresh?.find((p) => p.id === staleProduct.id)
+              if (updated) setEditingProduct(updated)
+            })
         }
 
         return (

@@ -179,7 +179,9 @@ describe('ProductModal — bug fix: variant editing data flow', () => {
 
       // ConfirmModal should be visible with the "Eliminar" confirm button
       await waitFor(() => {
-        expect(screen.getByText('¿Eliminar la variante PLA-BAS-BLAN?')).toBeInTheDocument()
+        expect(
+          screen.getByText('¿Eliminar la variante PLA-BAS-BLAN?'),
+        ).toBeInTheDocument()
       })
 
       // Click the confirm button in the ConfirmModal

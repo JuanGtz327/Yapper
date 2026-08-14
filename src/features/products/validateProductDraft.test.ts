@@ -50,16 +50,12 @@ describe('validateProductDraft', () => {
     })
 
     it('debería aceptar nombre de 120 caracteres', () => {
-      const result = validateProductDraft(
-        validDraft({ name: 'A'.repeat(120) }),
-      )
+      const result = validateProductDraft(validDraft({ name: 'A'.repeat(120) }))
       expect(result.ok).toBe(true)
     })
 
     it('debería rechazar nombre de 121 caracteres', () => {
-      const result = validateProductDraft(
-        validDraft({ name: 'A'.repeat(121) }),
-      )
+      const result = validateProductDraft(validDraft({ name: 'A'.repeat(121) }))
       expect(result.ok).toBe(false)
       expect(result.errors.name).toBeDefined()
     })
@@ -312,9 +308,7 @@ describe('validateProductDraft', () => {
     })
 
     it('debería rechazar URL no válida', () => {
-      const result = validateProductDraft(
-        validDraft({ imageUrl: 'not-a-url' }),
-      )
+      const result = validateProductDraft(validDraft({ imageUrl: 'not-a-url' }))
       expect(result.ok).toBe(false)
       expect(result.errors.imageUrl).toBeDefined()
     })

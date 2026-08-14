@@ -49,7 +49,9 @@ export function PaymentForm({
       return
     }
     if (parsedAmount > remaining) {
-      setError(`El monto excede el saldo restante (${formatMoney(remaining, currency)})`)
+      setError(
+        `El monto excede el saldo restante (${formatMoney(remaining, currency)})`,
+      )
       return
     }
 
@@ -94,17 +96,19 @@ export function PaymentForm({
       </label>
 
       <div className="payment-form-quick-amounts">
-        {[100, 200, 500].filter((v) => v <= remaining).map((value) => (
-          <button
-            key={value}
-            type="button"
-            className="payment-form-quick-btn"
-            onClick={() => handleQuickAmount(value)}
-            disabled={isSubmitting}
-          >
-            {formatMoney(value, currency)}
-          </button>
-        ))}
+        {[100, 200, 500]
+          .filter((v) => v <= remaining)
+          .map((value) => (
+            <button
+              key={value}
+              type="button"
+              className="payment-form-quick-btn"
+              onClick={() => handleQuickAmount(value)}
+              disabled={isSubmitting}
+            >
+              {formatMoney(value, currency)}
+            </button>
+          ))}
         {remaining > 0 && (
           <button
             type="button"
@@ -122,7 +126,11 @@ export function PaymentForm({
 
       <label className="payment-form-field">
         <span>Método de pago</span>
-        <div className="payment-form-method-group" role="radiogroup" aria-label="Método de pago">
+        <div
+          className="payment-form-method-group"
+          role="radiogroup"
+          aria-label="Método de pago"
+        >
           {PAYMENT_METHODS.map((method) => (
             <button
               key={method.value}
@@ -174,7 +182,8 @@ export function PaymentForm({
         ) : (
           <>
             <Banknote size={16} aria-hidden="true" />
-            Registrar abono de {parsedAmount > 0 ? formatMoney(parsedAmount, currency) : ''}
+            Registrar abono de{' '}
+            {parsedAmount > 0 ? formatMoney(parsedAmount, currency) : ''}
           </>
         )}
       </button>

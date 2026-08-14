@@ -46,7 +46,14 @@ export function ModalProvider({
 
   return (
     <ModalContext.Provider
-      value={{ modal, editingClient, confirmState, openModal, closeModal, clearConfirm }}
+      value={{
+        modal,
+        editingClient,
+        confirmState,
+        openModal,
+        closeModal,
+        clearConfirm,
+      }}
     >
       {children}
     </ModalContext.Provider>

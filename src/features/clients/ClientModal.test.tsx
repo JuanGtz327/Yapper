@@ -1,10 +1,4 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-} from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { Client } from '../../types.ts'
 import { ClientModal } from './ClientModal.tsx'
@@ -103,10 +97,7 @@ describe('ClientModal', () => {
     it('debería tener un placeholder descriptivo en el campo de nombre', () => {
       render(<ClientModal {...defaultProps} />)
       const nameInput = screen.getByLabelText('Nombre completo')
-      expect(nameInput).toHaveAttribute(
-        'placeholder',
-        'Ej. Mariana González',
-      )
+      expect(nameInput).toHaveAttribute('placeholder', 'Ej. Mariana González')
     })
   })
 
@@ -229,7 +220,8 @@ describe('ClientModal', () => {
 
     it('debería tener el atributo aria-hidden en el ícono del botón guardar', () => {
       render(<ClientModal {...defaultProps} />)
-      const icon = screen.getByRole('button', { name: /guardar cliente/i })
+      const icon = screen
+        .getByRole('button', { name: /guardar cliente/i })
         .querySelector('svg')
       expect(icon).toHaveAttribute('aria-hidden', 'true')
     })

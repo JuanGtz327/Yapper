@@ -111,7 +111,9 @@ describe('OptionTypeManagerModal', () => {
   describe('Creación de tipo de opción', () => {
     it('debería llamar a createOptionType al enviar el formulario', async () => {
       const createOptionType = vi.fn().mockResolvedValue('new-ot-id')
-      vi.mocked(repository.createOptionType).mockImplementation(createOptionType)
+      vi.mocked(repository.createOptionType).mockImplementation(
+        createOptionType,
+      )
 
       render(<OptionTypeManagerModal {...defaultProps} />)
 
@@ -129,12 +131,12 @@ describe('OptionTypeManagerModal', () => {
 
     it('debería llamar a onRefresh después de crear', async () => {
       const createOptionType = vi.fn().mockResolvedValue('new-ot-id')
-      vi.mocked(repository.createOptionType).mockImplementation(createOptionType)
+      vi.mocked(repository.createOptionType).mockImplementation(
+        createOptionType,
+      )
       const onRefresh = vi.fn()
 
-      render(
-        <OptionTypeManagerModal {...defaultProps} onRefresh={onRefresh} />,
-      )
+      render(<OptionTypeManagerModal {...defaultProps} onRefresh={onRefresh} />)
 
       const input = screen.getByPlaceholderText(
         'Nuevo tipo (ej. Color, Talla)...',
@@ -150,7 +152,9 @@ describe('OptionTypeManagerModal', () => {
 
     it('debería limpiar el campo después de crear exitosamente', async () => {
       const createOptionType = vi.fn().mockResolvedValue('new-ot-id')
-      vi.mocked(repository.createOptionType).mockImplementation(createOptionType)
+      vi.mocked(repository.createOptionType).mockImplementation(
+        createOptionType,
+      )
 
       render(<OptionTypeManagerModal {...defaultProps} />)
 
@@ -168,7 +172,9 @@ describe('OptionTypeManagerModal', () => {
 
     it('debería mostrar error cuando createOptionType falla', async () => {
       const createOptionType = vi.fn().mockRejectedValue(new Error('DB error'))
-      vi.mocked(repository.createOptionType).mockImplementation(createOptionType)
+      vi.mocked(repository.createOptionType).mockImplementation(
+        createOptionType,
+      )
 
       render(<OptionTypeManagerModal {...defaultProps} />)
 
@@ -209,7 +215,9 @@ describe('OptionTypeManagerModal', () => {
   describe('Eliminación de tipo de opción', () => {
     it('debería llamar a deleteOptionType al hacer clic en eliminar', async () => {
       const deleteOptionType = vi.fn().mockResolvedValue(undefined)
-      vi.mocked(repository.deleteOptionType).mockImplementation(deleteOptionType)
+      vi.mocked(repository.deleteOptionType).mockImplementation(
+        deleteOptionType,
+      )
 
       render(<OptionTypeManagerModal {...defaultProps} />)
 
@@ -224,12 +232,12 @@ describe('OptionTypeManagerModal', () => {
 
     it('debería llamar a onRefresh después de eliminar', async () => {
       const deleteOptionType = vi.fn().mockResolvedValue(undefined)
-      vi.mocked(repository.deleteOptionType).mockImplementation(deleteOptionType)
+      vi.mocked(repository.deleteOptionType).mockImplementation(
+        deleteOptionType,
+      )
       const onRefresh = vi.fn()
 
-      render(
-        <OptionTypeManagerModal {...defaultProps} onRefresh={onRefresh} />,
-      )
+      render(<OptionTypeManagerModal {...defaultProps} onRefresh={onRefresh} />)
 
       fireEvent.click(screen.getByLabelText('Eliminar Color'))
 
@@ -242,7 +250,9 @@ describe('OptionTypeManagerModal', () => {
 
     it('debería mostrar error cuando deleteOptionType falla', async () => {
       const deleteOptionType = vi.fn().mockRejectedValue(new Error('DB error'))
-      vi.mocked(repository.deleteOptionType).mockImplementation(deleteOptionType)
+      vi.mocked(repository.deleteOptionType).mockImplementation(
+        deleteOptionType,
+      )
 
       render(<OptionTypeManagerModal {...defaultProps} />)
 
@@ -283,14 +293,14 @@ describe('OptionTypeManagerModal', () => {
 
       fireEvent.click(screen.getByText('Color'))
 
-      expect(
-        screen.getByPlaceholderText('Nuevo valor...'),
-      ).toBeInTheDocument()
+      expect(screen.getByPlaceholderText('Nuevo valor...')).toBeInTheDocument()
     })
 
     it('debería llamar a createOptionValue al agregar un valor', async () => {
       const createOptionValue = vi.fn().mockResolvedValue('new-ov-id')
-      vi.mocked(repository.createOptionValue).mockImplementation(createOptionValue)
+      vi.mocked(repository.createOptionValue).mockImplementation(
+        createOptionValue,
+      )
 
       render(<OptionTypeManagerModal {...defaultProps} />)
 
@@ -299,7 +309,9 @@ describe('OptionTypeManagerModal', () => {
       const input = screen.getByPlaceholderText('Nuevo valor...')
       fireEvent.change(input, { target: { value: 'Rojo' } })
 
-      fireEvent.click(screen.getByText('', { selector: 'button[type="submit"]' }))
+      fireEvent.click(
+        screen.getByText('', { selector: 'button[type="submit"]' }),
+      )
 
       await waitFor(() => {
         expect(createOptionValue).toHaveBeenCalledWith('ot1', 'Rojo')
@@ -308,19 +320,21 @@ describe('OptionTypeManagerModal', () => {
 
     it('debería llamar a onRefresh después de agregar un valor', async () => {
       const createOptionValue = vi.fn().mockResolvedValue('new-ov-id')
-      vi.mocked(repository.createOptionValue).mockImplementation(createOptionValue)
+      vi.mocked(repository.createOptionValue).mockImplementation(
+        createOptionValue,
+      )
       const onRefresh = vi.fn()
 
-      render(
-        <OptionTypeManagerModal {...defaultProps} onRefresh={onRefresh} />,
-      )
+      render(<OptionTypeManagerModal {...defaultProps} onRefresh={onRefresh} />)
 
       fireEvent.click(screen.getByText('Color'))
 
       const input = screen.getByPlaceholderText('Nuevo valor...')
       fireEvent.change(input, { target: { value: 'Rojo' } })
 
-      fireEvent.click(screen.getByText('', { selector: 'button[type="submit"]' }))
+      fireEvent.click(
+        screen.getByText('', { selector: 'button[type="submit"]' }),
+      )
 
       await waitFor(() => {
         expect(onRefresh).toHaveBeenCalledTimes(1)
@@ -329,7 +343,9 @@ describe('OptionTypeManagerModal', () => {
 
     it('debería llamar a deleteOptionValue al eliminar un valor', async () => {
       const deleteOptionValue = vi.fn().mockResolvedValue(undefined)
-      vi.mocked(repository.deleteOptionValue).mockImplementation(deleteOptionValue)
+      vi.mocked(repository.deleteOptionValue).mockImplementation(
+        deleteOptionValue,
+      )
 
       render(<OptionTypeManagerModal {...defaultProps} />)
 
@@ -346,12 +362,12 @@ describe('OptionTypeManagerModal', () => {
 
     it('debería llamar a onRefresh después de eliminar un valor', async () => {
       const deleteOptionValue = vi.fn().mockResolvedValue(undefined)
-      vi.mocked(repository.deleteOptionValue).mockImplementation(deleteOptionValue)
+      vi.mocked(repository.deleteOptionValue).mockImplementation(
+        deleteOptionValue,
+      )
       const onRefresh = vi.fn()
 
-      render(
-        <OptionTypeManagerModal {...defaultProps} onRefresh={onRefresh} />,
-      )
+      render(<OptionTypeManagerModal {...defaultProps} onRefresh={onRefresh} />)
 
       fireEvent.click(screen.getByText('Color'))
 

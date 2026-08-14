@@ -56,9 +56,7 @@ const productWithVariants: Product = {
       inventoryCost: 50,
       salePrice: 100,
       stock: 10,
-      optionValues: [
-        { optionType: 'Color', value: 'Azul' },
-      ],
+      optionValues: [{ optionType: 'Color', value: 'Azul' }],
     },
   ],
 }
@@ -88,7 +86,9 @@ describe('Variant options isolation', () => {
     // 1. Open modal for variant A, verify its options load correctly
     await user.click(screen.getByLabelText('Editar variante BOT-V1'))
     await waitFor(() => {
-      expect(screen.getByRole('dialog', { name: 'Editar variante' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('dialog', { name: 'Editar variante' }),
+      ).toBeInTheDocument()
     })
 
     // Variant A should show Verde and 1L
@@ -108,7 +108,9 @@ describe('Variant options isolation', () => {
     // 2. Open modal for variant B, add a Red option, save
     await user.click(screen.getByLabelText('Editar variante BOT-V2'))
     await waitFor(() => {
-      expect(screen.getByRole('dialog', { name: 'Editar variante' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('dialog', { name: 'Editar variante' }),
+      ).toBeInTheDocument()
     })
 
     // Add a new option selection
@@ -117,8 +119,8 @@ describe('Variant options isolation', () => {
     const modalB = screen.getByRole('dialog')
     const typeTriggers = modalB.querySelectorAll('.custom-select-trigger')
     // First trigger after existing ones should be "Tipo..."
-    const tipoTrigger = Array.from(typeTriggers).find(
-      (t) => t.textContent?.includes('Tipo'),
+    const tipoTrigger = Array.from(typeTriggers).find((t) =>
+      t.textContent?.includes('Tipo'),
     )
     expect(tipoTrigger).toBeDefined()
     await user.click(tipoTrigger!)
@@ -130,8 +132,8 @@ describe('Variant options isolation', () => {
     // Select Rojo value
     await waitFor(() => {
       const valueTriggers = modalB.querySelectorAll('.custom-select-trigger')
-      const valorTrigger = Array.from(valueTriggers).find(
-        (t) => t.textContent?.includes('Valor'),
+      const valorTrigger = Array.from(valueTriggers).find((t) =>
+        t.textContent?.includes('Valor'),
       )
       expect(valorTrigger).toBeDefined()
     })

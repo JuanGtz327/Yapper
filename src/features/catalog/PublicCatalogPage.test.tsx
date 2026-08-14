@@ -49,25 +49,33 @@ describe('PublicCatalogPage', () => {
     mockCatalogIsLoading = true
     mockCatalogData = undefined
     render(<PublicCatalogPage slug="mi-negocio" />)
-    expect(screen.getAllByText(/Cargando catálogo/).length).toBeGreaterThanOrEqual(1)
+    expect(
+      screen.getAllByText(/Cargando catálogo/).length,
+    ).toBeGreaterThanOrEqual(1)
   })
 
   it('debería mostrar mensaje de tienda no disponible cuando hay error', () => {
     mockCatalogData = null
     mockCatalogError = new Error('Not found')
     render(<PublicCatalogPage slug="mi-negocio" />)
-    expect(screen.getByText('Esta tienda no está disponible')).toBeInTheDocument()
+    expect(
+      screen.getByText('Esta tienda no está disponible'),
+    ).toBeInTheDocument()
   })
 
   it('debería mostrar mensaje de tienda no disponible cuando no hay datos', () => {
     mockCatalogData = null
     render(<PublicCatalogPage slug="mi-negocio" />)
-    expect(screen.getByText('Esta tienda no está disponible')).toBeInTheDocument()
+    expect(
+      screen.getByText('Esta tienda no está disponible'),
+    ).toBeInTheDocument()
   })
 
   it('debería mostrar mensaje informativo cuando el catálogo no tiene productos', () => {
     mockCatalogData = { ...defaultCatalog, products: [] }
     render(<PublicCatalogPage slug="mi-negocio" />)
-    expect(screen.getByText(/Aún no hay productos publicados/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Aún no hay productos publicados/),
+    ).toBeInTheDocument()
   })
 })

@@ -255,7 +255,11 @@ describe('useProductsMutations — update mutation cache behavior', () => {
 
       await act(async () => {
         await result.current.create.mutateAsync({
-          product: { ...freshProduct, id: 'p-new', name: 'Nuevo Producto' } as Product,
+          product: {
+            ...freshProduct,
+            id: 'p-new',
+            name: 'Nuevo Producto',
+          } as Product,
         })
       })
 

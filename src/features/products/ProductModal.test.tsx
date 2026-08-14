@@ -111,7 +111,9 @@ describe('ProductModal', () => {
     it('debería poblar el campo nombre con el valor existente', () => {
       const product = createMockProduct()
       render(<ProductModal {...defaultProps} initial={product} />)
-      const input = screen.getByLabelText('Nombre del producto') as HTMLInputElement
+      const input = screen.getByLabelText(
+        'Nombre del producto',
+      ) as HTMLInputElement
       expect(input.value).toBe('Playera Básica')
     })
 
@@ -178,10 +180,14 @@ describe('ProductModal', () => {
       })
       render(<ProductModal {...defaultProps} initial={product} />)
 
-      const nameInput = screen.getByLabelText('Nombre del producto') as HTMLInputElement
+      const nameInput = screen.getByLabelText(
+        'Nombre del producto',
+      ) as HTMLInputElement
       expect(nameInput.value).toBe('Playera Básica')
 
-      const descriptionInput = screen.getByLabelText('Descripción pública') as HTMLTextAreaElement
+      const descriptionInput = screen.getByLabelText(
+        'Descripción pública',
+      ) as HTMLTextAreaElement
       expect(descriptionInput.value).toBe('Descripción de prueba')
     })
 
@@ -189,7 +195,9 @@ describe('ProductModal', () => {
       const product = createMockProduct({ published: true })
       render(<ProductModal {...defaultProps} initial={product} />)
 
-      const checkbox = screen.getByLabelText('Mostrar en mi catálogo público') as HTMLInputElement
+      const checkbox = screen.getByLabelText(
+        'Mostrar en mi catálogo público',
+      ) as HTMLInputElement
       expect(checkbox.checked).toBe(true)
     })
   })

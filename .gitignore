@@ -23,7 +23,20 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Test output
+coverage/
+
 # Opencode
 .agents/
 .opencode/
 skills-lock.json
+
+# AI Blueprint local workflow files
+.claude/
+blueprint/
+CLAUDE.md

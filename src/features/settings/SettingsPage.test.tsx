@@ -86,13 +86,17 @@ describe('SettingsPage', () => {
 
     it('debería mostrar la moneda actual', () => {
       render(<SettingsPage {...defaultProps} />)
-      const trigger = screen.getByRole('button', { name: /moneda predeterminada/i })
+      const trigger = screen.getByRole('button', {
+        name: /moneda predeterminada/i,
+      })
       expect(trigger).toHaveTextContent('Peso mexicano (MXN)')
     })
 
     it('debería mostrar el umbral de stock bajo', () => {
       render(<SettingsPage {...defaultProps} />)
-      const input = screen.getByRole('spinbutton', { name: /umbral de stock bajo/i })
+      const input = screen.getByRole('spinbutton', {
+        name: /umbral de stock bajo/i,
+      })
       expect(input).toHaveValue(5)
     })
 
@@ -110,7 +114,9 @@ describe('SettingsPage', () => {
 
     it('debería mostrar el WhatsApp', () => {
       render(<SettingsPage {...defaultProps} />)
-      const input = screen.getByRole('textbox', { name: /whatsapp de contacto/i })
+      const input = screen.getByRole('textbox', {
+        name: /whatsapp de contacto/i,
+      })
       expect(input).toHaveValue('55 1234 5678')
     })
 
@@ -141,16 +147,22 @@ describe('SettingsPage', () => {
     it('debería actualizar la moneda al cambiar', async () => {
       const user = userEvent.setup()
       render(<SettingsPage {...defaultProps} />)
-      const trigger = screen.getByRole('button', { name: /moneda predeterminada/i })
+      const trigger = screen.getByRole('button', {
+        name: /moneda predeterminada/i,
+      })
       await user.click(trigger)
-      await user.click(screen.getByRole('option', { name: 'Dólar estadounidense (USD)' }))
+      await user.click(
+        screen.getByRole('option', { name: 'Dólar estadounidense (USD)' }),
+      )
       expect(trigger).toHaveTextContent('Dólar estadounidense (USD)')
     })
 
     it('debería actualizar el umbral de stock', async () => {
       const user = userEvent.setup()
       render(<SettingsPage {...defaultProps} />)
-      const input = screen.getByRole('spinbutton', { name: /umbral de stock bajo/i })
+      const input = screen.getByRole('spinbutton', {
+        name: /umbral de stock bajo/i,
+      })
       await user.clear(input)
       await user.type(input, '10')
       expect(input).toHaveValue(10)
@@ -176,7 +188,9 @@ describe('SettingsPage', () => {
     it('debería actualizar el WhatsApp', async () => {
       const user = userEvent.setup()
       render(<SettingsPage {...defaultProps} />)
-      const input = screen.getByRole('textbox', { name: /whatsapp de contacto/i })
+      const input = screen.getByRole('textbox', {
+        name: /whatsapp de contacto/i,
+      })
       await user.clear(input)
       await user.type(input, '33 9876 5432')
       expect(input).toHaveValue('33 9876 5432')
@@ -218,7 +232,9 @@ describe('SettingsPage', () => {
 
     it('debería mostrar error si el umbral es negativo', async () => {
       render(<SettingsPage {...defaultProps} />)
-      const input = screen.getByRole('spinbutton', { name: /umbral de stock bajo/i })
+      const input = screen.getByRole('spinbutton', {
+        name: /umbral de stock bajo/i,
+      })
       const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
         window.HTMLInputElement.prototype,
         'value',
@@ -233,7 +249,9 @@ describe('SettingsPage', () => {
 
     it('debería mostrar error si el umbral supera 10000', async () => {
       render(<SettingsPage {...defaultProps} />)
-      const input = screen.getByRole('spinbutton', { name: /umbral de stock bajo/i })
+      const input = screen.getByRole('spinbutton', {
+        name: /umbral de stock bajo/i,
+      })
       const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
         window.HTMLInputElement.prototype,
         'value',
@@ -276,7 +294,10 @@ describe('SettingsPage', () => {
       const user = userEvent.setup()
       const onOpenOptionTypes = vi.fn()
       render(
-        <SettingsPage {...defaultProps} onOpenOptionTypes={onOpenOptionTypes} />,
+        <SettingsPage
+          {...defaultProps}
+          onOpenOptionTypes={onOpenOptionTypes}
+        />,
       )
       await user.click(screen.getByText('Gestionar opciones'))
       expect(onOpenOptionTypes).toHaveBeenCalled()

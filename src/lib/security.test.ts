@@ -4,7 +4,11 @@ import { isSafeImageUrl, safeImageUrl } from './security'
 describe('isSafeImageUrl', () => {
   it('debería aceptar URLs HTTPS válidas', () => {
     expect(isSafeImageUrl('https://example.com/image.jpg')).toBe(true)
-    expect(isSafeImageUrl('https://cdn.supabase.co/storage/v1/object/public/img.png')).toBe(true)
+    expect(
+      isSafeImageUrl(
+        'https://cdn.supabase.co/storage/v1/object/public/img.png',
+      ),
+    ).toBe(true)
   })
 
   it('debería rechazar URLs HTTP', () => {

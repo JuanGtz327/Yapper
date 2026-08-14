@@ -155,7 +155,11 @@ export function OrdersPage({
                 key={order.id}
                 onClick={() => onSelectOrder(order)}
                 onKeyDown={(event) => {
-                  if ((event.target as HTMLElement).closest('button, select, input, a'))
+                  if (
+                    (event.target as HTMLElement).closest(
+                      'button, select, input, a',
+                    )
+                  )
                     return
                   if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault()
