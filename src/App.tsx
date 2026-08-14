@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/ReactToastify.css'
 import './App.css'
-import type { Client, Order, Product } from './types.ts'
+import type { Order, Product } from './types.ts'
 import { AuthScreen } from './features/auth/AuthScreen.tsx'
 import { DashboardPage } from './features/dashboard/DashboardPage.tsx'
 import { ProductsPage } from './features/products/ProductsPage.tsx'
@@ -20,13 +20,11 @@ import { Spinner } from './components/ui/Spinner.tsx'
 import { AppSidebar } from './components/layout/AppSidebar.tsx'
 import { Topbar } from './components/layout/Topbar.tsx'
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer.tsx'
-import { ClientModal } from './features/clients/ClientModal.tsx'
-import { CategoryManagerModal } from './features/products/CategoryManagerModal.tsx'
-import { OptionTypeManagerModal } from './features/products/OptionTypeManagerModal.tsx'
-import { ConfirmModal } from './components/ui/ConfirmModal.tsx'
+import { ModalManager } from './components/layout/ModalManager.tsx'
+import { ModalProvider, useModal } from './context/ModalContext.tsx'
 import { isSupabaseConfigured } from './lib/supabase.ts'
 import { qk } from './lib/queryKeys.ts'
-import type { Page, Modal } from './lib/navigation.ts'
+import type { Page } from './lib/navigation.ts'
 import { getPublicCatalogSlug } from './lib/routing.ts'
 import { useAuth } from './hooks/useAuth.ts'
 import { useDashboardData } from './hooks/useDashboardData.ts'
@@ -46,10 +44,39 @@ function App() {
 }
 
 function DashboardApp() {
+  const { user, authLoading } = useAuth()
+  const dashboardData = useDashboardData(user)
+
+  if (authLoading)
+    return (
+      <main className="auth-loading">
+        <div className="brand-mark">Y</div>
+        <p>
+          <Spinner label="Cargando Yapper" /> Cargando Yapper...
+        </p>
+      </main>
+    )
+  if (isSupabaseConfigured && !user) return <AuthScreen />
+
+  return (
+    <ModalProvider
+      confirmState={dashboardData.confirmState}
+      clearConfirm={dashboardData.clearConfirm}
+    >
+      <DashboardContent user={user} dashboardData={dashboardData} />
+    </ModalProvider>
+  )
+}
+
+function DashboardContent({
+  user,
+  dashboardData,
+}: {
+  user: import('@supabase/supabase-js').User | null
+  dashboardData: ReturnType<typeof useDashboardData>
+}) {
   const qc = useQueryClient()
   const [page, setPage] = useState<Page>('Inicio')
-  const [modal, setModal] = useState<Modal>(null)
-  const [editingClient, setEditingClient] = useState<Client | null>(null)
   const [productEditor, setProductEditor] = useState<{
     mode: 'create' | 'edit'
     product: Product | null
@@ -62,7 +89,8 @@ function DashboardApp() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const hamburgerRef = useRef<HTMLButtonElement>(null)
 
-  const { user, authLoading, signOut } = useAuth()
+  const { openModal } = useModal()
+  const { signOut } = useAuth()
   const toast = useToast()
   const {
     products,
@@ -73,8 +101,6 @@ function DashboardApp() {
     sales,
     settings,
     dataLoading,
-    confirmState,
-    clearConfirm,
     addClient: addClientAction,
     removeProduct,
     removeClient,
@@ -85,7 +111,7 @@ function DashboardApp() {
     registerPaymentPending,
     updateExistingOrder,
     updateBusinessSettings,
-  } = useDashboardData(user)
+  } = dashboardData
 
   const productMutations = useProductsMutations(user)
 
@@ -95,11 +121,6 @@ function DashboardApp() {
     setOrderEditor(undefined)
     setOrderDetail(null)
     setMobileMenuOpen(false)
-  }
-
-  const openModalForAction = (type: 'client', editing?: Client) => {
-    setEditingClient(editing ?? null)
-    setModal(type)
   }
 
   const openProductEditor = (product?: Product) => {
@@ -122,17 +143,14 @@ function DashboardApp() {
           publicDescription: draft.publicDescription,
           imageUrl: draft.imageUrl || null,
         })
-        // Handle variant CRUD: update existing, create new, delete removed
         const existingVariants = productEditor.product.variants
 
-        // Delete variants not in draft
         for (const existing of existingVariants) {
           if (!draft.variants.some((v) => v.id === existing.id)) {
             await deleteVariant(existing.id)
           }
         }
 
-        // Update or create variants
         for (const v of draft.variants) {
           if (v.id && !v.id.startsWith('pending-')) {
             await updateVariant(v.id, {
@@ -163,7 +181,6 @@ function DashboardApp() {
       }
     }
 
-    // Create mode
     try {
       await productMutations.createWithVariants.mutateAsync({
         product: {
@@ -207,17 +224,6 @@ function DashboardApp() {
     })
   }
 
-  if (authLoading)
-    return (
-      <main className="auth-loading">
-        <div className="brand-mark">Y</div>
-        <p>
-          <Spinner label="Cargando Yapper" /> Cargando Yapper...
-        </p>
-      </main>
-    )
-  if (isSupabaseConfigured && !user) return <AuthScreen />
-
   return (
     <div className="app-shell">
       <AppSidebar
@@ -258,7 +264,7 @@ function DashboardApp() {
             search={search}
             setSearch={setSearch}
             onAdd={() => openProductEditor()}
-            onManageCategories={() => setModal('categories')}
+            onManageCategories={() => openModal('categories')}
             onEdit={(product) => openProductEditor(product)}
           />
         )}
@@ -281,8 +287,8 @@ function DashboardApp() {
             clients={clients}
             search={search}
             setSearch={setSearch}
-            onAdd={() => openModalForAction('client')}
-            onEdit={(client) => openModalForAction('client', client)}
+            onAdd={() => openModal('client')}
+            onEdit={(client) => openModal('client', client)}
             onRemove={removeClient}
           />
         )}
@@ -349,7 +355,7 @@ function DashboardApp() {
             settings={settings}
             onSave={updateBusinessSettings}
             onSignOut={signOut}
-            onOpenOptionTypes={() => setModal('optionTypes')}
+            onOpenOptionTypes={() => openModal('optionTypes')}
           />
         )}
       </main>
@@ -361,51 +367,12 @@ function DashboardApp() {
           hamburgerRef={hamburgerRef}
         />
       )}
-      {modal === 'client' && (
-        <ClientModal
-          initial={editingClient}
-          onClose={() => {
-            setModal(null)
-            setEditingClient(null)
-          }}
-          onSubmit={async (event) => {
-            if (await addClientAction(event, editingClient)) {
-              setModal(null)
-              setEditingClient(null)
-            }
-          }}
-        />
-      )}
-      {modal === 'categories' && (
-        <CategoryManagerModal
-          categories={categories}
-          onSelect={() => setModal(null)}
-          onCategoryCreated={() => {
-            void qc.invalidateQueries({ queryKey: qk.categories(user) })
-          }}
-          onClose={() => setModal(null)}
-        />
-      )}
-      {modal === 'optionTypes' && (
-        <OptionTypeManagerModal
-          optionTypes={optionTypes}
-          onRefresh={() => {
-            void qc.invalidateQueries({ queryKey: qk.optionTypes(user) })
-          }}
-          onClose={() => setModal(null)}
-        />
-      )}
-      {confirmState && (
-        <ConfirmModal
-          title={confirmState.title}
-          message={confirmState.message}
-          danger
-          onConfirm={() => {
-            void confirmState.onConfirm()
-          }}
-          onClose={clearConfirm}
-        />
-      )}
+      <ModalManager
+        categories={categories}
+        optionTypes={optionTypes}
+        user={user}
+        addClientAction={addClientAction}
+      />
       <ToastContainer
         position="bottom-right"
         autoClose={3000}
