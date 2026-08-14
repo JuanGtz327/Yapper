@@ -35,8 +35,8 @@ export function CatalogPage({
         </div>
       </div>
       {url && (
-        <div className="share-bar">
-          <span>Catálogo público listo</span>
+        <div className="flex items-center gap-[9px] -mt-[10px] mb-[22px]">
+          <span className="mr-auto text-[#579078] text-[12px] font-bold">Catálogo público listo</span>
           <Button
             variant="secondary"
             onClick={() => void navigator.clipboard?.writeText(url)}
@@ -54,7 +54,7 @@ export function CatalogPage({
           </Button>
         </div>
       )}
-      <div className="catalog-grid">
+      <div className="grid grid-cols-3 gap-4 max-[650px]:grid-cols-1">
         {products.filter((product) => product.published).length === 0 ? (
           <div className="empty-state">
             No hay productos publicados aún. Publica productos desde el almacén
@@ -67,10 +67,10 @@ export function CatalogPage({
               const imageUrl = safeImageUrl(product.imageUrl)
               const price = minVariantPrice(product)
               return (
-                <article className="catalog-card" key={product.id}>
+                <article className="overflow-hidden border border-[#ebe8e4] rounded-[14px] bg-[#fffefa]" key={product.id}>
                   {imageUrl ? (
                     <img
-                      className="catalog-image catalog-photo"
+                      className="catalog-image catalog-photo w-full object-cover"
                       src={imageUrl}
                       alt={`${product.name} — ${product.category}`}
                     />
@@ -79,13 +79,13 @@ export function CatalogPage({
                       <Boxes size={58} strokeWidth={1.2} aria-hidden="true" />
                     </div>
                   )}
-                  <div>
-                    <span>{product.category}</span>
-                    <h3>{product.name}</h3>
-                    <p className="catalog-description">
+                  <div className="p-4 px-[17px] pb-[18px]">
+                    <span className="text-[#aaa5a8] text-[10px]">{product.category}</span>
+                    <h3 className="mt-[6px] mb-3 text-ink text-[14px]">{product.name}</h3>
+                    <p className="min-h-[32px] -mt-[5px] mb-3 text-muted text-[11px] leading-[1.45]">
                       {product.publicDescription}
                     </p>
-                    <strong>{formatMoney(price, currency)}</strong>
+                    <strong className="text-[#6d3c72] text-[17px]">{formatMoney(price, currency)}</strong>
                   </div>
                 </article>
               )

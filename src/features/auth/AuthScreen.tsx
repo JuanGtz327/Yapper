@@ -32,9 +32,9 @@ export function AuthScreen() {
   }
 
   return (
-    <main className="auth-page">
-      <section className="auth-card">
-        <div className="auth-brand">
+    <main className="grid grid-cols-[minmax(390px,480px)_1fr] min-h-screen bg-[#f8f7f5] max-[750px]:block">
+      <section className="flex flex-col justify-center py-[60px] px-[clamp(30px,7vw,92px)] bg-[#fffefa] max-[750px]:min-h-screen max-[750px]:px-7 max-[750px]:py-[35px]">
+        <div className="flex items-center gap-[11px] mb-[76px] max-[750px]:mb-[65px]">
           <div className="brand-mark">Y</div>
           <div>
             <strong>Yapper</strong>
@@ -42,16 +42,16 @@ export function AuthScreen() {
             <span>Gestor de ventas</span>
           </div>
         </div>
-        <div className="auth-copy">
+        <div>
           <span className="eyebrow">TU NEGOCIO, MÁS SENCILLO</span>
-          <h1>{isSignUp ? 'Crea tu cuenta' : 'Qué bueno verte'}</h1>
-          <p>Gestiona pedidos, productos y clientes desde un solo lugar.</p>
+          <h1 className="mt-1 mb-[10px] text-[34px]">{isSignUp ? 'Crea tu cuenta' : 'Qué bueno verte'}</h1>
+          <p className="max-w-[300px] text-muted text-[13px] leading-[1.6]">Gestiona pedidos, productos y clientes desde un solo lugar.</p>
         </div>
-        <form className="auth-form" onSubmit={submit}>
+        <form className="grid gap-4 mt-9" onSubmit={submit}>
           <label>
-            <span>Correo electrónico</span>
-            <div className="auth-input">
-              <Mail size={18} aria-hidden="true" />
+            <span className="block mb-[7px] text-[#716b72] text-[11px] font-bold">Correo electrónico</span>
+            <div className="flex items-center gap-2">
+              <Mail size={18} className="text-muted-foreground" aria-hidden="true" />
               <Input
                 type="email"
                 value={email}
@@ -63,9 +63,9 @@ export function AuthScreen() {
             </div>
           </label>
           <label>
-            <span>Contraseña</span>
-            <div className="auth-input">
-              <LockKeyhole size={18} aria-hidden="true" />
+            <span className="block mb-[7px] text-[#716b72] text-[11px] font-bold">Contraseña</span>
+            <div className="flex items-center gap-2">
+              <LockKeyhole size={18} className="text-muted-foreground" aria-hidden="true" />
               <Input
                 type="password"
                 value={password}
@@ -78,13 +78,13 @@ export function AuthScreen() {
             </div>
           </label>
           {message && (
-            <p className="auth-message" role="alert" aria-live="assertive">
+            <p className="px-3 py-[10px] rounded-[7px] text-[#aa6259] bg-[#fff3f0] text-[11px]" role="alert" aria-live="assertive">
               {message}
             </p>
           )}
           <Button
             variant="primary"
-            className="auth-submit"
+            className="justify-center w-full mt-[6px]"
             disabled={loading}
             type="submit"
           >
@@ -93,7 +93,7 @@ export function AuthScreen() {
           </Button>
         </form>
         <button
-          className="auth-switch"
+          className="mt-[21px] border-0 text-[#6d3c72] bg-transparent text-[12px] font-bold"
           onClick={() => {
             setIsSignUp((current) => !current)
             setMessage('')
