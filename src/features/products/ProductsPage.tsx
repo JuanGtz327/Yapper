@@ -1,6 +1,7 @@
 import { useState, type KeyboardEvent } from 'react'
 import { Boxes, DollarSign, Plus, Search, Tag } from 'lucide-react'
 import { Empty } from '../../components/ui/Empty.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { formatMoney } from '../../lib/format.ts'
 import type { Product } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
@@ -118,18 +119,17 @@ export function ProductsPage({
           <p>Administra precios, existencias y categorías.</p>
         </div>
         <div className="section-actions">
-          <button
-            className="secondary-button"
+          <Button
+            variant="secondary"
             onClick={onManageCategories}
             type="button"
+            icon={<Tag size={16} aria-hidden="true" />}
           >
-            <Tag size={16} aria-hidden="true" />
             Categorías
-          </button>
-          <button className="secondary-button" onClick={onAdd} type="button">
-            <Plus size={17} aria-hidden="true" />
+          </Button>
+          <Button variant="secondary" onClick={onAdd} type="button" icon={<Plus size={17} aria-hidden="true" />}>
             Añadir producto
-          </button>
+          </Button>
         </div>
       </div>
       <div className="inventory-summary">

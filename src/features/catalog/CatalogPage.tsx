@@ -1,6 +1,7 @@
 import { Boxes, Copy, ExternalLink } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import { safeImageUrl } from '../../lib/security.ts'
+import { Button } from '../../components/ui/Button.tsx'
 import type { BusinessSettings, Product } from '../../types.ts'
 
 function minVariantPrice(product: Product): number {
@@ -36,23 +37,21 @@ export function CatalogPage({
       {url && (
         <div className="share-bar">
           <span>Catálogo público listo</span>
-          <button
-            className="secondary-button"
+          <Button
+            variant="secondary"
             onClick={() => void navigator.clipboard?.writeText(url)}
             type="button"
+            icon={<Copy size={16} />}
           >
-            <Copy size={16} />
             Copiar enlace
-          </button>
-          <a
-            className="secondary-button"
-            href={url}
-            target="_blank"
-            rel="noreferrer"
+          </Button>
+          <Button
+            variant="secondary"
+            icon={<ExternalLink size={16} />}
+            onClick={() => window.open(url, '_blank', 'noreferrer')}
           >
-            <ExternalLink size={16} />
             Abrir tienda
-          </a>
+          </Button>
         </div>
       )}
       <div className="catalog-grid">

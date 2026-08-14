@@ -236,13 +236,6 @@ describe('OrderModal', () => {
   })
 
   describe('Cierre del modal', () => {
-    it('debería llamar a onClose al hacer clic en cancelar', () => {
-      const onClose = vi.fn()
-      render(<OrderModal {...defaultProps} onClose={onClose} />)
-      fireEvent.click(screen.getByText('Cancelar'))
-      expect(onClose).toHaveBeenCalledTimes(1)
-    })
-
     it('debería llamar a onClose al hacer clic en cerrar', () => {
       const onClose = vi.fn()
       render(<OrderModal {...defaultProps} onClose={onClose} />)

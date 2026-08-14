@@ -147,19 +147,18 @@ export function OrderCreatePage({
         </div>
         <div className="section-actions">
           {onBackToDetail && (
-            <button
-              className="secondary-button"
+            <Button
+              variant="secondary"
               onClick={onBackToDetail}
               type="button"
+              icon={<ArrowLeft size={16} aria-hidden="true" />}
             >
-              <ArrowLeft size={16} aria-hidden="true" />
               Volver al pedido
-            </button>
+            </Button>
           )}
-          <button className="secondary-button" onClick={onClose} type="button">
-            <ArrowLeft size={16} aria-hidden="true" />
+          <Button variant="secondary" onClick={onClose} type="button" icon={<ArrowLeft size={16} aria-hidden="true" />}>
             Volver a pedidos
-          </button>
+          </Button>
         </div>
       </div>
       {!clients.length || !variantOptions.length ? (
@@ -179,6 +178,7 @@ export function OrderCreatePage({
                 label: client.name,
               }))}
               placeholder="Seleccionar cliente..."
+              ariaLabel="Cliente"
             />
           </label>
           <div className="order-lines">
@@ -212,6 +212,7 @@ export function OrderCreatePage({
                       label: formatVariantLabel(option),
                     }))}
                     placeholder="Producto..."
+                    ariaLabel="Producto"
                   />
                   <input
                     aria-label={`Cantidad ${index + 1}`}
@@ -282,6 +283,7 @@ export function OrderCreatePage({
                 { value: 'paid', label: 'Pagado' },
                 { value: 'pending', label: 'Pendiente de pago' },
               ]}
+              ariaLabel="Estado del pago"
             />
           </label>
           <div className="order-total">
@@ -289,21 +291,18 @@ export function OrderCreatePage({
             <strong>{money(total)}</strong>
           </div>
           <div className="modal-actions">
-            <button className="cancel-button" onClick={onClose} type="button">
-              Cancelar
-            </button>
-            <button
-              className={`primary-button${saving ? ' button-loading' : ''}`}
+            <Button
+              variant="primary"
               disabled={saving}
               type="submit"
+              icon={<Check size={18} />}
             >
-              <Check size={18} />{' '}
               {saving
                 ? 'Guardando...'
                 : initial
                   ? 'Guardar cambios'
                   : 'Guardar pedido'}
-            </button>
+            </Button>
           </div>
         </form>
       )}

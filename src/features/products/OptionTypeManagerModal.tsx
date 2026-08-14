@@ -1,6 +1,7 @@
 import { useState, useRef, type FormEvent } from 'react'
 import { Plus, X, Palette, ChevronDown, ChevronRight } from 'lucide-react'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import {
   createOptionType,
@@ -133,15 +134,15 @@ export function OptionTypeManagerModal({
           disabled={creatingType}
           aria-label="Nombre del tipo de opción"
         />
-        <button
-          className={`primary-button${creatingType ? ' button-loading' : ''}`}
+        <Button
+          variant="primary"
           type="submit"
           disabled={creatingType || !newTypeName.trim()}
           aria-busy={creatingType}
+          icon={<Plus size={15} aria-hidden="true" />}
         >
-          <Plus size={15} aria-hidden="true" />
           Añadir
-        </button>
+        </Button>
       </form>
 
       <ul className="option-type-list">
@@ -174,15 +175,14 @@ export function OptionTypeManagerModal({
                     {type.values.length === 1 ? 'valor' : 'valores'}
                   </span>
                 </button>
-                <button
-                  className="icon-button danger"
+                <Button
+                  variant="danger"
+                  icon={<X size={15} aria-hidden="true" />}
                   onClick={() => handleDeleteType(type.id)}
                   disabled={deletingTypeId === type.id}
                   type="button"
                   aria-label={`Eliminar ${type.name}`}
-                >
-                  <X size={15} aria-hidden="true" />
-                </button>
+                />
               </div>
 
               {isExpanded && (
@@ -191,15 +191,14 @@ export function OptionTypeManagerModal({
                     {type.values.map((val) => (
                       <li key={val.id} className="option-value-item">
                         <span>{val.name}</span>
-                        <button
-                          className="icon-button danger"
+                        <Button
+                          variant="danger"
+                          icon={<X size={13} aria-hidden="true" />}
                           onClick={() => handleDeleteValue(val.id)}
                           disabled={deletingValueId === val.id}
                           type="button"
                           aria-label={`Eliminar ${val.name}`}
-                        >
-                          <X size={13} aria-hidden="true" />
-                        </button>
+                        />
                       </li>
                     ))}
                     {type.values.length === 0 && (
@@ -227,17 +226,17 @@ export function OptionTypeManagerModal({
                       disabled={addingValueTo === type.id}
                       aria-label={`Nuevo valor para ${type.name}`}
                     />
-                    <button
-                      className={`small-button${addingValueTo === type.id ? ' button-loading' : ''}`}
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon={<Plus size={13} aria-hidden="true" />}
                       type="submit"
                       disabled={
                         addingValueTo === type.id ||
                         !(newValues[type.id] || '').trim()
                       }
                       aria-busy={addingValueTo === type.id}
-                    >
-                      <Plus size={13} aria-hidden="true" />
-                    </button>
+                    />
                   </form>
                 </div>
               )}

@@ -171,13 +171,6 @@ describe('ProductCreatePage', () => {
   })
 
   describe('Navegación', () => {
-    it('debería llamar a onClose al hacer clic en cancelar', () => {
-      const onClose = vi.fn()
-      render(<ProductCreatePage {...defaultProps} onClose={onClose} />)
-      fireEvent.click(screen.getByText('Cancelar'))
-      expect(onClose).toHaveBeenCalledTimes(1)
-    })
-
     it('debería llamar a onClose al hacer clic en volver', () => {
       const onClose = vi.fn()
       render(<ProductCreatePage {...defaultProps} onClose={onClose} />)

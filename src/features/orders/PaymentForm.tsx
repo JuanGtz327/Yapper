@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Banknote, Loader2 } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import { calculateRemainingAmount } from '../../lib/payment.ts'
+import { Button } from '../../components/ui/Button.tsx'
 
 type PaymentMethod = 'Efectivo' | 'Transferencia' | 'Tarjeta' | 'Otro'
 
@@ -169,9 +170,10 @@ export function PaymentForm({
         />
       </label>
 
-      <button
+      <Button
+        variant="primary"
         type="submit"
-        className="primary-button payment-form-submit"
+        className="payment-form-submit"
         disabled={isSubmitting || !isValid}
       >
         {isSubmitting ? (
@@ -186,7 +188,7 @@ export function PaymentForm({
             {parsedAmount > 0 ? formatMoney(parsedAmount, currency) : ''}
           </>
         )}
-      </button>
+      </Button>
     </form>
   )
 }

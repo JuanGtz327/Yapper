@@ -1,3 +1,28 @@
+/*
+ * App.css - Legacy styles pending migration to Tailwind
+ *
+ * STILL ACTIVE (used by un-migrated components):
+ *   - :root variables, .app-shell, .sidebar, .brand, .nav-item, .main-content, .topbar
+ *   - Auth screen (.auth-*)
+ *   - Dashboard (.welcome-card, .stats-grid, .chart-*, .quick-actions)
+ *   - Products (.product-*, .variant-*, .option-*)
+ *   - Orders (.order-*, .line-item-*, .order-summary)
+ *   - Payments (.payment-*)
+ *   - Clients (.client-*)
+ *   - Settings, Stats, Catalog pages
+ *   - Forms (.modal, .modal-heading, .modal-actions, input/select styles)
+ *   - Responsive/mobile styles
+ *
+ * DEAD (no longer referenced - can be removed in 18f):
+ *   - .btn, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost (-> shadcn Button)
+ *   - .loading-inline, .spinner, .visually-hidden (-> Tailwind)
+ *   - .empty-state (-> Tailwind)
+ *   - .stat-card, .stat-heading (-> Tailwind)
+ *   - .panel-heading, .text-button (-> Tailwind)
+ *   - .action-icon, .peach, .mint, .lavender (-> Tailwind)
+ *   - .custom-select, .custom-select-trigger, .custom-select-dropdown (-> shadcn Select)
+ */
+
 :root {
   --ink: #27252c;
   --muted: #817d86;
@@ -373,19 +398,9 @@ h2 {
   margin-top: 17px;
 }
 .quick-actions button {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  gap: 11px;
-  padding: 12px 0;
-  border: 0;
-  border-top: 1px solid var(--line);
-  text-align: left;
-  color: #aaa5a8;
-  background: transparent;
+  color: inherit;
 }
 .quick-actions button:first-child {
-  border-top: 0;
 }
 .quick-actions button > span:nth-child(2) {
   flex: 1;
@@ -561,16 +576,7 @@ select {
   background: var(--plum-dark);
 }
 
-/* secondary */
-.btn-secondary {
-  padding: 10px 14px;
-  color: var(--plum);
-  background: #fffefa;
-  border: 1px solid #d9c9d9;
-}
-.btn-secondary:hover {
-  background: #f5edf5;
-}
+/* secondary - migrated to shadcn Button */
 
 /* danger */
 .btn-danger {
@@ -655,21 +661,7 @@ select {
   font-size: 13px;
   margin-top: 7px;
 }
-.secondary-button {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 14px;
-  border: 1px solid #d9c9d9;
-  border-radius: 9px;
-  color: var(--plum);
-  background: #fffefa;
-  font-size: 12px;
-  font-weight: 700;
-}
-.secondary-button:hover {
-  background: #f5edf5;
-}
+/* secondary-button - migrated to shadcn Button */
 .inventory-summary {
   display: flex;
   align-items: center;
@@ -1261,12 +1253,12 @@ td.row-actions .row-actions-inner {
   align-items: center;
   gap: 9px;
   margin: -10px 0 22px;
+}
+.share-bar > span {
+  margin-right: auto;
   color: #579078;
   font-size: 12px;
   font-weight: 700;
-}
-.share-bar span {
-  margin-right: auto;
 }
 .catalog-description {
   min-height: 32px;
@@ -2439,10 +2431,7 @@ td.row-actions .row-actions-inner {
     flex-direction: column;
     gap: 17px;
   }
-  .secondary-button {
-    align-self: stretch;
-    justify-content: center;
-  }
+  /* secondary-button - migrated to shadcn Button */
   .table-filters {
     align-items: stretch;
     flex-direction: column;
@@ -2533,13 +2522,7 @@ td.row-actions .row-actions-inner {
   .public-page {
     padding: 20px 16px 45px;
   }
-  .public-header .secondary-button {
-    padding: 9px;
-    font-size: 0;
-  }
-  .public-header .secondary-button svg {
-    margin: 0;
-  }
+  /* public-header secondary-button - migrated */
   .public-hero {
     margin: 55px auto 30px;
   }
@@ -2554,10 +2537,11 @@ td.row-actions .row-actions-inner {
     align-items: stretch;
     flex-wrap: wrap;
   }
-  .share-bar span {
+  .share-bar > span {
     width: 100%;
   }
-  .share-bar .secondary-button {
+  .share-bar > button,
+  .share-bar > a {
     flex: 1;
     justify-content: center;
   }

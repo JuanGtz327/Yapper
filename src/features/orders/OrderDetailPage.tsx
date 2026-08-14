@@ -6,6 +6,7 @@ import { PaymentProgress } from './PaymentProgress.tsx'
 import { PaymentHistory } from './PaymentHistory.tsx'
 import { PaymentModal, PaymentButton } from './PaymentModal.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { useState } from 'react'
 
 export function OrderDetailPage({
@@ -113,23 +114,22 @@ export function OrderDetailPage({
           </p>
         </div>
         <div className="section-actions">
-          <button className="secondary-button" onClick={onBack} type="button">
-            <ArrowLeft size={16} aria-hidden="true" />
+          <Button variant="secondary" onClick={onBack} type="button" icon={<ArrowLeft size={16} aria-hidden="true" />}>
             Volver a pedidos
-          </button>
+          </Button>
           {canEdit && (
-            <button
-              className="secondary-button"
+            <Button
+              variant="secondary"
               onClick={() => onEdit(order)}
               type="button"
             >
               <Pencil size={16} aria-hidden="true" />
               Editar pedido
-            </button>
+            </Button>
           )}
           {canEdit && (
-            <button
-              className="cancel-button danger-action"
+            <Button
+              variant="danger"
               onClick={() => {
                 onCancel(order)
                 onBack()
@@ -138,7 +138,7 @@ export function OrderDetailPage({
             >
               <X size={16} aria-hidden="true" />
               Cancelar pedido
-            </button>
+            </Button>
           )}
         </div>
       </div>

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Check, Pencil, Plus, Trash2 } from 'lucide-react'
 import type { Product, Variant, OptionTypeWithValues } from '../../types.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { CategoryManagerModal } from './CategoryManagerModal.tsx'
 import { VariantManagerModal } from './VariantManagerModal.tsx'
@@ -155,28 +156,27 @@ export function ProductModal({
                 </option>
               ))}
             </select>
-            <button
-              className="icon-button"
+            <Button
+              variant="ghost"
+              icon={<Plus size={16} />}
               onClick={() => setCategoryManagerOpen(true)}
               type="button"
               aria-label="Gestionar categorías"
-            >
-              <Plus size={16} />
-            </button>
+            />
           </div>
         </label>
         {initial && (
           <div className="variant-section">
             <div className="variant-section-header">
               <span className="variant-section-title">Variantes</span>
-              <button
-                className="secondary-button"
+              <Button
+                variant="secondary"
                 onClick={() => setVariantManagerOpen(true)}
                 type="button"
               >
                 <Plus size={15} aria-hidden="true" />
                 Añadir variante
-              </button>
+              </Button>
             </div>
             <ul className="variant-list">
               {initial.variants.map((variant) => (
@@ -196,25 +196,23 @@ export function ProductModal({
                     )}
                   </div>
                   <div className="variant-actions">
-                    <button
-                      className="icon-button"
+                    <Button
+                      variant="ghost"
+                      icon={<Pencil size={15} />}
                       onClick={() => {
                         setEditingVariant(variant)
                         setVariantManagerOpen(true)
                       }}
                       type="button"
                       aria-label={`Editar variante ${variant.sku}`}
-                    >
-                      <Pencil size={15} />
-                    </button>
-                    <button
-                      className="icon-button danger"
+                    />
+                    <Button
+                      variant="danger"
+                      icon={<Trash2 size={15} />}
                       onClick={() => handleDeleteVariant(variant)}
                       type="button"
                       aria-label={`Eliminar variante ${variant.sku}`}
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                    />
                   </div>
                 </li>
               ))}
@@ -294,17 +292,14 @@ export function ProductModal({
           </label>
         </fieldset>
         <div className="modal-actions">
-          <button className="cancel-button" onClick={onClose} type="button">
-            Cancelar
-          </button>
-          <button
-            className={`primary-button${saving ? ' button-loading' : ''}`}
+          <Button
+            variant="primary"
             disabled={saving}
             type="submit"
+            icon={<Check size={18} aria-hidden="true" />}
           >
-            <Check size={18} aria-hidden="true" />
             {saving ? 'Guardando...' : 'Guardar producto'}
-          </button>
+          </Button>
         </div>
       </form>
       {confirmState && (

@@ -12,13 +12,13 @@ export function Stat({
   positive?: boolean
 }) {
   return (
-    <article className="stat-card">
-      <div className="stat-heading">
+    <article className="border border-border rounded-xl bg-sidebar p-5">
+      <div className="flex justify-between text-muted text-xs mb-4">
         <span>{label}</span>
-        <ArrowUpRight size={17} />
+        <ArrowUpRight size={17} className="text-muted-foreground" />
       </div>
-      <strong>{value}</strong>
-      <small className={positive ? 'positive' : ''}>{detail}</small>
+      <strong className="block text-foreground text-[27px] tracking-tight font-bold">{value}</strong>
+      <small className={`text-xs ${positive ? 'text-green-600' : 'text-muted-foreground'}`}>{detail}</small>
     </article>
   )
 }

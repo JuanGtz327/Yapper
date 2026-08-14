@@ -1,5 +1,6 @@
 import { Boxes, Copy, MessageCircle } from 'lucide-react'
 import { Spinner } from '../../components/ui/Spinner.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { formatMoney } from '../../lib/format.ts'
 import { safeImageUrl } from '../../lib/security.ts'
 import { normalizeMexicanWhatsApp } from '../../lib/whatsapp.ts'
@@ -35,8 +36,8 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
             <span>Catálogo público</span>
           </div>
         </div>
-        <button
-          className="secondary-button"
+        <Button
+          variant="secondary"
           onClick={() =>
             void navigator.clipboard?.writeText(window.location.href)
           }
@@ -44,7 +45,7 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
         >
           <Copy size={16} />
           Compartir
-        </button>
+        </Button>
       </header>
       <section className="public-hero">
         <span className="eyebrow">COMPRA DIRECTA</span>

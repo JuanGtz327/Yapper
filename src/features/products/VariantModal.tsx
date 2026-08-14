@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Check, Plus, X } from 'lucide-react'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 import type { VariantDraft } from './validateProductDraft.ts'
@@ -210,6 +211,7 @@ export function VariantModal({
                       label: t.name,
                     }))}
                     placeholder="Tipo..."
+                    ariaLabel="Tipo de opción"
                   />
                   <CustomSelect
                     value={sel.valueId}
@@ -220,38 +222,35 @@ export function VariantModal({
                     }))}
                     placeholder="Valor..."
                     disabled={!sel.typeId}
+                    ariaLabel="Valor de opción"
                   />
-                  <button
-                    className="icon-button danger"
+                  <Button
+                    variant="danger"
+                    icon={<X size={15} />}
                     onClick={() => removeSelection(idx)}
                     type="button"
                     aria-label="Quitar opción"
-                  >
-                    <X size={15} />
-                  </button>
+                  />
                 </div>
               )
             })}
             {availableTypes.length > 0 && (
-              <button
-                className="secondary-button option-add-btn"
+              <Button
+                variant="secondary"
+                className="option-add-btn"
                 onClick={addSelection}
                 type="button"
+                icon={<Plus size={14} aria-hidden="true" />}
               >
-                <Plus size={14} aria-hidden="true" />
                 Agregar opción
-              </button>
+              </Button>
             )}
           </fieldset>
         )}
         <div className="modal-actions">
-          <button className="cancel-button" onClick={onClose} type="button">
-            Cancelar
-          </button>
-          <button className="primary-button" type="submit">
-            <Check size={18} aria-hidden="true" />
+          <Button variant="primary" type="submit" icon={<Check size={18} aria-hidden="true" />}>
             {variant ? 'Guardar variante' : 'Añadir variante'}
-          </button>
+          </Button>
         </div>
       </form>
     </ModalFrame>

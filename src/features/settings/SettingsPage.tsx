@@ -2,6 +2,7 @@ import { useState, useEffect, type FormEvent } from 'react'
 import { Check, Settings, Palette } from 'lucide-react'
 import type { BusinessSettings } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 
 export function SettingsPage({
@@ -99,6 +100,7 @@ export function SettingsPage({
             <CustomSelect
               value={draft.currency}
               onChange={(val) => setDraft({ ...draft, currency: val })}
+              ariaLabel="Moneda predeterminada"
               options={[
                 { value: 'MXN', label: 'Peso mexicano (MXN)' },
                 { value: 'USD', label: 'Dólar estadounidense (USD)' },
@@ -185,35 +187,36 @@ export function SettingsPage({
             )}
           </fieldset>
           <div className="modal-actions">
-            <button
-              className={`primary-button${saving ? ' button-loading' : ''}`}
+            <Button
+              variant="primary"
               disabled={saving}
               type="submit"
+              icon={<Check size={18} />}
             >
-              <Check size={18} />
               {saving ? 'Guardando...' : 'Guardar cambios'}
-            </button>
+            </Button>
           </div>
         </form>
         <aside className="panel account-panel">
           <span className="eyebrow">CUENTA</span>
           <h3>Sesión actual</h3>
           <p>Tu información está protegida y solo tú puedes acceder a ella.</p>
-          <button className="sign-out-button" onClick={onSignOut} type="button">
+          <Button variant="danger" onClick={onSignOut} type="button">
             Cerrar sesión
-          </button>
+          </Button>
           <div className="settings-section-divider" />
           <span className="eyebrow">INVENTARIO</span>
           <h3>Opciones de producto</h3>
           <p>Administra tipos como Color, Talla o Capacidad y sus valores.</p>
-          <button
-            className="secondary-button option-type-btn"
+          <Button
+            variant="secondary"
+            className="option-type-btn"
             onClick={onOpenOptionTypes}
             type="button"
+            icon={<Palette size={16} />}
           >
-            <Palette size={16} />
             Gestionar opciones
-          </button>
+          </Button>
         </aside>
       </div>
     </section>

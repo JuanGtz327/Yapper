@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Check } from 'lucide-react'
 import type { Client } from '../../types.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 
 export function ClientModal({
   initial,
@@ -53,17 +54,14 @@ export function ClientModal({
           />
         </label>
         <div className="modal-actions">
-          <button className="cancel-button" onClick={onClose} type="button">
-            Cancelar
-          </button>
-          <button
-            className={`primary-button${saving ? ' button-loading' : ''}`}
+          <Button
+            variant="primary"
             disabled={saving}
             type="submit"
+            icon={<Check size={18} aria-hidden="true" />}
           >
-            <Check size={18} aria-hidden="true" />
             {saving ? 'Guardando...' : 'Guardar cliente'}
-          </button>
+          </Button>
         </div>
       </form>
     </ModalFrame>

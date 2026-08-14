@@ -3,6 +3,7 @@ import { Plus, Search } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import type { Order } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 
 export function OrdersPage({
   orders,
@@ -57,10 +58,9 @@ export function OrdersPage({
           <h2>Pedidos</h2>
           <p>Consulta y da seguimiento a tus pedidos.</p>
         </div>
-        <button className="secondary-button" onClick={onAdd} type="button">
-          <Plus size={17} />
+        <Button variant="secondary" onClick={onAdd} type="button" icon={<Plus size={17} />}>
           Crear pedido
-        </button>
+        </Button>
       </div>
       <div className="order-summary">
         <div>

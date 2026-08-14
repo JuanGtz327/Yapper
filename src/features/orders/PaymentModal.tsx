@@ -3,6 +3,7 @@ import type { Order } from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
 import { calculateRemainingAmount } from '../../lib/payment.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { PaymentForm } from './PaymentForm.tsx'
 
 export function PaymentModal({
@@ -58,13 +59,14 @@ export function PaymentModal({
 
 export function PaymentButton({ onClick }: { onClick: () => void }) {
   return (
-    <button
-      className="secondary-button payment-trigger-btn"
+    <Button
+      variant="secondary"
+      className="payment-trigger-btn"
       onClick={onClick}
       type="button"
     >
       <Banknote size={16} aria-hidden="true" />
       Registrar abono
-    </button>
+    </Button>
   )
 }

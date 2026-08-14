@@ -6,6 +6,7 @@ import 'react-toastify/ReactToastify.css'
 import './App.css'
 import { AuthScreen } from './features/auth/AuthScreen.tsx'
 import { PublicCatalogPage } from './features/catalog/PublicCatalogPage.tsx'
+import DebugUI from './pages/DebugUI.tsx'
 import { Spinner } from './components/ui/Spinner.tsx'
 import { AppSidebar } from './components/layout/AppSidebar.tsx'
 import { Topbar } from './components/layout/Topbar.tsx'
@@ -25,6 +26,9 @@ import { useOrderEditor } from './hooks/useOrderEditor.ts'
 function App() {
   return (
     <Switch>
+      <Route path="/debug-ui">
+        <DebugUI />
+      </Route>
       <Route path={routes.publicCatalog}>
         {(params) => <PublicCatalogPage slug={params.slug} />}
       </Route>

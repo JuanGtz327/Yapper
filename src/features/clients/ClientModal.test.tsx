@@ -102,13 +102,6 @@ describe('ClientModal', () => {
   })
 
   describe('cierre del modal', () => {
-    it('debería llamar a onClose al hacer clic en cancelar', () => {
-      const onClose = vi.fn()
-      render(<ClientModal {...defaultProps} onClose={onClose} />)
-      fireEvent.click(screen.getByRole('button', { name: /cancelar/i }))
-      expect(onClose).toHaveBeenCalledTimes(1)
-    })
-
     it('debería llamar a onClose al hacer clic en el botón de cerrar del modal', () => {
       const onClose = vi.fn()
       render(<ClientModal {...defaultProps} onClose={onClose} />)

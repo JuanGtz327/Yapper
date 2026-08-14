@@ -29,10 +29,9 @@ export function ClientsPage({
           <h2>Tus clientes</h2>
           <p>Ten a mano sus datos e historial de pedidos.</p>
         </div>
-        <button className="secondary-button" onClick={onAdd} type="button">
-          <Plus size={17} />
+        <Button variant="secondary" onClick={onAdd} type="button" icon={<Plus size={17} />}>
           Nuevo cliente
-        </button>
+        </Button>
       </div>
       <div className="toolbar">
         <label className="search-box">

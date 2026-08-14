@@ -11,6 +11,7 @@ import { formatMoney } from '../../lib/format.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Empty } from '../../components/ui/Empty.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 
 function buildVariantOptions(products: Product[]): VariantOption[] {
@@ -141,6 +142,7 @@ export function OrderModal({
                   label: client.name,
                 }))}
                 placeholder="Seleccionar cliente..."
+                ariaLabel="Cliente"
               />
             </label>
             <div className="order-lines">
@@ -165,6 +167,7 @@ export function OrderModal({
                         label: formatVariantLabel(opt),
                       }))}
                       placeholder="Producto..."
+                      ariaLabel="Producto"
                     />
                     <input
                       aria-label="Cantidad"
@@ -184,8 +187,9 @@ export function OrderModal({
                         (selectedOpt?.variant.salePrice ?? 0) * line.quantity,
                       )}
                     </span>
-                    <button
-                      className="icon-button danger"
+                    <Button
+                      variant="danger"
+                      icon={<X size={16} />}
                       onClick={() =>
                         setLines((current) =>
                           current.filter((_, lineIndex) => lineIndex !== index),
@@ -193,9 +197,7 @@ export function OrderModal({
                       }
                       aria-label="Quitar producto"
                       type="button"
-                    >
-                      <X size={16} />
-                    </button>
+                    />
                   </div>
                 )
               })}
@@ -228,6 +230,7 @@ export function OrderModal({
                   { value: 'paid', label: 'Pagado' },
                   { value: 'pending', label: 'Pendiente de pago' },
                 ]}
+                ariaLabel="Estado del pago"
               />
             </label>
             <div className="order-total">
@@ -235,17 +238,14 @@ export function OrderModal({
               <strong>{money.format(total)}</strong>
             </div>
             <div className="modal-actions">
-              <button className="cancel-button" onClick={onClose} type="button">
-                Cancelar
-              </button>
-              <button
-                className={`primary-button${saving ? ' button-loading' : ''}`}
+              <Button
+                variant="primary"
                 disabled={saving}
                 type="submit"
+                icon={<Check size={18} />}
               >
-                <Check size={18} />
                 {saving ? 'Guardando...' : 'Guardar pedido'}
-              </button>
+              </Button>
             </div>
           </>
         )}

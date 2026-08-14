@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Check } from 'lucide-react'
 import type { Variant, OptionTypeWithValues } from '../../types.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 
 export function VariantManagerModal({
@@ -172,21 +173,18 @@ export function VariantManagerModal({
           </fieldset>
         )}
         <div className="modal-actions">
-          <button className="cancel-button" onClick={onClose} type="button">
-            Cancelar
-          </button>
-          <button
-            className={`primary-button${saving ? ' button-loading' : ''}`}
+          <Button
+            variant="primary"
             disabled={saving}
             type="submit"
+            icon={<Check size={18} aria-hidden="true" />}
           >
-            <Check size={18} aria-hidden="true" />
             {saving
               ? 'Guardando...'
               : variant
                 ? 'Guardar variante'
                 : 'Añadir variante'}
-          </button>
+          </Button>
         </div>
       </form>
     </ModalFrame>

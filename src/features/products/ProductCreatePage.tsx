@@ -221,10 +221,9 @@ export function ProductCreatePage({
               Eliminar producto
             </Button>
           )}
-          <button className="secondary-button" onClick={onClose} type="button">
-            <ArrowLeft size={16} aria-hidden="true" />
+          <Button variant="secondary" onClick={onClose} type="button" icon={<ArrowLeft size={16} aria-hidden="true" />}>
             Volver
-          </button>
+          </Button>
         </div>
       </div>
       <div className="settings-layout">
@@ -262,6 +261,7 @@ export function ProductCreatePage({
                     })),
                   ]}
                   placeholder="Sin categoría"
+                  ariaLabel="Categoría"
                 />
                 <Button
                   variant="primary"
@@ -320,14 +320,15 @@ export function ProductCreatePage({
                 Aún no tienes variantes. Agrega al menos una.
               </p>
             )}
-            <button
-              className="secondary-button variant-add-btn"
+            <Button
+              variant="secondary"
+              className="variant-add-btn"
               onClick={openAddVariant}
               type="button"
+              icon={<Plus size={15} aria-hidden="true" />}
             >
-              <Plus size={15} aria-hidden="true" />
               Añadir variante
-            </button>
+            </Button>
           </fieldset>
 
           {/* ── CATÁLOGO PÚBLICO ───────────────────────────── */}
@@ -374,21 +375,18 @@ export function ProductCreatePage({
 
           {/* ── ACTIONS ─────────────────────────────────────── */}
           <div className="modal-actions">
-            <button className="cancel-button" onClick={onClose} type="button">
-              Cancelar
-            </button>
-            <button
-              className={`primary-button${saving ? ' button-loading' : ''}`}
+            <Button
+              variant="primary"
               disabled={saving}
               type="submit"
+              icon={<Check size={18} aria-hidden="true" />}
             >
-              <Check size={18} aria-hidden="true" />
               {saving
                 ? 'Guardando...'
                 : initial
                   ? 'Guardar cambios'
                   : 'Crear producto'}
-            </button>
+            </Button>
           </div>
         </form>
 

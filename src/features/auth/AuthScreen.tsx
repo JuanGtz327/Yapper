@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { ArrowRight, LockKeyhole, Mail } from 'lucide-react'
+import { Button } from '../../components/ui/Button.tsx'
 import { supabase } from '../../lib/supabase.ts'
 
 export function AuthScreen() {
@@ -80,14 +81,15 @@ export function AuthScreen() {
               {message}
             </p>
           )}
-          <button
-            className="primary-button auth-submit"
+          <Button
+            variant="primary"
+            className="auth-submit"
             disabled={loading}
             type="submit"
           >
             {loading ? 'Comprobando...' : isSignUp ? 'Crear cuenta' : 'Entrar'}
             <ArrowRight size={18} aria-hidden="true" />
-          </button>
+          </Button>
         </form>
         <button
           className="auth-switch"

@@ -39,6 +39,7 @@ export function StatsPage({
               { value: '7d', label: 'Últimos 7 días' },
               { value: '6m', label: 'Últimos 6 meses' },
             ]}
+            ariaLabel="Periodo de estadísticas"
           />
         </label>
       </div>

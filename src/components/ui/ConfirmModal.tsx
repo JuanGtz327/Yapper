@@ -1,5 +1,6 @@
 import { AlertTriangle } from 'lucide-react'
 import { ModalFrame } from './ModalFrame.tsx'
+import { Button } from './Button.tsx'
 
 export function ConfirmModal({
   title,
@@ -18,24 +19,18 @@ export function ConfirmModal({
 }) {
   return (
     <ModalFrame title={title} onClose={onClose}>
-      <p style={{ color: 'var(--muted)', fontSize: 13, margin: 0 }}>
-        {message}
-      </p>
-      <div className="modal-actions" style={{ marginTop: 20 }}>
-        <button className="cancel-button" onClick={onClose} type="button">
-          Cancelar
-        </button>
-        <button
-          className={`primary-button${danger ? ' danger-action' : ''}`}
+      <p className="text-muted-foreground text-sm m-0">{message}</p>
+      <div className="flex justify-end mt-5">
+        <Button
+          variant={danger ? 'danger' : 'primary'}
           onClick={() => {
             onConfirm()
             onClose()
           }}
-          type="button"
         >
           <AlertTriangle size={16} aria-hidden="true" />
           {confirmLabel}
-        </button>
+        </Button>
       </div>
     </ModalFrame>
   )

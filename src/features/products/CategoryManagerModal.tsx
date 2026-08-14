@@ -1,6 +1,7 @@
 import { useState, useRef, type FormEvent } from 'react'
 import { Plus, X, Tag } from 'lucide-react'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { createCategory, deleteCategory } from '../../lib/repository.ts'
 import { useToast, toastMessages } from '../../hooks/useToast.ts'
@@ -77,15 +78,15 @@ export function CategoryManagerModal({
           disabled={creating}
           aria-label="Nombre de la nueva categoría"
         />
-        <button
-          className={`primary-button${creating ? ' button-loading' : ''}`}
+        <Button
+          variant="primary"
           type="submit"
           disabled={creating || !newName.trim()}
           aria-busy={creating}
+          icon={<Plus size={15} aria-hidden="true" />}
         >
-          <Plus size={15} aria-hidden="true" />
           Añadir
-        </button>
+        </Button>
       </form>
       <ul className="category-list">
         {categories.length === 0 && (
@@ -104,15 +105,14 @@ export function CategoryManagerModal({
               <Tag size={14} aria-hidden="true" />
               {cat.name}
             </button>
-            <button
-              className="icon-button danger"
+            <Button
+              variant="danger"
+              icon={<X size={15} aria-hidden="true" />}
               onClick={() => handleDelete(cat.id)}
               disabled={deletingId === cat.id}
               type="button"
               aria-label={`Eliminar ${cat.name}`}
-            >
-              <X size={15} aria-hidden="true" />
-            </button>
+            />
           </li>
         ))}
       </ul>

@@ -4,6 +4,7 @@ import type { MouseEvent } from 'react'
 import type { Order, Product } from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
 import { ModalFrame } from '../../components/ui/ModalFrame.tsx'
+import { Button } from '../../components/ui/Button.tsx'
 import { useOrderPaymentsQuery } from '../../hooks/queries/useOrderPayments.ts'
 import { PaymentProgress } from './PaymentProgress.tsx'
 import { PaymentHistory } from './PaymentHistory.tsx'
@@ -256,8 +257,8 @@ export function OrderTicketModal({
             </div>
             <div className="modal-actions order-actions-footer">
               {onEdit && (
-                <button
-                  className="primary-button"
+                <Button
+                  variant="primary"
                   onClick={(event) => {
                     event.stopPropagation()
                     onEdit(order)
@@ -267,10 +268,10 @@ export function OrderTicketModal({
                 >
                   <Pencil size={16} aria-hidden="true" />
                   Editar pedido
-                </button>
+                </Button>
               )}
-              <button
-                className="cancel-button danger-action"
+              <Button
+                variant="danger"
                 onClick={(event) => {
                   event.stopPropagation()
                   onCancel(order)
@@ -280,7 +281,7 @@ export function OrderTicketModal({
               >
                 <X size={16} aria-hidden="true" />
                 Cancelar pedido
-              </button>
+              </Button>
             </div>
           </section>
         )}
