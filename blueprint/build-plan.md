@@ -33,7 +33,7 @@
   - [ ] 18d. Products & Orders restyle - product forms, order forms, variants, payment tracking
     - [x] 18d. Products pages - ProductsPage, ProductCreatePage, product modals
     - [x] 18d2. Orders pages - OrdersPage, OrderCreatePage, OrderDetailPage, order modals
-    - [ ] 18d3. Payment components - PaymentForm, PaymentModal, PaymentProgress, PaymentHistory
+    - [x] 18d3. Payment components - PaymentForm, PaymentModal, PaymentProgress, PaymentHistory
     - [ ] 18d4. Shared classes - table styles, form-grid, modal-actions, badge, segmented-control
   - [ ] 18e. Clients, Settings, Stats, Catalog restyle - remaining pages + public catalog + auth screen
   - [ ] 18f. Cleanup - remove App.css, verify responsive behavior, final pass

@@ -30,20 +30,20 @@ export function PaymentModal({
 
   return (
     <ModalFrame title={`Abono — ${order.id}`} onClose={onClose}>
-      <div className="payment-modal-summary">
-        <div className="payment-modal-row">
-          <span>Total del pedido</span>
-          <strong>{formatMoney(total, currency)}</strong>
+      <div className="grid gap-[6px] p-3.5 rounded-[10px] bg-[#faf7f9] mb-4">
+        <div className="flex items-center justify-between text-[13px] text-foreground">
+          <span className="text-muted-foreground text-xs">Total del pedido</span>
+          <strong className="text-sm">{formatMoney(total, currency)}</strong>
         </div>
-        <div className="payment-modal-row">
-          <span>Ya abonado</span>
-          <strong className="text-plum">
+        <div className="flex items-center justify-between text-[13px] text-foreground">
+          <span className="text-muted-foreground text-xs">Ya abonado</span>
+          <strong className="text-primary text-[15px]">
             {formatMoney(paidAmount, currency)}
           </strong>
         </div>
-        <div className="payment-modal-row payment-modal-remaining">
-          <span>Saldo restante</span>
-          <strong>{formatMoney(remaining, currency)}</strong>
+        <div className="flex items-center justify-between text-[13px] text-foreground pt-2 mt-1 border-t border-border">
+          <span className="text-muted-foreground text-xs">Saldo restante</span>
+          <strong className="text-primary text-[15px]">{formatMoney(remaining, currency)}</strong>
         </div>
       </div>
       <PaymentForm
@@ -61,7 +61,7 @@ export function PaymentButton({ onClick }: { onClick: () => void }) {
   return (
     <Button
       variant="secondary"
-      className="payment-trigger-btn"
+      className="w-full justify-center"
       onClick={onClick}
       type="button"
       icon={<Banknote size={16} aria-hidden="true" />}

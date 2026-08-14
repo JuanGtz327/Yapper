@@ -75,10 +75,10 @@ export function PaymentForm({
   }
 
   return (
-    <form className="payment-form" onSubmit={handleSubmit} noValidate>
-      <label className="payment-form-field">
-        <span>Monto</span>
-        <div className="payment-form-amount-input">
+    <form className="grid gap-3.5" onSubmit={handleSubmit} noValidate>
+      <label className="grid gap-[6px]">
+        <span className="text-muted-foreground text-[11px] font-bold">Monto</span>
+        <div>
           <Input
             type="number"
             min="0.01"
@@ -94,17 +94,17 @@ export function PaymentForm({
             required
           />
         </div>
-        {error && <span className="payment-form-error">{error}</span>}
+        {error && <span className="text-[#b94b4b] text-[11px] font-semibold">{error}</span>}
       </label>
 
-      <div className="payment-form-quick-amounts">
+      <div className="flex gap-2">
         {[100, 200, 500]
           .filter((v) => v <= remaining)
           .map((value) => (
             <button
               key={value}
               type="button"
-              className="payment-form-quick-btn"
+              className="flex-1 py-2 border border-[#ded8dd] rounded-[7px] bg-sidebar text-foreground text-xs font-bold cursor-pointer transition-colors hover:border-primary hover:text-primary hover:bg-[#f8f2f8]"
               onClick={() => handleQuickAmount(value)}
               disabled={isSubmitting}
             >
@@ -114,7 +114,7 @@ export function PaymentForm({
         {remaining > 0 && (
           <button
             type="button"
-            className="payment-form-quick-btn"
+            className="flex-1 py-2 border border-[#ded8dd] rounded-[7px] bg-sidebar text-foreground text-xs font-bold cursor-pointer transition-colors hover:border-primary hover:text-primary hover:bg-[#f8f2f8]"
             onClick={() => {
               setAmount(String(remaining))
               setError('')
@@ -126,10 +126,10 @@ export function PaymentForm({
         )}
       </div>
 
-      <label className="payment-form-field">
-        <span>Método de pago</span>
+      <label className="grid gap-[6px]">
+        <span className="text-muted-foreground text-[11px] font-bold">Método de pago</span>
         <div
-          className="payment-form-method-group"
+          className="flex gap-[6px]"
           role="radiogroup"
           aria-label="Método de pago"
         >
@@ -139,7 +139,7 @@ export function PaymentForm({
               type="button"
               role="radio"
               aria-checked={paymentMethod === method.value}
-              className={`payment-form-method${paymentMethod === method.value ? ' is-active' : ''}`}
+              className={`flex-1 py-2 px-1 border border-[#ded8dd] rounded-[7px] bg-sidebar text-muted-foreground text-[11px] font-bold cursor-pointer transition-colors hover:text-primary hover:bg-[#f8f2f8]${paymentMethod === method.value ? ' border-primary bg-[#f3eaf4] text-primary' : ''}`}
               onClick={() => setPaymentMethod(method.value)}
               disabled={isSubmitting}
             >
@@ -149,8 +149,8 @@ export function PaymentForm({
         </div>
       </label>
 
-      <label className="payment-form-field">
-        <span>Referencia (opcional)</span>
+      <label className="grid gap-[6px]">
+        <span className="text-muted-foreground text-[11px] font-bold">Referencia (opcional)</span>
         <Input
           type="text"
           value={reference}
@@ -160,8 +160,8 @@ export function PaymentForm({
         />
       </label>
 
-      <label className="payment-form-field">
-        <span>Notas (opcional)</span>
+      <label className="grid gap-[6px]">
+        <span className="text-muted-foreground text-[11px] font-bold">Notas (opcional)</span>
         <Input
           type="text"
           value={notes}
@@ -174,12 +174,12 @@ export function PaymentForm({
       <Button
         variant="primary"
         type="submit"
-        className="payment-form-submit"
+        className="w-full justify-center mt-1"
         disabled={isSubmitting || !isValid}
       >
         {isSubmitting ? (
           <>
-            <Loader2 size={16} className="spin" aria-hidden="true" />
+            <Loader2 size={16} className="animate-spin" aria-hidden="true" />
             Registrando...
           </>
         ) : (

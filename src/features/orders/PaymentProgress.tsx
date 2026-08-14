@@ -15,22 +15,22 @@ export function PaymentProgress({
 
   return (
     <div
-      className="payment-progress"
+      className="mt-4 mb-4 p-3.5 rounded-[10px] bg-[#faf7f9]"
       role="group"
       aria-label="Progreso de pago"
     >
-      <div className="payment-progress-header">
-        <span className="payment-progress-label">
+      <div className="flex items-center justify-between mb-[10px]">
+        <span className="text-muted-foreground text-[11px] font-bold">
           {isFullyPaid ? 'Pagado total' : 'Abonado'}
         </span>
-        <span className="payment-progress-amounts">
-          <strong>{formatMoney(paidAmount, currency)}</strong>
-          <span className="payment-progress-separator">de</span>
+        <span className="flex items-baseline gap-1 text-[13px] text-foreground">
+          <strong className="text-primary text-[15px]">{formatMoney(paidAmount, currency)}</strong>
+          <span className="text-muted-foreground text-[11px]">de</span>
           <span>{formatMoney(total, currency)}</span>
         </span>
       </div>
       <div
-        className="payment-progress-bar"
+        className="h-2 rounded bg-[#e8e4e5] overflow-hidden"
         role="progressbar"
         aria-valuenow={paidAmount}
         aria-valuemin={0}
@@ -38,14 +38,14 @@ export function PaymentProgress({
         aria-label={`${percentage.toFixed(0)}% pagado`}
       >
         <div
-          className={`payment-progress-fill${isFullyPaid ? ' is-complete' : ''}`}
+          className={`h-full rounded transition-[width] duration-300 ${isFullyPaid ? 'bg-[#579078]' : 'bg-primary'}`}
           style={{ width: `${percentage}%` }}
         />
       </div>
       {!isFullyPaid && (
-        <div className="payment-progress-footer">
-          <span className="payment-progress-remaining">
-            Falta: <strong>{formatMoney(remaining, currency)}</strong>
+        <div className="mt-2">
+          <span className="text-muted-foreground text-xs">
+            Falta: <strong className="text-foreground">{formatMoney(remaining, currency)}</strong>
           </span>
         </div>
       )}
