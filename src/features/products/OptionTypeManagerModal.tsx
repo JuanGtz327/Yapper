@@ -146,7 +146,7 @@ export function OptionTypeManagerModal({
         </Button>
       </form>
 
-      <ul className="option-type-list">
+      <ul className="list-none mt-3 mb-0 p-0">
         {optionTypes.length === 0 && (
           <li className="category-list-empty">
             <Palette size={16} aria-hidden="true" />
@@ -156,10 +156,10 @@ export function OptionTypeManagerModal({
         {optionTypes.map((type) => {
           const isExpanded = expandedTypeId === type.id
           return (
-            <li key={type.id} className="option-type-item">
-              <div className="option-type-header">
+            <li key={type.id} className="border border-[#e8e5e3] rounded-[8px] mb-2 bg-white">
+              <div className="flex items-center gap-[6px] py-[10px] px-3">
                 <button
-                  className="option-type-toggle"
+                  className="flex items-center gap-[6px] flex-1 min-w-0 border-0 bg-none p-0 cursor-pointer text-[13px] text-foreground hover:text-primary"
                   onClick={() => setExpandedTypeId(isExpanded ? null : type.id)}
                   type="button"
                   aria-expanded={isExpanded}
@@ -170,8 +170,8 @@ export function OptionTypeManagerModal({
                     <ChevronRight size={14} />
                   )}
                   <Palette size={14} aria-hidden="true" />
-                  <span className="option-type-name">{type.name}</span>
-                  <span className="option-type-count">
+                  <span className="font-bold">{type.name}</span>
+                  <span className="text-muted-foreground text-xs ml-auto">
                     {type.values.length}{' '}
                     {type.values.length === 1 ? 'valor' : 'valores'}
                   </span>
@@ -187,10 +187,10 @@ export function OptionTypeManagerModal({
               </div>
 
               {isExpanded && (
-                <div className="option-type-values">
-                  <ul className="option-value-list">
+                <div className="border-t border-[#e8e5e3] py-2 px-3 pb-[10px]">
+                    <ul className="list-none m-0 p-0 flex flex-wrap gap-[6px]">
                     {type.values.map((val) => (
-                      <li key={val.id} className="option-value-item">
+                      <li key={val.id} className="flex items-center gap-1 py-1 px-2 rounded-[6px] bg-[#f4f2f0] text-xs">
                         <span>{val.name}</span>
                         <Button
                           variant="danger"
@@ -203,11 +203,11 @@ export function OptionTypeManagerModal({
                       </li>
                     ))}
                     {type.values.length === 0 && (
-                      <li className="option-value-empty">Sin valores aún</li>
+                      <li className="text-muted-foreground text-xs py-1">Sin valores aún</li>
                     )}
                   </ul>
                   <form
-                    className="option-value-add-row"
+                    className="flex gap-[6px] mt-2"
                     onSubmit={(e) => {
                       e.preventDefault()
                       handleAddValue(type.id)

@@ -4,6 +4,7 @@ import { Empty } from '../../components/ui/Empty.tsx'
 import { Button } from '../../components/ui/Button.tsx'
 import { Input } from '../../components/ui/Input.tsx'
 import { formatMoney } from '../../lib/format.ts'
+import { cn } from '../../lib/utils.ts'
 import type { Product } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 
@@ -13,6 +14,13 @@ type VariantRow = {
   isFirst: boolean
   rowSpan: number
   productIndex: number
+}
+
+const productDotColors: Record<string, string> = {
+  coral: 'text-[#b06b57] bg-[#f9e5dc]',
+  mint: 'text-[#579078] bg-[#dff1e6]',
+  sky: 'text-[#52829e] bg-[#e0eff5]',
+  lavender: 'text-[#7963a2] bg-[#ece5f7]',
 }
 
 function flattenProducts(products: Product[]): VariantRow[] {
@@ -133,11 +141,11 @@ export function ProductsPage({
           </Button>
         </div>
       </div>
-      <div className="inventory-summary">
-        <DollarSign size={18} aria-hidden="true" />
-        <span>Inversión: {formatMoney(totalInvestment, currency)}</span>
-        <span>Inventario: {formatMoney(totalSaleValue, currency)}</span>
-        <strong>Ganancia: {formatMoney(totalProfit, currency)}</strong>
+      <div className="flex items-center gap-2 mb-[14px] p-3 px-4 border border-[#e3ddd5] rounded-[10px] bg-[#fcfaf8] text-xs">
+        <DollarSign size={18} className="text-primary" aria-hidden="true" />
+        <span className="text-muted-foreground">Inversión: {formatMoney(totalInvestment, currency)}</span>
+        <span className="text-muted-foreground">Inventario: {formatMoney(totalSaleValue, currency)}</span>
+        <strong className="ml-auto text-foreground text-[15px]">Ganancia: {formatMoney(totalProfit, currency)}</strong>
       </div>
       <div className="table-filters" aria-label="Filtros de productos">
         <div className="relative w-full max-w-[300px]">
@@ -229,7 +237,7 @@ export function ProductsPage({
                   {row.isFirst && (
                     <>
                       <td className="col-left" rowSpan={row.rowSpan}>
-                        <div className={`product-dot ${row.product.color}`}>
+                        <div className={cn('inline-grid place-items-center w-[34px] h-[34px] mr-[10px] rounded-[9px]', productDotColors[row.product.color] ?? '')}>
                           <Boxes size={18} aria-hidden="true" />
                         </div>
                         <strong>{row.product.name}</strong>
@@ -241,7 +249,7 @@ export function ProductsPage({
                   )}
                   <td>
                     {row.variant?.sku || '—'}
-                    {label && <span className="variant-label">{label}</span>}
+                    {label && <span className="block text-[11px] font-normal text-muted-foreground mt-[2px]">{label}</span>}
                   </td>
                   <td className="col-right">{formatMoney(cost, currency)}</td>
                   <td className="table-emphasis">
@@ -249,7 +257,7 @@ export function ProductsPage({
                   </td>
                   <td>
                     <span
-                      className={stock <= threshold ? 'stock low' : 'stock'}
+                      className={stock <= threshold ? 'font-bold text-[#c5804a]' : 'font-bold text-[#5f9e7c]'}
                     >
                       {stock}
                     </span>

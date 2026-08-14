@@ -167,9 +167,9 @@ export function ProductModal({
           </div>
         </label>
         {initial && (
-          <div className="variant-section">
-            <div className="variant-section-header">
-              <span className="variant-section-title">Variantes</span>
+          <div className="border border-[#e8e4e6] rounded-[10px] p-[14px] bg-[#fdfcfc]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[13px] font-bold text-foreground">Variantes</span>
               <Button
                 variant="secondary"
                 onClick={() => setVariantManagerOpen(true)}
@@ -179,24 +179,24 @@ export function ProductModal({
                 Añadir variante
               </Button>
             </div>
-            <ul className="variant-list">
+            <ul className="grid gap-[6px] p-0 m-0 list-none">
               {initial.variants.map((variant) => (
-                <li key={variant.id} className="variant-list-item">
-                  <div className="variant-info">
-                    <strong>{variant.sku}</strong>
-                    <span className="variant-meta">
+                <li key={variant.id} className="flex items-center justify-between gap-[10px] p-[10px_12px] border border-[#e8e4e6] rounded-[8px] bg-white hover:bg-[#f3eef4]">
+                  <div className="flex flex-col gap-[2px] min-w-0">
+                    <strong className="text-[13px] text-foreground">{variant.sku}</strong>
+                    <span className="text-[12px] text-muted-foreground">
                       {variant.name && `${variant.name} · `}${variant.salePrice}{' '}
                       · {variant.stock} uds
                     </span>
                     {variant.optionValues.length > 0 && (
-                      <span className="variant-options-badge">
+                      <span className="text-[11px] text-primary bg-[#f3eef4] rounded-[6px] py-[2px] px-2 w-fit">
                         {variant.optionValues
                           .map((ov) => `${ov.optionType}: ${ov.value}`)
                           .join(', ')}
                       </span>
                     )}
                   </div>
-                  <div className="variant-actions">
+                  <div className="flex gap-1 shrink-0">
                     <Button
                       variant="ghost"
                       icon={<Pencil size={15} />}
@@ -262,8 +262,8 @@ export function ProductModal({
             </label>
           </>
         )}
-        <fieldset className="public-settings">
-          <legend>Publicación</legend>
+        <fieldset className="grid gap-3 p-[14px] border border-[var(--line)] rounded-[10px]">
+          <legend className="px-[5px] text-primary text-xs font-bold">Publicación</legend>
           <label className="checkbox-label">
             <input
               name="published"

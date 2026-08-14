@@ -69,7 +69,7 @@ export function CategoryManagerModal({
 
   return (
     <ModalFrame title="Categorías" onClose={onClose}>
-      <form className="category-add-row" onSubmit={handleCreate}>
+      <form className="flex gap-2 mb-[14px]" onSubmit={handleCreate}>
         <Input
           ref={inputRef}
           type="text"
@@ -89,21 +89,21 @@ export function CategoryManagerModal({
           Añadir
         </Button>
       </form>
-      <ul className="category-list">
+      <ul className="grid gap-1 p-0 m-0 list-none max-h-[280px] overflow-y-auto">
         {categories.length === 0 && (
-          <li className="category-list-empty">
-            <Tag size={16} aria-hidden="true" />
+          <li className="flex items-center justify-center gap-2 p-7 px-4 text-muted-foreground text-[13px]">
+            <Tag size={16} aria-hidden="true" className="text-[#c9bfca]" />
             No hay categorías todavía
           </li>
         )}
         {categories.map((cat) => (
-          <li key={cat.id} className="category-list-item">
+          <li key={cat.id} className="flex items-center gap-1">
             <button
-              className="category-list-select"
+              className="flex-1 flex items-center gap-2 py-[10px] px-3 border-0 rounded-[8px] text-foreground bg-transparent text-[13px] text-left cursor-pointer hover:bg-[#f3eaf4]"
               onClick={() => onSelect(cat.id)}
               type="button"
             >
-              <Tag size={14} aria-hidden="true" />
+              <Tag size={14} aria-hidden="true" className="text-primary shrink-0" />
               {cat.name}
             </button>
             <Button

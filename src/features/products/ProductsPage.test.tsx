@@ -374,7 +374,7 @@ describe('ProductsPage', () => {
         <ProductsPage {...defaultProps} products={[product]} threshold={5} />,
       )
       const stockBadge = screen.getByText('3')
-      expect(stockBadge).toHaveClass('low')
+      expect(stockBadge).toHaveClass('text-[#c5804a]')
     })
 
     it('debería marcar stock como normal cuando es mayor al umbral', () => {
@@ -396,8 +396,8 @@ describe('ProductsPage', () => {
         <ProductsPage {...defaultProps} products={[product]} threshold={5} />,
       )
       const stockBadge = screen.getByText('10')
-      expect(stockBadge).toHaveClass('stock')
-      expect(stockBadge).not.toHaveClass('low')
+      expect(stockBadge).toHaveClass('text-[#5f9e7c]')
+      expect(stockBadge).not.toHaveClass('text-[#c5804a]')
     })
   })
 })

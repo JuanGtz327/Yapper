@@ -148,8 +148,8 @@ export function VariantManagerModal({
           />
         </label>
         {optionTypes.length > 0 && (
-          <fieldset className="variant-options">
-            <legend>Opciones</legend>
+          <fieldset className="border border-[#e8e4e6] rounded-[10px] p-[14px] bg-[#fdfcfc]">
+            <legend className="text-[13px] font-bold text-foreground">Opciones</legend>
             {optionTypes.map((type) => (
               <label key={type.id}>
                 {type.name}

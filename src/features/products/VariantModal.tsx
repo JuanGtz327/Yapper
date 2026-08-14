@@ -195,13 +195,13 @@ export function VariantModal({
           />
         </label>
         {optionTypes.length > 0 && (
-          <fieldset className="variant-options">
-            <legend>Opciones</legend>
+          <fieldset className="border border-[#e8e4e6] rounded-[10px] p-[14px] bg-[#fdfcfc]">
+            <legend className="text-[13px] font-bold text-foreground">Opciones</legend>
             {selections.map((sel, idx) => {
               const type = optionTypes.find((t) => t.id === sel.typeId)
               const valuesForType = type?.values ?? []
               return (
-                <div key={idx} className="option-selection-row">
+                <div key={idx} className="flex gap-[6px] items-center">
                   <CustomSelect
                     value={sel.typeId}
                     onChange={(val) =>
@@ -238,7 +238,7 @@ export function VariantModal({
             {availableTypes.length > 0 && (
               <Button
                 variant="secondary"
-                className="option-add-btn"
+                className="mt-2 text-xs"
                 onClick={addSelection}
                 type="button"
                 icon={<Plus size={14} aria-hidden="true" />}

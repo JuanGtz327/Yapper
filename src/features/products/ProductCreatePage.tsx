@@ -66,7 +66,7 @@ function FieldError({
 }) {
   const msg = errors[name]
   if (!msg) return null
-  return <span className="field-error">{msg}</span>
+  return <span className="block text-[#aa6259] text-[11px] mt-[2px]">{msg}</span>
 }
 
 export function ProductCreatePage({
@@ -230,8 +230,8 @@ export function ProductCreatePage({
       <div className="settings-layout">
         <form className="panel form-grid" onSubmit={submit}>
           {/* ── INFORMACIÓN BÁSICA ─────────────────────────── */}
-          <fieldset className="product-section">
-            <legend>Información básica</legend>
+          <fieldset className="border border-[#e8e4e6] rounded-[10px] p-4 bg-[#fdfcfc]">
+            <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">Información básica</legend>
             <label>
               Nombre del producto
               <Input
@@ -248,7 +248,7 @@ export function ProductCreatePage({
             </label>
             <label className="category-row">
               Categoría
-              <div className="category-selector">
+              <div className="flex gap-[6px] items-stretch">
                 <CustomSelect
                   value={draft.categoryId ?? ''}
                   onChange={(val) =>
@@ -276,28 +276,28 @@ export function ProductCreatePage({
           </fieldset>
 
           {/* ── VARIANTES ───────────────────────────────────── */}
-          <fieldset className="product-section">
-            <legend>
+          <fieldset className="border border-[#e8e4e6] rounded-[10px] p-4 bg-[#fdfcfc]">
+            <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">
               Variantes
-              <span className="field-help">
+              <span className="field-help font-normal">
                 Cada variante define su propio SKU, precio y existencias.
               </span>
             </legend>
             {errors.variants && (
-              <span className="field-error">{errors.variants}</span>
+              <span className="block text-[#aa6259] text-[11px] mt-[2px]">{errors.variants}</span>
             )}
             {draft.variants.length > 0 ? (
-              <ul className="variant-list">
+              <ul className="grid gap-[6px] p-0 m-0 list-none">
                 {draft.variants.map((variant, idx) => (
-                  <li key={variant.id ?? idx} className="variant-list-item">
-                    <div className="variant-info">
-                      <strong>{variant.sku}</strong>
-                      <span className="variant-meta">
+                  <li key={variant.id ?? idx} className="flex items-center justify-between gap-[10px] p-[10px_12px] border border-[#e8e4e6] rounded-[8px] bg-white hover:bg-[#f3eef4]">
+                    <div className="flex flex-col gap-[2px] min-w-0">
+                      <strong className="text-[13px] text-foreground">{variant.sku}</strong>
+                      <span className="text-[12px] text-muted-foreground">
                         {variant.name && `${variant.name} · `}$
                         {variant.salePrice} · {variant.stock} uds
                       </span>
                     </div>
-                    <div className="variant-actions">
+                    <div className="flex gap-1 shrink-0">
                       <Button
                         variant="primary"
                         icon={<Pencil size={15} />}
@@ -317,13 +317,13 @@ export function ProductCreatePage({
                 ))}
               </ul>
             ) : (
-              <p className="variant-empty-hint">
+              <p className="text-[12px] text-muted-foreground m-0 mb-2">
                 Aún no tienes variantes. Agrega al menos una.
               </p>
             )}
             <Button
               variant="secondary"
-              className="variant-add-btn"
+              className="mt-3"
               onClick={openAddVariant}
               type="button"
               icon={<Plus size={15} aria-hidden="true" />}
@@ -333,8 +333,8 @@ export function ProductCreatePage({
           </fieldset>
 
           {/* ── CATÁLOGO PÚBLICO ───────────────────────────── */}
-          <fieldset className="product-section">
-            <legend>Catálogo público</legend>
+          <fieldset className="border border-[#e8e4e6] rounded-[10px] p-4 bg-[#fdfcfc]">
+            <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">Catálogo público</legend>
             <label className="checkbox-label">
               <input
                 type="checkbox"
@@ -345,7 +345,7 @@ export function ProductCreatePage({
               />
               Mostrar en mi catálogo público
             </label>
-            <label className="public-description-gap">
+            <label className="mt-2">
               Descripción pública
               <textarea
                 value={draft.publicDescription}
@@ -392,36 +392,36 @@ export function ProductCreatePage({
         </form>
 
         {/* ── PREVIEW ────────────────────────────────────────── */}
-        <aside className="panel product-preview-panel">
+        <aside className="panel self-start">
           <span className="eyebrow">VISTA PREVIA</span>
-          <h3>Cómo se ve en tu catálogo</h3>
-          <div className="product-preview-card">
+          <h3 className="text-foreground text-base">Cómo se ve en tu catálogo</h3>
+          <div className="mt-[14px] border border-border rounded-xl overflow-hidden bg-white">
             {draft.imageUrl ? (
               <img
                 src={draft.imageUrl}
                 alt={draft.name || 'Vista previa'}
-                className="product-preview-image"
+                className="w-full h-[160px] object-cover block"
               />
             ) : (
-              <div className="product-preview-placeholder">
-                <Image size={28} aria-hidden="true" />
+              <div className="w-full h-[160px] flex flex-col items-center justify-center gap-[6px] bg-[#f3f1ef] text-muted-foreground text-xs">
+                <Image size={28} aria-hidden="true" className="text-[#c9bfca]" />
                 <span>Sin imagen</span>
               </div>
             )}
-            <div className="product-preview-body">
-              <span className="product-preview-category">
+            <div className="p-3.5 grid gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-[0.5px] text-primary">
                 {selectedCategoryName}
               </span>
-              <strong className="product-preview-name">
+              <strong className="text-[15px] text-foreground">
                 {draft.name || 'Nombre del producto'}
               </strong>
               {draft.variants.length > 0 && (
-                <span className="product-preview-price">
+                <span className="text-sm font-bold text-foreground mt-[2px]">
                   ${draft.variants[0].salePrice || '0'}
                 </span>
               )}
               {draft.publicDescription && (
-                <p className="product-preview-desc">
+                <p className="text-xs text-muted-foreground leading-[1.5] mt-[6px]">
                   {draft.publicDescription}
                 </p>
               )}
@@ -429,15 +429,15 @@ export function ProductCreatePage({
           </div>
           <div className="settings-section-divider" />
           <span className="eyebrow">RESUMEN</span>
-          <ul className="product-preview-summary">
+          <ul className="list-none p-0 mt-2.5 grid gap-[6px] text-xs text-muted-foreground">
             <li>
-              Variantes: <strong>{draft.variants.length}</strong>
+              Variantes: <strong className="text-foreground">{draft.variants.length}</strong>
             </li>
             <li>
-              Publicado: <strong>{draft.published ? 'Sí' : 'No'}</strong>
+              Publicado: <strong className="text-foreground">{draft.published ? 'Sí' : 'No'}</strong>
             </li>
             <li>
-              SKU principal: <strong>{draft.variants[0]?.sku || '—'}</strong>
+              SKU principal: <strong className="text-foreground">{draft.variants[0]?.sku || '—'}</strong>
             </li>
           </ul>
         </aside>
