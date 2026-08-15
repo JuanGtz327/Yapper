@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Search } from 'lucide-react'
-import { cn } from '../../lib/utils.ts'
 import {
   Select,
   SelectContent,
@@ -52,13 +51,10 @@ export function CustomSelect({
     >
       {label ? (
         <div className="relative">
-          <SelectTrigger
-            className={cn('h-14 pt-[20px] pb-1', className)}
-            aria-label={ariaLabel}
-          >
+          <SelectTrigger className={className} aria-label={ariaLabel}>
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
-          <span className="pointer-events-none absolute top-2 left-3 text-[10px] font-bold text-[#716b72]">
+          <span className="pointer-events-none absolute top-[-7px] left-3 bg-white px-1 text-[10px] font-bold text-[#716b72]">
             {label}
           </span>
         </div>
