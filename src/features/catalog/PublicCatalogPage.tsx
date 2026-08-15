@@ -57,7 +57,7 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
         </Button>
       </header>
       <section className="max-w-[1120px] mx-auto mt-[75px] mb-10 max-[520px]:mt-[55px] max-[520px]:mb-[30px]">
-        <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+        <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
           COMPRA DIRECTA
         </span>
         <h1 className="mt-[7px] mb-[10px] text-[clamp(34px,7vw,62px)]">

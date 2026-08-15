@@ -43,7 +43,7 @@ export function AuthScreen() {
           </div>
         </div>
         <div>
-          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+          <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
             TU NEGOCIO, MÁS SENCILLO
           </span>
           <h1 className="mt-1 mb-[10px] text-[34px]">

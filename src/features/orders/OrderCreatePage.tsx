@@ -138,7 +138,7 @@ export function OrderCreatePage({
     <section className="animate-[page-in_0.25s_ease_both] w-full">
       <div className="flex items-end justify-between mb-[27px] max-[520px]:mb-5 max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+          <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
             VENTAS
           </span>
           <h1>{initial ? 'Editar pedido' : 'Nuevo pedido'}</h1>

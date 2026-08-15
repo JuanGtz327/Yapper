@@ -70,7 +70,7 @@ export function SettingsPage({
     <section className="animate-[page-in_0.25s_ease_both]">
       <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+          <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
             CONFIGURACIÓN
           </span>
           <h2>Tu negocio</h2>
