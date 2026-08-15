@@ -202,10 +202,7 @@ export function ProductCreatePage({
     <section className="animate-[page-in_0.25s_ease_both]">
       <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
-            CONTROL DE INVENTARIO
-          </span>
-          <h2>{initial ? 'Editar producto' : 'Nuevo producto'}</h2>
+          <h1>{initial ? 'Editar producto' : 'Nuevo producto'}</h1>
           <p>
             {initial
               ? 'Modifica la información de tu producto.'
@@ -239,7 +236,7 @@ export function ProductCreatePage({
       <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(260px,1fr)] gap-4">
         <form className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] grid gap-6" onSubmit={submit}>
           {/* ── INFORMACIÓN BÁSICA ─────────────────────────── */}
-          <div>
+          <div className="grid gap-4">
             <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
               INFORMACIÓN BÁSICA
             </span>
@@ -257,7 +254,7 @@ export function ProductCreatePage({
               />
               <FieldError errors={errors} name="name" />
             </label>
-            <div className="flex gap-[6px] items-stretch">
+            <div className="flex gap-[6px] items-center">
               <div className="min-w-0 flex-1">
                 <CustomSelect
                   label="Categoría"
