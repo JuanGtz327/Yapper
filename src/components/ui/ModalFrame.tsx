@@ -22,7 +22,7 @@ export function ModalFrame({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className={cn('max-w-3xl', className)}>
+      <DialogContent className={cn('max-w-lg', className)}>
         <DialogHeader>
           <DialogTitle className="text-[#6d3c72] text-lg font-bold">{title}</DialogTitle>
         </DialogHeader>

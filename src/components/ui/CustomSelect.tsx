@@ -54,7 +54,7 @@ export function CustomSelect({
           <SelectTrigger className={className} aria-label={ariaLabel}>
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
-          <span className="pointer-events-none absolute top-[-7px] left-3 bg-white px-1 text-[10px] font-bold text-[#716b72]">
+          <span className="pointer-events-none absolute top-[-5px] left-2 bg-white px-1 text-[10px] font-bold text-[#716b72] rounded-2xl">
             {label}
           </span>
         </div>

@@ -57,7 +57,7 @@ export function PaymentModal({
           </div>
         </div>
       </div>
-      <div className="h-px bg-[#e8e4e6] my-4" />
+      <div className="h-px bg-[#e8e4e6] my-0" />
       <PaymentForm
         total={total}
         paidAmount={paidAmount}
