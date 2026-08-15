@@ -19,6 +19,7 @@ export function useClientsMutations(user: User | null) {
         ...(current ?? []),
         saved,
       ])
+      void qc.invalidateQueries({ queryKey: qk.clients(user) })
     },
   })
 
@@ -29,6 +30,7 @@ export function useClientsMutations(user: User | null) {
       qc.setQueryData<Client[]>(qk.clients(user), (current) =>
         (current ?? []).map((c) => (c.id === client.id ? client : c)),
       )
+      void qc.invalidateQueries({ queryKey: qk.clients(user) })
     },
   })
 
@@ -38,6 +40,7 @@ export function useClientsMutations(user: User | null) {
       qc.setQueryData<Client[]>(qk.clients(user), (current) =>
         (current ?? []).filter((c) => c.id !== id),
       )
+      void qc.invalidateQueries({ queryKey: qk.clients(user) })
     },
   })
 

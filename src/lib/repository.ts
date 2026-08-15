@@ -17,6 +17,11 @@ import type {
   ClientRow,
   OrderRow,
   OrderItemRow,
+  ClientFilters,
+  OrderFilters,
+  PaginationParams,
+  PaginatedResult,
+  ProductFilters,
 } from '../types.ts'
 import { safeImageUrl } from './security.ts'
 
@@ -42,7 +47,59 @@ export async function loadProducts(user: User): Promise<Product[]> {
     .order('created_at', { ascending: false })
   if (productError) throw productError
 
-  const products = productRows as ProductRow[]
+  return hydrateProducts(user, (productRows as ProductRow[]) ?? [])
+}
+
+export async function loadProductsPage(
+  user: User,
+  pagination: PaginationParams,
+  filters: ProductFilters = {},
+): Promise<PaginatedResult<Product>> {
+  const { page, pageSize } = normalizePagination(pagination)
+  let query = supabase
+    .from('products')
+    .select('id, name, category_id, published, public_description, image_url', {
+      count: 'exact',
+    })
+    .eq('user_id', user.id)
+  if (filters.search?.trim()) {
+    query = query.ilike('name', `%${escapeIlike(filters.search)}%`)
+  }
+  if (filters.categoryId) query = query.eq('category_id', filters.categoryId)
+  if (filters.published !== undefined)
+    query = query.eq('published', filters.published)
+  if (filters.stock) {
+    const stockQuery = supabase
+      .from('product_variants')
+      .select('product_id')
+      .eq('user_id', user.id)
+    if (filters.stock === 'available') stockQuery.gt('stock', 0)
+    if (filters.stock === 'low')
+      stockQuery.gt('stock', 0).lte('stock', filters.stockThreshold ?? 5)
+    if (filters.stock === 'out') stockQuery.gt('stock', 0)
+    const { data: stockRows, error: stockError } = await stockQuery
+    if (stockError) throw stockError
+    const matchingIds = Array.from(
+      new Set((stockRows ?? []).map((row) => row.product_id as string)),
+    )
+    if (filters.stock === 'out') {
+      if (matchingIds.length)
+        query = query.not('id', 'in', `(${matchingIds.join(',')})`)
+    } else if (!matchingIds.length) {
+      return paginated([], 0, page, pageSize)
+    } else {
+      query = query.in('id', matchingIds)
+    }
+  }
+  const { data, count, error } = await query
+    .order('created_at', { ascending: false })
+    .range((page - 1) * pageSize, page * pageSize - 1)
+  if (error) throw error
+  const products = await hydrateProducts(user, (data as ProductRow[]) ?? [])
+  return paginated(products, count ?? 0, page, pageSize)
+}
+
+async function hydrateProducts(user: User, products: ProductRow[]) {
   if (!products.length) return []
 
   const productIds = products.map((p) => p.id)
@@ -466,6 +523,52 @@ export async function loadClients(user: User): Promise<Client[]> {
   }))
 }
 
+export async function loadClientsPage(
+  user: User,
+  pagination: PaginationParams,
+  filters: ClientFilters = {},
+): Promise<PaginatedResult<Client>> {
+  const { page, pageSize } = normalizePagination(pagination)
+  let query = supabase
+    .from('clients')
+    .select('id, name, phone, address', { count: 'exact' })
+    .eq('user_id', user.id)
+  if (filters.search?.trim()) {
+    const pattern = `%${escapeIlike(filters.search)}%`
+    query = query.or(`name.ilike.${pattern},phone.ilike.${pattern}`)
+  }
+  const { data, count, error } = await query
+    .order('created_at', { ascending: false })
+    .range((page - 1) * pageSize, page * pageSize - 1)
+  if (error) throw error
+
+  const rows = (data as ClientRow[]) ?? []
+  const ids = rows.map((row) => row.id)
+  const { data: orderData, error: orderError } = ids.length
+    ? await supabase
+        .from('orders')
+        .select('client_id')
+        .eq('user_id', user.id)
+        .neq('status', 'cancelled')
+        .in('client_id', ids)
+    : { data: [], error: null }
+  if (orderError) throw orderError
+  const orderCounts = (orderData as Array<{ client_id: string | null }>).reduce<
+    Record<string, number>
+  >((counts, order) => {
+    if (order.client_id)
+      counts[order.client_id] = (counts[order.client_id] ?? 0) + 1
+    return counts
+  }, {})
+  const clients = rows.map((client) => ({
+    ...client,
+    zone: client.address || 'Sin zona',
+    orders: orderCounts[client.id] || 0,
+    initials: getInitials(client.name),
+  }))
+  return paginated(clients, count ?? 0, page, pageSize)
+}
+
 export async function createClient(
   user: User,
   client: Omit<Client, 'id'>,
@@ -614,6 +717,55 @@ export async function loadOrders(
           ? 'Parcial'
           : 'Pendiente',
   }))
+}
+
+export async function loadOrdersPage(
+  user: User,
+  pagination: PaginationParams,
+  filters: OrderFilters = {},
+): Promise<PaginatedResult<Order & { clientId?: string }>> {
+  const { page, pageSize } = normalizePagination(pagination)
+  let query = supabase
+    .from('orders')
+    .select(
+      'id, client_id, status, payment_status, total, paid_amount, created_at, order_number, client_name_snapshot',
+      { count: 'exact' },
+    )
+    .eq('user_id', user.id)
+  if (filters.search?.trim()) {
+    const pattern = `%${escapeIlike(filters.search)}%`
+    query = query.or(
+      `client_name_snapshot.ilike.${pattern},order_number.ilike.${pattern}`,
+    )
+  }
+  if (filters.status) query = query.eq('status', filters.status)
+  if (filters.paymentStatus === 'paidOrPartial')
+    query = query.in('payment_status', ['paid', 'partial'])
+  else if (filters.paymentStatus)
+    query = query.eq('payment_status', filters.paymentStatus)
+  if (filters.dateFrom) query = query.gte('created_at', filters.dateFrom)
+  if (filters.dateTo) query = query.lt('created_at', filters.dateTo)
+  const { data, count, error } = await query
+    .order('created_at', { ascending: false })
+    .range((page - 1) * pageSize, page * pageSize - 1)
+  if (error) throw error
+  const rows = (data as OrderRow[]) ?? []
+  const ids = rows.map((row) => row.id)
+  const itemsResult = ids.length
+    ? await supabase
+        .from('order_items')
+        .select(
+          'order_id, variant_id, quantity, sku_snapshot, product_name_snapshot, variant_label_snapshot, unit_price, unit_cost_snapshot, line_total',
+        )
+        .in('order_id', ids)
+    : { data: [], error: null }
+  if (itemsResult.error) throw itemsResult.error
+  return paginated(
+    mapOrderRows(rows, (itemsResult.data as OrderItemRow[]) ?? []),
+    count ?? 0,
+    page,
+    pageSize,
+  )
 }
 
 export async function updateOrderStatus(
@@ -827,4 +979,87 @@ function getInitials(name: string) {
     .map((part) => part[0])
     .join('')
     .toUpperCase()
+}
+
+function normalizePagination({
+  page,
+  pageSize,
+}: PaginationParams): PaginationParams {
+  return {
+    page: Number.isInteger(page) ? Math.max(1, page) : 1,
+    pageSize: Number.isInteger(pageSize)
+      ? Math.min(100, Math.max(1, pageSize))
+      : 25,
+  }
+}
+
+function paginated<T>(
+  data: T[],
+  total: number,
+  page: number,
+  pageSize: number,
+): PaginatedResult<T> {
+  return {
+    data,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  }
+}
+
+function escapeIlike(value: string): string {
+  return value
+    .trim()
+    .slice(0, 100)
+    .replace(/[%,()\\]/g, '\\$&')
+}
+
+function mapOrderRows(
+  rows: OrderRow[],
+  itemRows: OrderItemRow[],
+): Array<Order & { clientId?: string }> {
+  const itemCounts = itemRows.reduce<Record<string, number>>((counts, item) => {
+    counts[item.order_id] = (counts[item.order_id] ?? 0) + item.quantity
+    return counts
+  }, {})
+  return rows.map((row) => ({
+    id: row.order_number ?? `#${row.id.slice(0, 6).toUpperCase()}`,
+    databaseId: row.id,
+    clientId: row.client_id ?? undefined,
+    client: row.client_name_snapshot || 'Cliente sin nombre',
+    clientNameSnapshot: row.client_name_snapshot || undefined,
+    date: new Intl.DateTimeFormat('es-MX', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(row.created_at)),
+    createdAt: row.created_at,
+    items: itemCounts[row.id] || 0,
+    itemLines: itemRows
+      .filter((item) => item.order_id === row.id)
+      .map((item) => ({
+        variantId: item.variant_id,
+        quantity: item.quantity,
+        productNameSnapshot: item.product_name_snapshot,
+        skuSnapshot: item.sku_snapshot,
+        variantLabelSnapshot: item.variant_label_snapshot,
+        unitPrice: item.unit_price,
+        unitCostSnapshot: item.unit_cost_snapshot,
+        lineTotal: item.line_total,
+      })),
+    total: row.total,
+    paidAmount: row.paid_amount ?? 0,
+    status:
+      row.status === 'delivered'
+        ? 'Entregado'
+        : row.status === 'cancelled'
+          ? 'Cancelado'
+          : 'Pendiente',
+    payment:
+      row.payment_status === 'paid'
+        ? 'Pagado'
+        : row.payment_status === 'partial'
+          ? 'Parcial'
+          : 'Pendiente',
+  }))
 }

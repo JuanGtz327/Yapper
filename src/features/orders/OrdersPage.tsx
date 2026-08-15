@@ -7,24 +7,47 @@ import type { Order } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Input } from '../../components/ui/Input.tsx'
 import { Button } from '../../components/ui/Button.tsx'
+import { PaginationControls } from '../../components/ui/PaginationControls.tsx'
 
 export function OrdersPage({
   orders,
   currency,
   onAdd,
   onSelectOrder,
+  summaryOrders,
+  serverFilters,
+  serverPagination,
 }: {
   orders: Order[]
   currency: string
   onAdd: () => void
   onSelectOrder: (order: Order) => void
+  summaryOrders?: Order[]
+  serverFilters?: {
+    search: string
+    delivery: '' | 'pending' | 'delivered' | 'cancelled'
+    payment: '' | 'pending' | 'paid'
+    onSearchChange: (value: string) => void
+    onDeliveryChange: (
+      value: '' | 'pending' | 'delivered' | 'cancelled',
+    ) => void
+    onPaymentChange: (value: '' | 'pending' | 'paid') => void
+  }
+  serverPagination?: {
+    page: number
+    total: number
+    totalPages: number
+    isFetching: boolean
+    onPageChange: (page: number) => void
+  }
 }) {
   const [deliveryFilter, setDeliveryFilter] = useState('all')
   const [paymentFilter, setPaymentFilter] = useState('all')
   const [orderSearch, setOrderSearch] = useState('')
 
   const now = new Date()
-  const active = orders.filter((order) => order.status !== 'Cancelado')
+  const summary = summaryOrders ?? orders
+  const active = summary.filter((order) => order.status !== 'Cancelado')
   const thisMonth = active.filter((order) => {
     if (!order.createdAt) return true
     const orderDate = new Date(order.createdAt)
@@ -52,6 +75,10 @@ export function OrdersPage({
         order.payment === 'Pendiente')
     return matchesSearch && matchesDelivery && matchesPayment
   })
+  const visibleOrders = serverPagination ? orders : filteredOrders
+  const activeSearch = serverFilters?.search ?? orderSearch
+  const activeDelivery = serverFilters?.delivery || deliveryFilter
+  const activePayment = serverFilters?.payment || paymentFilter
 
   return (
     <section className="animate-[page-in_0.25s_ease_both]">
@@ -116,15 +143,27 @@ export function OrdersPage({
           <Input
             className="pl-8"
             aria-label="Buscar por número de pedido"
-            value={orderSearch}
-            onChange={(event) => setOrderSearch(event.target.value)}
+            value={activeSearch}
+            onChange={(event) =>
+              serverFilters
+                ? serverFilters.onSearchChange(event.target.value)
+                : setOrderSearch(event.target.value)
+            }
             placeholder="Buscar número de pedido"
           />
         </div>
         <CustomSelect
           label="Entrega"
-          value={deliveryFilter}
-          onChange={setDeliveryFilter}
+          value={activeDelivery || 'all'}
+          onChange={(value) =>
+            serverFilters
+              ? serverFilters.onDeliveryChange(
+                  value === 'all'
+                    ? ''
+                    : (value as 'pending' | 'delivered' | 'cancelled'),
+                )
+              : setDeliveryFilter(value)
+          }
           ariaLabel="Filtrar por entrega"
           options={[
             { value: 'all', label: 'Todas' },
@@ -135,8 +174,14 @@ export function OrdersPage({
         />
         <CustomSelect
           label="Pago"
-          value={paymentFilter}
-          onChange={setPaymentFilter}
+          value={activePayment || 'all'}
+          onChange={(value) =>
+            serverFilters
+              ? serverFilters.onPaymentChange(
+                  value === 'all' ? '' : (value as 'pending' | 'paid'),
+                )
+              : setPaymentFilter(value)
+          }
           ariaLabel="Filtrar por pago"
           options={[
             { value: 'all', label: 'Todos' },
@@ -144,10 +189,21 @@ export function OrdersPage({
             { value: 'pending', label: 'Pendientes' },
           ]}
         />
-        <span className="ml-auto pb-[10px] text-[#aaa5a8] text-[10px] max-[650px]:ml-0 max-[650px]:pb-0">
-          {filteredOrders.length}{' '}
-          {filteredOrders.length === 1 ? 'pedido' : 'pedidos'}
-        </span>
+        {serverPagination && (
+          <PaginationControls
+            page={serverPagination.page}
+            total={serverPagination.total}
+            totalPages={serverPagination.totalPages}
+            isFetching={serverPagination.isFetching}
+            onPageChange={serverPagination.onPageChange}
+          />
+        )}
+        {!serverPagination && (
+          <span className="ml-auto pb-[10px] text-[#aaa5a8] text-[10px] max-[650px]:ml-0 max-[650px]:pb-0">
+            {filteredOrders.length}{' '}
+            {filteredOrders.length === 1 ? 'pedido' : 'pedidos'}
+          </span>
+        )}
       </div>
       <div className="overflow-auto border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] max-[650px]:hidden">
         <table className="w-full border-collapse min-w-[650px] text-xs">
@@ -177,7 +233,7 @@ export function OrdersPage({
             </tr>
           </thead>
           <tbody>
-            {filteredOrders.map((order, idx) => (
+            {visibleOrders.map((order, idx) => (
               <tr
                 className={cn(
                   'py-[15px] px-[18px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle cursor-pointer hover:bg-[#fcf9fc] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[#c9a3ca] focus-visible:outline-offset-[-3px]',
@@ -254,7 +310,7 @@ export function OrdersPage({
         aria-label="Pedidos"
       >
         <p className="sr-only">Selecciona un pedido para ver sus detalles.</p>
-        {filteredOrders.map((order) => (
+        {visibleOrders.map((order) => (
           <article
             className="grid gap-[15px] p-[17px] border border-border rounded-[13px] bg-sidebar shadow-[0_5px_18px_rgba(48,39,46,0.03)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[#c9a3ca] focus-visible:outline-offset-2"
             tabIndex={0}

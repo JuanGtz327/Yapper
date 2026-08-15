@@ -5,8 +5,9 @@ import { Button } from '../../components/ui/Button.tsx'
 import { Input } from '../../components/ui/Input.tsx'
 import { formatMoney } from '../../lib/format.ts'
 import { cn } from '../../lib/utils.ts'
-import type { Product } from '../../types.ts'
+import type { Category, Product } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
+import { PaginationControls } from '../../components/ui/PaginationControls.tsx'
 
 type VariantRow = {
   product: Product
@@ -67,6 +68,13 @@ export function ProductsPage({
   currency,
   search,
   setSearch,
+  categories: productCategories = [],
+  serverPagination,
+  onSearchChange,
+  categoryFilter: controlledCategoryFilter,
+  onCategoryChange,
+  stockFilter: controlledStockFilter,
+  onStockChange,
   onAdd,
   onManageCategories,
   onEdit,
@@ -76,6 +84,19 @@ export function ProductsPage({
   currency: string
   search: string
   setSearch: (value: string) => void
+  categories?: Category[]
+  serverPagination?: {
+    page: number
+    total: number
+    totalPages: number
+    isFetching: boolean
+    onPageChange: (page: number) => void
+  }
+  onSearchChange?: (value: string) => void
+  categoryFilter?: string
+  onCategoryChange?: (value: string) => void
+  stockFilter?: '' | 'available' | 'low' | 'out'
+  onStockChange?: (value: '' | 'available' | 'low' | 'out') => void
   onAdd: () => void
   onManageCategories: () => void
   onEdit: (product: Product) => void
@@ -83,7 +104,15 @@ export function ProductsPage({
   const [hoveredProductId, setHoveredProductId] = useState<string | null>(null)
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [stockFilter, setStockFilter] = useState('all')
-  const categories = Array.from(
+  const activeCategoryFilter =
+    controlledCategoryFilter === undefined
+      ? categoryFilter
+      : controlledCategoryFilter || 'all'
+  const activeStockFilter =
+    controlledStockFilter === undefined
+      ? stockFilter
+      : controlledStockFilter || 'all'
+  const derivedCategories = Array.from(
     new Set(products.map((product) => product.category || 'Sin categoría')),
   ).sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }))
   const filtered = products.filter((product) => {
@@ -93,17 +122,19 @@ export function ProductsPage({
     const category = product.category || 'Sin categoría'
     const stocks = product.variants.map((variant) => variant.stock)
     const matchesCategory =
-      categoryFilter === 'all' || category === categoryFilter
+      activeCategoryFilter === 'all' || category === activeCategoryFilter
     const matchesStock =
-      stockFilter === 'all' ||
-      (stockFilter === 'available' && stocks.some((stock) => stock > 0)) ||
-      (stockFilter === 'low' &&
+      activeStockFilter === 'all' ||
+      (activeStockFilter === 'available' &&
+        stocks.some((stock) => stock > 0)) ||
+      (activeStockFilter === 'low' &&
         stocks.some((stock) => stock > 0 && stock <= threshold)) ||
-      (stockFilter === 'out' &&
+      (activeStockFilter === 'out' &&
         (!stocks.length || stocks.every((stock) => stock === 0)))
     return matchesSearch && matchesCategory && matchesStock
   })
-  const rows = flattenProducts(filtered)
+  const visibleProducts = serverPagination ? products : filtered
+  const rows = flattenProducts(visibleProducts)
 
   const totalInvestment = products.reduce(
     (sum, product) =>
@@ -124,7 +155,9 @@ export function ProductsPage({
       <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
           <h1>Tus productos</h1>
-          <p className='mt-0.5 ml-0.5'>Administra precios, existencias y categorías.</p>
+          <p className="mt-0.5 ml-0.5">
+            Administra precios, existencias y categorías.
+          </p>
         </div>
         <div className="flex gap-2 shrink-0">
           <Button
@@ -145,13 +178,13 @@ export function ProductsPage({
           </Button>
         </div>
       </div>
-      <div className="flex items-center gap-2 mb-[14px] p-3 px-4 border border-[#e3ddd5] rounded-[10px] bg-[#fcfaf8] text-xs">
+      <div className="flex items-center gap-2 mb-[14px] p-3 px-4 border border-[#e3ddd5] rounded-[10px] bg-white text-xs">
         <DollarSign size={18} className="text-primary" aria-hidden="true" />
         <span className="text-muted-foreground">
-          Inversión: {formatMoney(totalInvestment, currency)}
+          Inventario: {formatMoney(totalSaleValue, currency)}
         </span>
         <span className="text-muted-foreground">
-          Inventario: {formatMoney(totalSaleValue, currency)}
+          Inversión: {formatMoney(totalInvestment, currency)}
         </span>
         <strong className="ml-auto text-foreground text-[15px]">
           Ganancia: {formatMoney(totalProfit, currency)}
@@ -171,27 +204,44 @@ export function ProductsPage({
             className="pl-8"
             aria-label="Buscar productos"
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) =>
+              (onSearchChange ?? setSearch)(event.target.value)
+            }
             placeholder="Buscar producto"
           />
         </div>
         <CustomSelect
           label="Categoría"
-          value={categoryFilter}
-          onChange={setCategoryFilter}
+          value={activeCategoryFilter}
+          onChange={(value) =>
+            onCategoryChange
+              ? onCategoryChange(value === 'all' ? '' : value)
+              : setCategoryFilter(value)
+          }
           ariaLabel="Filtrar por categoría"
           options={[
             { value: 'all', label: 'Todas' },
-            ...categories.map((category) => ({
-              value: category,
-              label: category,
-            })),
+            ...(productCategories.length
+              ? productCategories.map((category) => ({
+                  value: category.id,
+                  label: category.name,
+                }))
+              : derivedCategories.map((category) => ({
+                  value: category,
+                  label: category,
+                }))),
           ]}
         />
         <CustomSelect
           label="Existencias"
-          value={stockFilter}
-          onChange={setStockFilter}
+          value={activeStockFilter}
+          onChange={(value) =>
+            onStockChange
+              ? onStockChange(
+                  value === 'all' ? '' : (value as 'available' | 'low' | 'out'),
+                )
+              : setStockFilter(value)
+          }
           ariaLabel="Filtrar por existencias"
           options={[
             { value: 'all', label: 'Todas' },
@@ -200,9 +250,20 @@ export function ProductsPage({
             { value: 'out', label: 'Agotados' },
           ]}
         />
-        <span className="ml-auto pb-[10px] text-[#aaa5a8] text-[10px] max-[650px]:ml-0 max-[650px]:pb-0">
-          {filtered.length} {filtered.length === 1 ? 'producto' : 'productos'}
-        </span>
+        {serverPagination && (
+          <PaginationControls
+            page={serverPagination.page}
+            total={serverPagination.total}
+            totalPages={serverPagination.totalPages}
+            isFetching={serverPagination.isFetching}
+            onPageChange={serverPagination.onPageChange}
+          />
+        )}
+        {!serverPagination && (
+          <span className="ml-auto pb-[10px] text-[#aaa5a8] text-[10px] max-[650px]:ml-0 max-[650px]:pb-0">
+            {filtered.length} {filtered.length === 1 ? 'producto' : 'productos'}
+          </span>
+        )}
       </div>
       <div className="overflow-auto border border-[#ebe8e4] rounded-[13px] bg-[#fffefa]">
         <table className="w-full border-collapse min-w-[650px] text-xs">

@@ -107,6 +107,39 @@ export type SalesAggregate = {
   orders: number
 }
 
+export type PaginationParams = {
+  page: number
+  pageSize: number
+}
+
+export type PaginatedResult<T> = {
+  data: T[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+export type ProductFilters = {
+  search?: string
+  categoryId?: string
+  published?: boolean
+  stock?: 'available' | 'low' | 'out'
+  stockThreshold?: number
+}
+
+export type ClientFilters = {
+  search?: string
+}
+
+export type OrderFilters = {
+  search?: string
+  status?: 'pending' | 'delivered' | 'cancelled'
+  paymentStatus?: 'pending' | 'partial' | 'paid' | 'paidOrPartial'
+  dateFrom?: string
+  dateTo?: string
+}
+
 export type OptionTypeWithValues = {
   id: string
   name: string

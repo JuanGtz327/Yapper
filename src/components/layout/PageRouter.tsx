@@ -1,5 +1,5 @@
 import type { User } from '@supabase/supabase-js'
-import { useRoute, useLocation } from 'wouter'
+import { useRoute, useLocation, useSearch } from 'wouter'
 import type {
   Client,
   Order,
@@ -22,6 +22,21 @@ import type { Page, Modal } from '../../lib/navigation.ts'
 import type { BusinessSettings } from '../../types.ts'
 import { routes, routeToPage } from '../../lib/routes.ts'
 import type { ProductDraft } from '../../features/products/validateProductDraft.ts'
+import { useProductsPaginatedQuery } from '../../hooks/queries/useProducts.ts'
+import { useClientsPaginatedQuery } from '../../hooks/queries/useClients.ts'
+import { useOrdersPaginatedQuery } from '../../hooks/queries/useOrders.ts'
+import type {
+  ClientFilters,
+  OrderFilters,
+  ProductFilters,
+} from '../../types.ts'
+import {
+  PAGE_SIZE,
+  joinLocationSearch,
+  readListUrl,
+  useDebouncedUrlSearch,
+  writeListUrl,
+} from '../../lib/listUrl.ts'
 
 type PageRouterProps = {
   user: User | null
@@ -73,8 +88,6 @@ export function PageRouter({
   optionTypes,
   settings,
   sales,
-  search,
-  setSearch,
   registerPaymentPending,
   openModal,
   onNavigate,
@@ -99,7 +112,50 @@ export function PageRouter({
   const [, orderEditParams] = useRoute(routes.orderEdit)
   const [isNewProduct] = useRoute(routes.productNew)
   const [isNewOrder] = useRoute(routes.orderNew)
-  const [, setLocation] = useLocation()
+  const [location, setLocation] = useLocation()
+  const locationSearch = useSearch()
+  const currentLocation = joinLocationSearch(location, locationSearch)
+  const urlFilters = readListUrl(currentLocation)
+  const [searchInput, setSearchInput] = useDebouncedUrlSearch(
+    currentLocation,
+    setLocation,
+  )
+
+  const updateListUrl = (updates: Parameters<typeof writeListUrl>[1]) =>
+    setLocation(writeListUrl(currentLocation, updates))
+
+  const productFilters: ProductFilters = {
+    search: urlFilters.search || undefined,
+    categoryId: urlFilters.categoryId || undefined,
+    stock: urlFilters.stock || undefined,
+    stockThreshold: settings.lowStockThreshold,
+  }
+  const clientFilters: ClientFilters = {
+    search: urlFilters.search || undefined,
+  }
+  const orderFilters: OrderFilters = {
+    search: urlFilters.search || undefined,
+    status: urlFilters.delivery || undefined,
+    paymentStatus:
+      urlFilters.payment === 'paid'
+        ? 'paidOrPartial'
+        : urlFilters.payment || undefined,
+  }
+  const productsPage = useProductsPaginatedQuery(
+    user,
+    { page: urlFilters.page, pageSize: PAGE_SIZE },
+    productFilters,
+  )
+  const clientsPage = useClientsPaginatedQuery(
+    user,
+    { page: urlFilters.page, pageSize: PAGE_SIZE },
+    clientFilters,
+  )
+  const ordersPage = useOrdersPaginatedQuery(
+    user,
+    { page: urlFilters.page, pageSize: PAGE_SIZE },
+    orderFilters,
+  )
 
   const productId = productParams?.productId || productEditParams?.productId
   const orderId = orderParams?.orderId || orderEditParams?.orderId
@@ -160,11 +216,29 @@ export function PageRouter({
           }
           return (
             <ProductsPage
-              products={products}
+              products={
+                productsPage.data?.data ??
+                (productsPage.isLoading ? [] : products)
+              }
               threshold={settings.lowStockThreshold}
               currency={currency}
-              search={search}
-              setSearch={setSearch}
+              search={searchInput}
+              setSearch={setSearchInput}
+              categories={categories}
+              serverPagination={{
+                page: productsPage.data?.page ?? urlFilters.page,
+                total: productsPage.data?.total ?? 0,
+                totalPages: productsPage.data?.totalPages ?? 0,
+                isFetching: productsPage.isFetching,
+                onPageChange: (page) => updateListUrl({ page }),
+              }}
+              onSearchChange={setSearchInput}
+              categoryFilter={urlFilters.categoryId}
+              onCategoryChange={(categoryId) =>
+                updateListUrl({ categoryId, page: 1 })
+              }
+              stockFilter={urlFilters.stock}
+              onStockChange={(stock) => updateListUrl({ stock, page: 1 })}
               onAdd={() => setLocation('/almacen/nuevo')}
               onManageCategories={() => openModal('categories')}
               onEdit={(product) => setLocation(`/almacen/${product.id}/editar`)}
@@ -175,9 +249,19 @@ export function PageRouter({
         if (page === 'Clientes') {
           return (
             <ClientsPage
-              clients={clients}
-              search={search}
-              setSearch={setSearch}
+              clients={
+                clientsPage.data?.data ?? (clientsPage.isLoading ? [] : clients)
+              }
+              search={searchInput}
+              setSearch={setSearchInput}
+              serverPagination={{
+                page: clientsPage.data?.page ?? urlFilters.page,
+                total: clientsPage.data?.total ?? 0,
+                totalPages: clientsPage.data?.totalPages ?? 0,
+                isFetching: clientsPage.isFetching,
+                onPageChange: (page) => updateListUrl({ page }),
+              }}
+              onSearchChange={setSearchInput}
               onAdd={() => openModal('client')}
               onEdit={(client) => openModal('client', client)}
               onRemove={removeClient}
@@ -237,8 +321,28 @@ export function PageRouter({
           }
           return (
             <OrdersPage
-              orders={orders}
+              orders={
+                ordersPage.data?.data ?? (ordersPage.isLoading ? [] : orders)
+              }
               currency={currency}
+              summaryOrders={orders}
+              serverFilters={{
+                search: searchInput,
+                delivery: urlFilters.delivery,
+                payment: urlFilters.payment,
+                onSearchChange: setSearchInput,
+                onDeliveryChange: (delivery) =>
+                  updateListUrl({ delivery, page: 1 }),
+                onPaymentChange: (payment) =>
+                  updateListUrl({ payment, page: 1 }),
+              }}
+              serverPagination={{
+                page: ordersPage.data?.page ?? urlFilters.page,
+                total: ordersPage.data?.total ?? 0,
+                totalPages: ordersPage.data?.totalPages ?? 0,
+                isFetching: ordersPage.isFetching,
+                onPageChange: (page) => updateListUrl({ page }),
+              }}
               onAdd={() => setLocation('/pedidos/nuevo')}
               onSelectOrder={(order) =>
                 setLocation(`/pedidos/${order.databaseId || order.id}`)

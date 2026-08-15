@@ -19,7 +19,7 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
     return (
       <main className="min-h-screen py-7 px-[clamp(18px,6vw,90px)] pb-[70px] bg-[#f8f7f5] max-[520px]:px-4 max-[520px]:pb-[45px]">
         <div className="grid place-items-center min-h-[70vh] gap-3 text-center text-muted-foreground">
-          <Spinner label="Cargando catálogo" /> Cargando catálogo...
+          <Spinner label="Cargando catálogo" />
         </div>
       </main>
     )

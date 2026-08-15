@@ -47,7 +47,11 @@ function DashboardApp() {
       confirmState={dashboardData.confirmState}
       clearConfirm={dashboardData.clearConfirm}
     >
-      <DashboardContent user={user} dashboardData={dashboardData} authLoading={authLoading} />
+      <DashboardContent
+        user={user}
+        dashboardData={dashboardData}
+        authLoading={authLoading}
+      />
     </ModalProvider>
   )
 }
@@ -106,18 +110,20 @@ function DashboardContent({
   const isLoading = authLoading || dataLoading
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex h-screen overflow-hidden bg-background max-[850px]:h-auto max-[850px]:min-h-screen max-[850px]:overflow-visible">
       <AppSidebar
         page={page}
         businessName={settings.businessName}
         accountLabel={user?.email || 'Modo demo'}
       />
-      <main className="w-full max-w-[1200px] mx-auto px-[54px] pt-[47px] pb-[60px] max-[850px]:w-full max-[850px]:px-[25px] max-[850px]:pt-[35px] max-[850px]:pb-[50px] max-[650px]:px-[16px] max-[650px]:pt-[25px]">
+      <main className="min-w-0 min-h-0 flex-1 w-full max-w-[1200px] mx-auto overflow-y-auto px-[54px] pt-[47px] pb-[60px] max-[850px]:w-full max-[850px]:min-h-screen max-[850px]:overflow-visible max-[850px]:px-[25px] max-[850px]:pt-[35px] max-[850px]:pb-[50px] max-[650px]:px-[16px] max-[650px]:pt-[25px]">
         {isLoading ? (
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="flex flex-col items-center gap-3">
               <div className="w-10 h-10 border-[3px] border-primary border-r-transparent rounded-full animate-spin" />
-              <span className="text-muted-foreground text-sm">Cargando datos...</span>
+              <span className="text-muted-foreground text-sm">
+                Cargando datos...
+              </span>
             </div>
           </div>
         ) : (

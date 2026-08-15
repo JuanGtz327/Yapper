@@ -15,7 +15,7 @@ export function AppSidebar({
   accountLabel: string
 }) {
   return (
-    <aside className="w-[252px] shrink-0 flex flex-col py-[32px] px-[18px] pb-[22px] bg-sidebar border-r border-border max-[850px]:hidden">
+    <aside className="w-[252px] h-screen shrink-0 flex flex-col overflow-y-auto py-[32px] px-[18px] pb-[22px] bg-sidebar border-r border-border max-[850px]:hidden">
       <div className="flex items-center gap-[11px] px-[14px] pb-[48px]">
         <div className="grid place-items-center w-[38px] h-[38px] rounded-xl text-white bg-primary text-[23px] font-bold -rotate-7">
           Y

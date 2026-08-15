@@ -3,11 +3,14 @@ import { Empty } from '../../components/ui/Empty.tsx'
 import { Button } from '../../components/ui/Button.tsx'
 import { Input } from '../../components/ui/Input.tsx'
 import type { Client } from '../../types.ts'
+import { PaginationControls } from '../../components/ui/PaginationControls.tsx'
 
 export function ClientsPage({
   clients,
   search,
   setSearch,
+  serverPagination,
+  onSearchChange,
   onAdd,
   onEdit,
   onRemove,
@@ -15,19 +18,31 @@ export function ClientsPage({
   clients: Client[]
   search: string
   setSearch: (value: string) => void
+  serverPagination?: {
+    page: number
+    total: number
+    totalPages: number
+    isFetching: boolean
+    onPageChange: (page: number) => void
+  }
+  onSearchChange?: (value: string) => void
   onAdd: () => void
   onEdit: (client: Client) => void
   onRemove: (id: string) => void
 }) {
-  const visible = clients.filter((client) =>
-    client.name.toLowerCase().includes(search.toLowerCase()),
-  )
+  const visible = serverPagination
+    ? clients
+    : clients.filter((client) =>
+        client.name.toLowerCase().includes(search.toLowerCase()),
+      )
   return (
     <section className="animate-[page-in_0.25s_ease_both]">
       <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
           <h1>Tus clientes</h1>
-          <p className='mt-0.5 ml-0.5'>Ten a mano sus datos e historial de pedidos.</p>
+          <p className="mt-0.5 ml-0.5">
+            Ten a mano sus datos e historial de pedidos.
+          </p>
         </div>
         <Button
           variant="secondary"
@@ -49,11 +64,22 @@ export function ClientsPage({
             className="pl-8"
             aria-label="Buscar cliente"
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) =>
+              (onSearchChange ?? setSearch)(event.target.value)
+            }
             placeholder="Buscar cliente"
           />
         </div>
-        <span>{clients.length} clientes</span>
+        {serverPagination && (
+          <PaginationControls
+            page={serverPagination.page}
+            total={serverPagination.total}
+            totalPages={serverPagination.totalPages}
+            isFetching={serverPagination.isFetching}
+            onPageChange={serverPagination.onPageChange}
+          />
+        )}
+        {!serverPagination && <span>{clients.length} clientes</span>}
       </div>
       <div className="grid grid-cols-2 gap-[14px]">
         {visible.map((client) => (

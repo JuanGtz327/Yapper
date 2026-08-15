@@ -95,6 +95,23 @@ describe('OrdersPage', () => {
       expect(pendientes?.querySelector('strong')).toHaveTextContent('2')
     })
 
+    it('debería calcular el resumen usando todos los pedidos, no solo la página actual', () => {
+      const currentPage = [createMockOrder({ id: '#PED-001', total: 300 })]
+      const allOrders = [
+        ...currentPage,
+        createMockOrder({ id: '#PED-002', total: 500 }),
+      ]
+      render(
+        <OrdersPage
+          {...defaultProps}
+          orders={currentPage}
+          summaryOrders={allOrders}
+        />,
+      )
+      const summary = screen.getByText('Este mes').parentElement
+      expect(summary?.querySelector('strong')).toHaveTextContent('$800.00')
+    })
+
     it('debería excluir órdenes de meses anteriores del total "Este mes"', () => {
       const orders = [
         createMockOrder({

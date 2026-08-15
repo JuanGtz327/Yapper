@@ -35,6 +35,7 @@ export function useProductsMutations(user: User | null) {
         ...(current ?? []),
         saved,
       ])
+      void qc.invalidateQueries({ queryKey: qk.products(user) })
     },
   })
 
@@ -71,6 +72,7 @@ export function useProductsMutations(user: User | null) {
         ...(current ?? []),
         saved,
       ])
+      void qc.invalidateQueries({ queryKey: qk.products(user) })
     },
   })
 
@@ -88,6 +90,7 @@ export function useProductsMutations(user: User | null) {
       qc.setQueryData<Product[]>(qk.products(user), (current) =>
         (current ?? []).filter((p) => p.id !== id),
       )
+      void qc.invalidateQueries({ queryKey: qk.products(user) })
     },
   })
 
