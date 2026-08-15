@@ -28,33 +28,38 @@ export function ClientModal({
       title={initial ? 'Editar cliente' : 'Nuevo cliente'}
       onClose={onClose}
     >
-      <form className="grid gap-[15px]" onSubmit={submit}>
-        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-          Nombre completo
-          <Input
-            name="name"
-            defaultValue={initial?.name}
-            placeholder="Ej. Mariana González"
-            required
-          />
-        </label>
-        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-          Teléfono
-          <Input
-            name="phone"
-            defaultValue={initial?.phone}
-            placeholder="55 1234 5678"
-          />
-        </label>
-        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-          Zona o colonia
-          <Input
-            name="zone"
-            defaultValue={initial?.zone}
-            placeholder="Ej. Coyoacán"
-          />
-        </label>
-        <div className="flex justify-end gap-[10px] mt-[9px]">
+      <form className="grid gap-6" onSubmit={submit}>
+        <div className="grid gap-4">
+          <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+            DATOS DEL CLIENTE
+          </span>
+          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
+            Nombre completo
+            <Input
+              name="name"
+              defaultValue={initial?.name}
+              placeholder="Ej. Mariana González"
+              required
+            />
+          </label>
+          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
+            Teléfono
+            <Input
+              name="phone"
+              defaultValue={initial?.phone}
+              placeholder="55 1234 5678"
+            />
+          </label>
+          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
+            Zona o colonia
+            <Input
+              name="zone"
+              defaultValue={initial?.zone}
+              placeholder="Ej. Coyoacán"
+            />
+          </label>
+        </div>
+        <div className="flex justify-end gap-[10px]">
           <Button
             variant="primary"
             disabled={saving}
