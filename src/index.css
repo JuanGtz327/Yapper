@@ -171,6 +171,22 @@ button {
   html {
     @apply font-sans;
   }
+  h1,
+  h2,
+  p {
+    margin: 0;
+  }
+  h1 {
+    color: var(--ink);
+    font-size: clamp(25px, 3vw, 32px);
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+  h2 {
+    color: var(--ink);
+    font-size: 18px;
+    letter-spacing: -0.45px;
+  }
 }
 
 @keyframes page-in {
@@ -218,23 +234,6 @@ button {
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   vertical-align: -3px;
-}
-
-h1,
-h2,
-p {
-  margin: 0;
-}
-h1 {
-  color: var(--ink);
-  font-size: clamp(25px, 3vw, 32px);
-  letter-spacing: -1px;
-  line-height: 1.1;
-}
-h2 {
-  color: var(--ink);
-  font-size: 18px;
-  letter-spacing: -0.45px;
 }
 
 @keyframes spin {
