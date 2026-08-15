@@ -199,10 +199,12 @@ export function ProductCreatePage({
   }, [draft])
 
   return (
-    <section className="page-section">
-      <div className="section-intro">
+    <section className="animate-[page-in_0.25s_ease_both]">
+      <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="eyebrow">CONTROL DE INVENTARIO</span>
+          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+            CONTROL DE INVENTARIO
+          </span>
           <h2>{initial ? 'Editar producto' : 'Nuevo producto'}</h2>
           <p>
             {initial
@@ -210,7 +212,7 @@ export function ProductCreatePage({
               : 'Completa los datos para crear un nuevo producto.'}
           </p>
         </div>
-        <div className="section-actions">
+        <div className="flex gap-2 shrink-0">
           {initial && onRemove && (
             <Button
               variant="danger"
@@ -234,16 +236,13 @@ export function ProductCreatePage({
           </Button>
         </div>
       </div>
-      <div className="settings-layout">
-        <form
-          className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] grid gap-[15px]"
-          onSubmit={submit}
-        >
+      <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(260px,1fr)] gap-4">
+        <form className="grid gap-6" onSubmit={submit}>
           {/* ── INFORMACIÓN BÁSICA ─────────────────────────── */}
-          <fieldset className="border border-[#e8e4e6] rounded-[10px] p-4 bg-[#fdfcfc]">
-            <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">
-              Información básica
-            </legend>
+          <div>
+            <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
+              INFORMACIÓN BÁSICA
+            </span>
             <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
               Nombre del producto
               <Input
@@ -254,7 +253,7 @@ export function ProductCreatePage({
                 }}
                 placeholder="Ej. Tupper rectangular 1L"
                 maxLength={120}
-                className={errors.name ? 'input-error' : ''}
+                className={errors.name ? 'border-[#aa6259]' : ''}
               />
               <FieldError errors={errors} name="name" />
             </label>
@@ -286,16 +285,20 @@ export function ProductCreatePage({
                 aria-label="Gestionar categorías"
               />
             </div>
-          </fieldset>
+          </div>
+
+          <div className="h-px bg-[#e8e4e6]" />
 
           {/* ── VARIANTES ───────────────────────────────────── */}
-          <fieldset className="border border-[#e8e4e6] rounded-[10px] p-4 bg-[#fdfcfc]">
-            <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">
-              Variantes
-              <span className="text-[#aaa5a8] text-[10px] font-normal font-normal">
+          <div>
+            <div className="flex items-baseline gap-2 mb-3">
+              <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+                VARIANTES
+              </span>
+              <span className="text-[#aaa5a8] text-[10px] font-normal">
                 Cada variante define su propio SKU, precio y existencias.
               </span>
-            </legend>
+            </div>
             {errors.variants && (
               <span className="block text-[#aa6259] text-[11px] mt-[2px]">
                 {errors.variants}
@@ -350,13 +353,15 @@ export function ProductCreatePage({
             >
               Añadir variante
             </Button>
-          </fieldset>
+          </div>
+
+          <div className="h-px bg-[#e8e4e6]" />
 
           {/* ── CATÁLOGO PÚBLICO ───────────────────────────── */}
-          <fieldset className="border border-[#e8e4e6] rounded-[10px] p-4 bg-[#fdfcfc]">
-            <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">
-              Catálogo público
-            </legend>
+          <div>
+            <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
+              CATÁLOGO PÚBLICO
+            </span>
             <label className="flex! grid-cols-[auto_1fr] items-center gap-2!">
               <input
                 className="w-auto!"
@@ -377,7 +382,7 @@ export function ProductCreatePage({
                 }
                 maxLength={240}
                 placeholder="Breve descripción para tu catálogo."
-                className={errors.publicDescription ? 'input-error' : ''}
+                className={errors.publicDescription ? 'border-[#aa6259]' : ''}
               />
               <FieldError errors={errors} name="publicDescription" />
             </label>
@@ -391,11 +396,11 @@ export function ProductCreatePage({
                   setDraft({ ...draft, imageUrl: e.target.value })
                 }
                 placeholder="https://..."
-                className={errors.imageUrl ? 'input-error' : ''}
+                className={errors.imageUrl ? 'border-[#aa6259]' : ''}
               />
               <FieldError errors={errors} name="imageUrl" />
             </label>
-          </fieldset>
+          </div>
 
           {/* ── ACTIONS ─────────────────────────────────────── */}
           <div className="flex justify-end gap-[10px] mt-[9px]">
@@ -416,7 +421,9 @@ export function ProductCreatePage({
 
         {/* ── PREVIEW ────────────────────────────────────────── */}
         <aside className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] self-start">
-          <span className="eyebrow">VISTA PREVIA</span>
+          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+            VISTA PREVIA
+          </span>
           <h3 className="text-foreground text-base">
             Cómo se ve en tu catálogo
           </h3>
@@ -456,8 +463,10 @@ export function ProductCreatePage({
               )}
             </div>
           </div>
-          <div className="settings-section-divider" />
-          <span className="eyebrow">RESUMEN</span>
+          <div className="h-px bg-[#e8e5e3] my-[18px]" />
+          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+            RESUMEN
+          </span>
           <ul className="list-none p-0 mt-2.5 grid gap-[6px] text-xs text-muted-foreground">
             <li>
               Variantes:{' '}

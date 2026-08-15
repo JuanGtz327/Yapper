@@ -65,10 +65,12 @@ export function SettingsPage({
     }
   }
   return (
-    <section className="page-section">
-      <div className="section-intro">
+    <section className="animate-[page-in_0.25s_ease_both]">
+      <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="eyebrow">CONFIGURACIÓN</span>
+          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+            CONFIGURACIÓN
+          </span>
           <h2>Tu negocio</h2>
           <p>Personaliza Yapper para trabajar a tu manera.</p>
         </div>
@@ -207,7 +209,9 @@ export function SettingsPage({
           </div>
         </form>
         <aside className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] self-start">
-          <span className="eyebrow">CUENTA</span>
+          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+            CUENTA
+          </span>
           <h3 className="text-ink text-[16px] mt-[7px]">Sesión actual</h3>
           <p className="mt-1 text-muted text-[12px] leading-[1.5]">
             Tu información está protegida y solo tú puedes acceder a ella.
@@ -216,7 +220,9 @@ export function SettingsPage({
             Cerrar sesión
           </Button>
           <div className="h-px bg-[#e8e5e3] my-[18px]" />
-          <span className="eyebrow">INVENTARIO</span>
+          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+            INVENTARIO
+          </span>
           <h3 className="text-ink text-[16px] mt-[7px]">
             Opciones de producto
           </h3>
