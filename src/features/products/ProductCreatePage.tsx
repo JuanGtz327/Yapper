@@ -242,7 +242,7 @@ export function ProductCreatePage({
         >
           {/* ── INFORMACIÓN BÁSICA ─────────────────────────── */}
           <div className="grid gap-4">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
               INFORMACIÓN BÁSICA
             </span>
             <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
@@ -294,7 +294,7 @@ export function ProductCreatePage({
           {/* ── VARIANTES ───────────────────────────────────── */}
           <div className="grid gap-4">
             <div className="flex items-baseline gap-2 mb-3">
-              <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+              <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
                 VARIANTES
               </span>
               <span className="text-[#aaa5a8] text-[10px] font-normal">
@@ -361,7 +361,7 @@ export function ProductCreatePage({
 
           {/* ── CATÁLOGO PÚBLICO ───────────────────────────── */}
           <div className="grid gap-4">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
               CATÁLOGO PÚBLICO
             </span>
             <label className="flex! items-center gap-2! text-[#716b72] text-[11px] font-bold">
@@ -423,7 +423,7 @@ export function ProductCreatePage({
         <aside className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] self-start grid gap-6">
           <div>
             <div className="flex items-baseline gap-2 mb-3">
-              <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+              <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
                 VISTA PREVIA
               </span>
               <span className="text-[#aaa5a8] text-[10px] font-normal">
@@ -469,7 +469,7 @@ export function ProductCreatePage({
           </div>
           <div className="h-px bg-[#e8e4e6]" />
           <div>
-            <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
               RESUMEN
             </span>
             <ul className="list-none p-0 mt-2.5 grid gap-[6px] text-xs text-muted-foreground">
