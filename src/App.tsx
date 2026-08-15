@@ -41,11 +41,13 @@ function DashboardApp() {
   const { user, authLoading } = useAuth()
   const dashboardData = useDashboardData(user)
 
-  if (authLoading)
+  if (authLoading || (user && dashboardData.dataLoading))
     return (
-      <main className="flex items-center justify-center min-h-screen bg-background">
-        <Spinner label="Cargando Yapper" />
-      </main>
+      <div className="flex min-h-screen bg-background">
+        <div className="flex-1 flex items-center justify-center">
+          <Spinner label="Cargando datos" />
+        </div>
+      </div>
     )
   if (isSupabaseConfigured && !user) return <AuthScreen />
 
@@ -83,7 +85,6 @@ function DashboardContent({
     optionTypes,
     sales,
     settings,
-    dataLoading,
     addClient: addClientAction,
     removeProduct,
     removeClient,
@@ -116,12 +117,7 @@ function DashboardContent({
         accountLabel={user?.email || 'Modo demo'}
       />
       <main className="w-full max-w-[1200px] mx-auto px-[54px] pt-[47px] pb-[60px] max-[850px]:w-full max-[850px]:px-[25px] max-[850px]:pt-[35px] max-[850px]:pb-[50px] max-[650px]:px-[16px] max-[650px]:pt-[25px]">
-        {dataLoading ? (
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <Spinner label="Cargando datos" />
-          </div>
-        ) : (
-          <PageRouter
+        <PageRouter
           user={user}
           products={products}
           clients={clients}
@@ -150,7 +146,6 @@ function DashboardContent({
           updateBusinessSettings={updateBusinessSettings}
           signOut={signOut}
         />
-        )}
       </main>
       {mobileMenuOpen && (
         <MobileNavDrawer
