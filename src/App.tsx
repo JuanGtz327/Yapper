@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Route, Switch, useLocation } from 'wouter'
 import { ToastContainer } from 'react-toastify'
@@ -39,33 +39,15 @@ function App() {
 function DashboardApp() {
   const { user, authLoading } = useAuth()
   const dashboardData = useDashboardData(user)
-  const [initialLoadDone, setInitialLoadDone] = useState(false)
 
-  useEffect(() => {
-    if (user && !dashboardData.dataLoading) {
-      setInitialLoadDone(true)
-    }
-  }, [user, dashboardData.dataLoading])
-
-  if (authLoading || !initialLoadDone)
-    return (
-      <div className="flex min-h-screen bg-background">
-        <div className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-10 h-10 border-[3px] border-primary border-r-transparent rounded-full animate-spin" />
-            <span className="text-muted-foreground text-sm">Cargando datos...</span>
-          </div>
-        </div>
-      </div>
-    )
-  if (isSupabaseConfigured && !user) return <AuthScreen />
+  if (isSupabaseConfigured && !user && !authLoading) return <AuthScreen />
 
   return (
     <ModalProvider
       confirmState={dashboardData.confirmState}
       clearConfirm={dashboardData.clearConfirm}
     >
-      <DashboardContent user={user} dashboardData={dashboardData} />
+      <DashboardContent user={user} dashboardData={dashboardData} authLoading={authLoading} />
     </ModalProvider>
   )
 }
@@ -73,9 +55,11 @@ function DashboardApp() {
 function DashboardContent({
   user,
   dashboardData,
+  authLoading,
 }: {
   user: import('@supabase/supabase-js').User | null
   dashboardData: ReturnType<typeof useDashboardData>
+  authLoading: boolean
 }) {
   const qc = useQueryClient()
   const [location, setLocation] = useLocation()
@@ -94,6 +78,7 @@ function DashboardContent({
     optionTypes,
     sales,
     settings,
+    dataLoading,
     addClient: addClientAction,
     removeProduct,
     removeClient,
@@ -118,6 +103,8 @@ function DashboardContent({
     setLocation(pageToPathname(nextPage))
   }
 
+  const isLoading = authLoading || dataLoading
+
   return (
     <div className="flex min-h-screen bg-background">
       <AppSidebar
@@ -126,35 +113,44 @@ function DashboardContent({
         accountLabel={user?.email || 'Modo demo'}
       />
       <main className="w-full max-w-[1200px] mx-auto px-[54px] pt-[47px] pb-[60px] max-[850px]:w-full max-[850px]:px-[25px] max-[850px]:pt-[35px] max-[850px]:pb-[50px] max-[650px]:px-[16px] max-[650px]:pt-[25px]">
-        <PageRouter
-          user={user}
-          products={products}
-          clients={clients}
-          orders={orders}
-          categories={categories}
-          optionTypes={optionTypes}
-          settings={settings}
-          sales={sales}
-          search={search}
-          setSearch={setSearch}
-          registerPaymentPending={registerPaymentPending}
-          openModal={openModal}
-          onNavigate={handleNavigateFromPage}
-          onProductCreated={() => {
-            void qc.invalidateQueries({ queryKey: qk.categories(user) })
-          }}
-          handleProductSubmit={handleProductSubmit}
-          handleVariantsChanged={handleVariantsChanged}
-          handleOrderSubmit={handleOrderSubmit}
-          handleStatusChange={handleStatusChange}
-          handlePaymentChange={handlePaymentChange}
-          handleRegisterPayment={handleRegisterPayment}
-          handleCancelOrder={handleCancelOrder}
-          removeProduct={removeProduct}
-          removeClient={removeClient}
-          updateBusinessSettings={updateBusinessSettings}
-          signOut={signOut}
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-10 h-10 border-[3px] border-primary border-r-transparent rounded-full animate-spin" />
+              <span className="text-muted-foreground text-sm">Cargando datos...</span>
+            </div>
+          </div>
+        ) : (
+          <PageRouter
+            user={user}
+            products={products}
+            clients={clients}
+            orders={orders}
+            categories={categories}
+            optionTypes={optionTypes}
+            settings={settings}
+            sales={sales}
+            search={search}
+            setSearch={setSearch}
+            registerPaymentPending={registerPaymentPending}
+            openModal={openModal}
+            onNavigate={handleNavigateFromPage}
+            onProductCreated={() => {
+              void qc.invalidateQueries({ queryKey: qk.categories(user) })
+            }}
+            handleProductSubmit={handleProductSubmit}
+            handleVariantsChanged={handleVariantsChanged}
+            handleOrderSubmit={handleOrderSubmit}
+            handleStatusChange={handleStatusChange}
+            handlePaymentChange={handlePaymentChange}
+            handleRegisterPayment={handleRegisterPayment}
+            handleCancelOrder={handleCancelOrder}
+            removeProduct={removeProduct}
+            removeClient={removeClient}
+            updateBusinessSettings={updateBusinessSettings}
+            signOut={signOut}
+          />
+        )}
       </main>
       {mobileMenuOpen && (
         <MobileNavDrawer
