@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Route, Switch, useLocation } from 'wouter'
 import { ToastContainer } from 'react-toastify'
@@ -40,8 +40,15 @@ function App() {
 function DashboardApp() {
   const { user, authLoading } = useAuth()
   const dashboardData = useDashboardData(user)
+  const [initialLoadDone, setInitialLoadDone] = useState(false)
 
-  if (authLoading || (user && dashboardData.dataLoading))
+  useEffect(() => {
+    if (user && !dashboardData.dataLoading) {
+      setInitialLoadDone(true)
+    }
+  }, [user, dashboardData.dataLoading])
+
+  if (authLoading || !initialLoadDone)
     return (
       <div className="flex min-h-screen bg-background">
         <div className="flex-1 flex items-center justify-center">
