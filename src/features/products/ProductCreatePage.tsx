@@ -364,7 +364,7 @@ export function ProductCreatePage({
             <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
               CATÁLOGO PÚBLICO
             </span>
-            <label className="flex! items-center gap-2!">
+            <label className="flex! items-center gap-2! text-[#716b72] text-[11px] font-bold">
               <Checkbox
                 checked={draft.published}
                 onChange={(e) =>

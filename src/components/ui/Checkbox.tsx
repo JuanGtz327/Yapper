@@ -5,7 +5,7 @@ function Checkbox({ className, ...props }: React.ComponentProps<'input'>) {
     <input
       type="checkbox"
       className={cn(
-        'h-4 w-4 shrink-0 rounded border border-input accent-primary cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
+        'h-3.5 w-3.5 shrink-0 rounded-[4px] border border-[#c9c5ca] accent-primary cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
         className,
       )}
       {...props}
