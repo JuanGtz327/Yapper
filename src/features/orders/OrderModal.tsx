@@ -202,8 +202,8 @@ export function OrderModal({
                   </div>
                 )
               })}
-              <button
-                className="flex items-center justify-center gap-[5px] py-[9px] border border-dashed border-[#d8c8d8] rounded-[8px] text-primary bg-[#fbf7fb] text-[11px] font-bold"
+              <Button
+                variant="primary"
                 onClick={() => {
                   const next = variantOptions.find(
                     (opt) =>
@@ -217,10 +217,10 @@ export function OrderModal({
                     ])
                 }}
                 type="button"
+                icon={<Plus size={15} />}
               >
-                <Plus size={15} />
                 Añadir otro producto
-              </button>
+              </Button>
             </div>
             <CustomSelect
               label="Estado del pago"
