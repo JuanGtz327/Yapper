@@ -108,8 +108,11 @@ export function OrderDetailPage({
     <section className="animate-[page-in_0.25s_ease_both] max-w-[1100px]">
       <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
+          <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+            PEDIDOS
+          </span>
           <h1>Detalles del pedido {order.id}</h1>
-          <p className='mt-0.5 ml-0.5'>
+          <p className="mt-0.5 ml-0.5">
             {order.client} — {order.date}
           </p>
         </div>
@@ -149,11 +152,11 @@ export function OrderDetailPage({
       </div>
 
       <div className="grid grid-cols-[1fr_340px] gap-6 items-start max-[860px]:grid-cols-1">
-        <div className="grid gap-5">
-          <div className="p-5 border border-border rounded-xl bg-sidebar">
-            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">
-              Resumen
-            </h3>
+        <div className="grid gap-6">
+          <div className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px]">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
+              RESUMEN
+            </span>
             <dl className="grid grid-cols-2 gap-3.5 m-0">
               <div className="p-3 rounded-[9px] bg-[#faf7f9]">
                 <dt className="text-muted-foreground text-[10px] font-bold">
@@ -190,10 +193,10 @@ export function OrderDetailPage({
             </dl>
           </div>
 
-          <div className="p-5 border border-border rounded-xl bg-sidebar">
-            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">
-              Productos
-            </h3>
+          <div className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px]">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
+              PRODUCTOS
+            </span>
             {lineItems.length ? (
               <div>
                 <div
@@ -243,11 +246,11 @@ export function OrderDetailPage({
           </div>
         </div>
 
-        <div className="grid gap-5 sticky top-6 max-[860px]:static">
-          <div className="p-5 border border-border rounded-xl bg-sidebar">
-            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">
-              Estado
-            </h3>
+        <div className="grid gap-6 sticky top-6 max-[860px]:static">
+          <div className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px]">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
+              ESTADO
+            </span>
             {order.status === 'Cancelado' ? (
               <div className="flex items-center gap-2 py-2.5 px-3 rounded-[8px] bg-[#faf7f9] text-muted-foreground text-xs font-bold">
                 <Badge variant="danger">Cancelado</Badge>
@@ -327,10 +330,10 @@ export function OrderDetailPage({
             )}
           </div>
 
-          <div className="p-5 border border-border rounded-xl bg-sidebar">
-            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">
-              Pago
-            </h3>
+          <div className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px]">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
+              PAGO
+            </span>
             <PaymentProgress
               total={total}
               paidAmount={paidAmount}
@@ -342,7 +345,7 @@ export function OrderDetailPage({
           </div>
 
           {orderPayments.length > 0 && (
-            <div className="p-5 border border-border rounded-xl bg-sidebar">
+            <div className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px]">
               <PaymentHistory payments={orderPayments} currency={currency} />
             </div>
           )}
