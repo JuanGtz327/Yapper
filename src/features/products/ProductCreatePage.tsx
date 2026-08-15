@@ -292,7 +292,7 @@ export function ProductCreatePage({
           <div className="h-px bg-[#e8e4e6]" />
 
           {/* ── VARIANTES ───────────────────────────────────── */}
-          <div>
+          <div className="grid gap-4">
             <div className="flex items-baseline gap-2 mb-3">
               <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
                 VARIANTES
@@ -360,7 +360,7 @@ export function ProductCreatePage({
           <div className="h-px bg-[#e8e4e6]" />
 
           {/* ── CATÁLOGO PÚBLICO ───────────────────────────── */}
-          <div>
+          <div className="grid gap-4">
             <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
               CATÁLOGO PÚBLICO
             </span>
