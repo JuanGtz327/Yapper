@@ -213,7 +213,7 @@ export function SettingsPage({
               CUENTA
             </span>
             <h3 className="text-ink text-[16px] mt-[7px]">Sesión actual</h3>
-            <p className="mt-1 text-muted text-[12px] leading-[1.5]">
+            <p className="mt-1 text-muted-foreground text-[12px] leading-[1.5]">
               Tu información está protegida y solo tú puedes acceder a ella.
             </p>
             <Button variant="danger" onClick={onSignOut} type="button">
@@ -228,7 +228,7 @@ export function SettingsPage({
             <h3 className="text-ink text-[16px] mt-[7px]">
               Opciones de producto
             </h3>
-            <p className="mt-1 text-muted text-[12px] leading-[1.5]">
+            <p className="mt-1 text-muted-foreground text-[12px] leading-[1.5]">
               Administra tipos como Color, Talla o Capacidad y sus valores.
             </p>
             <Button
