@@ -2,6 +2,7 @@ import { Boxes, Copy, ExternalLink } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import { safeImageUrl } from '../../lib/security.ts'
 import { Button } from '../../components/ui/Button.tsx'
+import { Badge } from '../../components/ui/badge.tsx'
 import type { BusinessSettings, Product } from '../../types.ts'
 
 const catalogColors: Record<string, string> = {
@@ -41,9 +42,7 @@ export function CatalogPage({
         </div>
         {url && (
           <div className="flex items-center gap-[9px]">
-            <span className="mr-auto text-[#579078] text-[12px] font-bold">
-              Catálogo público listo
-            </span>
+            <Badge variant="success">Catálogo público listo</Badge>
             <Button
               variant="secondary"
               onClick={() => void navigator.clipboard?.writeText(url)}
