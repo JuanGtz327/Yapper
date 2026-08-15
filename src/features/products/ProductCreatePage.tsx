@@ -422,12 +422,14 @@ export function ProductCreatePage({
         {/* ── PREVIEW ────────────────────────────────────────── */}
         <aside className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] self-start grid gap-6">
           <div>
-            <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
-              VISTA PREVIA
-            </span>
-            <h3 className="text-foreground text-base">
-              Cómo se ve en tu catálogo
-            </h3>
+            <div className="flex items-baseline gap-2 mb-3">
+              <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+                VISTA PREVIA
+              </span>
+              <span className="text-[#aaa5a8] text-[10px] font-normal">
+                Cómo se ve en tu catálogo
+              </span>
+            </div>
             <div className="mt-[14px] border border-border rounded-xl overflow-hidden bg-white">
               {draft.imageUrl ? (
                 <img
