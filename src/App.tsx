@@ -6,7 +6,6 @@ import 'react-toastify/ReactToastify.css'
 import { AuthScreen } from './features/auth/AuthScreen.tsx'
 import { PublicCatalogPage } from './features/catalog/PublicCatalogPage.tsx'
 import DebugUI from './pages/DebugUI.tsx'
-import { Spinner } from './components/ui/Spinner.tsx'
 import { AppSidebar } from './components/layout/AppSidebar.tsx'
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer.tsx'
 import { ModalManager } from './components/layout/ModalManager.tsx'
@@ -52,7 +51,10 @@ function DashboardApp() {
     return (
       <div className="flex min-h-screen bg-background">
         <div className="flex-1 flex items-center justify-center">
-          <Spinner label="Cargando datos" />
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-[3px] border-primary border-r-transparent rounded-full animate-spin" />
+            <span className="text-muted-foreground text-sm">Cargando datos...</span>
+          </div>
         </div>
       </div>
     )
