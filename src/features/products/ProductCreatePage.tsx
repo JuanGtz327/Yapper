@@ -420,73 +420,77 @@ export function ProductCreatePage({
         </form>
 
         {/* ── PREVIEW ────────────────────────────────────────── */}
-        <aside className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] self-start">
-          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
-            VISTA PREVIA
-          </span>
-          <h3 className="text-foreground text-base">
-            Cómo se ve en tu catálogo
-          </h3>
-          <div className="mt-[14px] border border-border rounded-xl overflow-hidden bg-white">
-            {draft.imageUrl ? (
-              <img
-                src={draft.imageUrl}
-                alt={draft.name || 'Vista previa'}
-                className="w-full h-[160px] object-cover block"
-              />
-            ) : (
-              <div className="w-full h-[160px] flex flex-col items-center justify-center gap-[6px] bg-[#f3f1ef] text-muted-foreground text-xs">
-                <Image
-                  size={28}
-                  aria-hidden="true"
-                  className="text-[#c9bfca]"
+        <aside className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] self-start grid gap-6">
+          <div>
+            <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+              VISTA PREVIA
+            </span>
+            <h3 className="text-foreground text-base">
+              Cómo se ve en tu catálogo
+            </h3>
+            <div className="mt-[14px] border border-border rounded-xl overflow-hidden bg-white">
+              {draft.imageUrl ? (
+                <img
+                  src={draft.imageUrl}
+                  alt={draft.name || 'Vista previa'}
+                  className="w-full h-[160px] object-cover block"
                 />
-                <span>Sin imagen</span>
-              </div>
-            )}
-            <div className="p-3.5 grid gap-1">
-              <span className="text-[10px] font-bold uppercase tracking-[0.5px] text-primary">
-                {selectedCategoryName}
-              </span>
-              <strong className="text-[15px] text-foreground">
-                {draft.name || 'Nombre del producto'}
-              </strong>
-              {draft.variants.length > 0 && (
-                <span className="text-sm font-bold text-foreground mt-[2px]">
-                  ${draft.variants[0].salePrice || '0'}
+              ) : (
+                <div className="w-full h-[160px] flex flex-col items-center justify-center gap-[6px] bg-[#f3f1ef] text-muted-foreground text-xs">
+                  <Image
+                    size={28}
+                    aria-hidden="true"
+                    className="text-[#c9bfca]"
+                  />
+                  <span>Sin imagen</span>
+                </div>
+              )}
+              <div className="p-3.5 grid gap-1">
+                <span className="text-[10px] font-bold uppercase tracking-[0.5px] text-primary">
+                  {selectedCategoryName}
                 </span>
-              )}
-              {draft.publicDescription && (
-                <p className="text-xs text-muted-foreground leading-[1.5] mt-[6px]">
-                  {draft.publicDescription}
-                </p>
-              )}
+                <strong className="text-[15px] text-foreground">
+                  {draft.name || 'Nombre del producto'}
+                </strong>
+                {draft.variants.length > 0 && (
+                  <span className="text-sm font-bold text-foreground mt-[2px]">
+                    ${draft.variants[0].salePrice || '0'}
+                  </span>
+                )}
+                {draft.publicDescription && (
+                  <p className="text-xs text-muted-foreground leading-[1.5] mt-[6px]">
+                    {draft.publicDescription}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
-          <div className="h-px bg-[#e8e5e3] my-[18px]" />
-          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
-            RESUMEN
-          </span>
-          <ul className="list-none p-0 mt-2.5 grid gap-[6px] text-xs text-muted-foreground">
-            <li>
-              Variantes:{' '}
-              <strong className="text-foreground">
-                {draft.variants.length}
-              </strong>
-            </li>
-            <li>
-              Publicado:{' '}
-              <strong className="text-foreground">
-                {draft.published ? 'Sí' : 'No'}
-              </strong>
-            </li>
-            <li>
-              SKU principal:{' '}
-              <strong className="text-foreground">
-                {draft.variants[0]?.sku || '—'}
-              </strong>
-            </li>
-          </ul>
+          <div className="h-px bg-[#e8e4e6]" />
+          <div>
+            <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+              RESUMEN
+            </span>
+            <ul className="list-none p-0 mt-2.5 grid gap-[6px] text-xs text-muted-foreground">
+              <li>
+                Variantes:{' '}
+                <strong className="text-foreground">
+                  {draft.variants.length}
+                </strong>
+              </li>
+              <li>
+                Publicado:{' '}
+                <strong className="text-foreground">
+                  {draft.published ? 'Sí' : 'No'}
+                </strong>
+              </li>
+              <li>
+                SKU principal:{' '}
+                <strong className="text-foreground">
+                  {draft.variants[0]?.sku || '—'}
+                </strong>
+              </li>
+            </ul>
+          </div>
         </aside>
       </div>
 
