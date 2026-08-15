@@ -237,7 +237,7 @@ export function ProductCreatePage({
         </div>
       </div>
       <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(260px,1fr)] gap-4">
-        <form className="grid gap-6" onSubmit={submit}>
+        <form className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] grid gap-6" onSubmit={submit}>
           {/* ── INFORMACIÓN BÁSICA ─────────────────────────── */}
           <div>
             <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
