@@ -49,7 +49,7 @@ export function AuthScreen() {
           <h1 className="mt-1 mb-[10px] text-[34px]">
             {isSignUp ? 'Crea tu cuenta' : 'Qué bueno verte'}
           </h1>
-          <p className="max-w-[300px] text-muted text-[13px] leading-[1.6]">
+          <p className="max-w-[300px] text-muted-foreground text-[13px] leading-[1.6]">
             Gestiona pedidos, productos y clientes desde un solo lugar.
           </p>
         </div>

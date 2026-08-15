@@ -18,7 +18,7 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
   if (isLoading)
     return (
       <main className="min-h-screen py-7 px-[clamp(18px,6vw,90px)] pb-[70px] bg-[#f8f7f5] max-[520px]:px-4 max-[520px]:pb-[45px]">
-        <div className="grid place-items-center min-h-[70vh] gap-3 text-center text-muted">
+        <div className="grid place-items-center min-h-[70vh] gap-3 text-center text-muted-foreground">
           <Spinner label="Cargando catálogo" /> Cargando catálogo...
         </div>
       </main>
@@ -26,7 +26,7 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
   if (error || !catalog)
     return (
       <main className="min-h-screen py-7 px-[clamp(18px,6vw,90px)] pb-[70px] bg-[#f8f7f5] max-[520px]:px-4 max-[520px]:pb-[45px]">
-        <div className="grid place-items-center min-h-[70vh] gap-3 text-center text-muted">
+        <div className="grid place-items-center min-h-[70vh] gap-3 text-center text-muted-foreground">
           <div className="brand-mark">Y</div>
           <h1 className="text-[28px]">Esta tienda no está disponible</h1>
           <p className="text-[14px]">
@@ -63,7 +63,7 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
         <h1 className="mt-[7px] mb-[10px] text-[clamp(34px,7vw,62px)]">
           {catalog.businessName}
         </h1>
-        <p className="max-w-[560px] text-muted text-[16px] leading-[1.6]">
+        <p className="max-w-[560px] text-muted-foreground text-[16px] leading-[1.6]">
           {catalog.publicIntro || 'Conoce nuestros productos disponibles.'}
         </p>
       </section>
@@ -102,7 +102,7 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
                     {product.category}
                   </span>
                   <h2 className="my-[7px] text-[18px]">{product.name}</h2>
-                  <p className="min-h-[35px] text-muted text-[12px] leading-[1.5]">
+                  <p className="min-h-[35px] text-muted-foreground text-[12px] leading-[1.5]">
                     {product.publicDescription}
                   </p>
                   <strong className="block mt-[13px] mb-[15px] text-[#6d3c72] text-[20px]">

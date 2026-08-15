@@ -99,7 +99,7 @@ export function CatalogPage({
                     <h3 className="mt-[6px] mb-3 text-ink text-[14px]">
                       {product.name}
                     </h3>
-                    <p className="min-h-[32px] -mt-[5px] mb-3 text-muted text-[11px] leading-[1.45]">
+                    <p className="min-h-[32px] -mt-[5px] mb-3 text-muted-foreground text-[11px] leading-[1.45]">
                       {product.publicDescription}
                     </p>
                     <strong className="text-[#6d3c72] text-[17px]">

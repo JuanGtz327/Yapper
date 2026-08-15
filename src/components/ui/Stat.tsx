@@ -13,7 +13,7 @@ export function Stat({
 }) {
   return (
     <article className="border border-border rounded-xl bg-sidebar p-5">
-      <div className="flex justify-between text-muted text-xs mb-4">
+      <div className="flex justify-between text-muted-foreground text-xs mb-4">
         <span>{label}</span>
         <ArrowUpRight size={17} className="text-muted-foreground" />
       </div>
