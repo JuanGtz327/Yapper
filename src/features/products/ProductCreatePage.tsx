@@ -7,6 +7,8 @@ import { ConfirmModal } from '../../components/ui/ConfirmModal.tsx'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Button } from '../../components/ui/Button.tsx'
 import { Input } from '../../components/ui/Input.tsx'
+import { Checkbox } from '../../components/ui/Checkbox.tsx'
+import { Textarea } from '../../components/ui/Textarea.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 import {
   validateProductDraft,
@@ -234,7 +236,10 @@ export function ProductCreatePage({
         </div>
       </div>
       <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(260px,1fr)] gap-4">
-        <form className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] grid gap-6" onSubmit={submit}>
+        <form
+          className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] grid gap-6"
+          onSubmit={submit}
+        >
           {/* ── INFORMACIÓN BÁSICA ─────────────────────────── */}
           <div className="grid gap-4">
             <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
@@ -359,10 +364,8 @@ export function ProductCreatePage({
             <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-3">
               CATÁLOGO PÚBLICO
             </span>
-            <label className="flex! grid-cols-[auto_1fr] items-center gap-2!">
-              <input
-                className="w-auto!"
-                type="checkbox"
+            <label className="flex! items-center gap-2!">
+              <Checkbox
                 checked={draft.published}
                 onChange={(e) =>
                   setDraft({ ...draft, published: e.target.checked })
@@ -372,7 +375,7 @@ export function ProductCreatePage({
             </label>
             <label className="mt-2 grid gap-[6px] text-[#716b72] text-[11px] font-bold">
               Descripción pública
-              <textarea
+              <Textarea
                 value={draft.publicDescription}
                 onChange={(e) =>
                   setDraft({ ...draft, publicDescription: e.target.value })
