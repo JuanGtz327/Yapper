@@ -60,7 +60,7 @@ export function OrderCreatePage({
         : []),
   )
   const [payment, setPayment] = useState<'pending' | 'paid'>(
-    initial?.payment === 'Pendiente' ? 'pending' : 'paid',
+    initial?.payment === 'Pagado' ? 'paid' : 'pending',
   )
   const [saving, setSaving] = useState(false)
   const toast = useToast()

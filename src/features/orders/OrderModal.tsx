@@ -50,7 +50,7 @@ export function OrderModal({
       ? [{ variantId: firstAvailable.variant.id, quantity: 1 }]
       : [],
   )
-  const [payment, setPayment] = useState<'pending' | 'paid'>('paid')
+  const [payment, setPayment] = useState<'pending' | 'paid'>('pending')
   const [saving, setSaving] = useState(false)
   const toast = useToast()
 
