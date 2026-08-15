@@ -254,7 +254,6 @@ export function OrderCreatePage({
                           ),
                         )
                       }}
-                      step="1"
                     />
                     <span className="text-foreground text-[13px] font-bold text-right whitespace-nowrap max-[520px]:text-xs">
                       {money(priceFor(line) * line.quantity)}
