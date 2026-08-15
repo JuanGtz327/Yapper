@@ -24,7 +24,9 @@ export function PaymentProgress({
           {isFullyPaid ? 'Pagado total' : 'Abonado'}
         </span>
         <span className="flex items-baseline gap-1 text-[13px] text-foreground">
-          <strong className="text-primary text-[15px]">{formatMoney(paidAmount, currency)}</strong>
+          <strong className="text-primary text-[15px]">
+            {formatMoney(paidAmount, currency)}
+          </strong>
           <span className="text-muted-foreground text-[11px]">de</span>
           <span>{formatMoney(total, currency)}</span>
         </span>
@@ -45,7 +47,10 @@ export function PaymentProgress({
       {!isFullyPaid && (
         <div className="mt-2">
           <span className="text-muted-foreground text-xs">
-            Falta: <strong className="text-foreground">{formatMoney(remaining, currency)}</strong>
+            Falta:{' '}
+            <strong className="text-foreground">
+              {formatMoney(remaining, currency)}
+            </strong>
           </span>
         </div>
       )}

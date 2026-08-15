@@ -128,24 +128,23 @@ export function OrderModal({
 
   return (
     <ModalFrame title="Crear pedido" onClose={onClose}>
-      <form className="form-grid gap-4" onSubmit={submit}>
+      <form className="grid gap-[15px] gap-4" onSubmit={submit}>
         {!clients.length || !variantOptions.length ? (
           <Empty text="Necesitas al menos un cliente y un producto para crear un pedido." />
         ) : (
           <>
-            <label>
-              Cliente
-              <CustomSelect
-                value={clientId}
-                onChange={(val) => setClientId(val)}
-                options={clients.map((client) => ({
-                  value: client.id,
-                  label: client.name,
-                }))}
-                placeholder="Seleccionar cliente..."
-                ariaLabel="Cliente"
-              />
-            </label>
+            <CustomSelect
+              label="Cliente"
+              value={clientId}
+              onChange={(val) => setClientId(val)}
+              options={clients.map((client) => ({
+                value: client.id,
+                label: client.name,
+              }))}
+              placeholder="Seleccionar cliente..."
+              ariaLabel="Cliente"
+              searchable
+            />
             <div className="grid gap-[9px]">
               <div className="flex justify-between text-[#716b72] text-[11px] font-bold">
                 <span>Productos</span>
@@ -169,6 +168,7 @@ export function OrderModal({
                       }))}
                       placeholder="Producto..."
                       ariaLabel="Producto"
+                      searchable
                     />
                     <Input
                       aria-label="Cantidad"
@@ -222,21 +222,21 @@ export function OrderModal({
                 Añadir otro producto
               </button>
             </div>
-            <label>
-              Estado del pago
-              <CustomSelect
-                value={payment}
-                onChange={(val) => setPayment(val as 'pending' | 'paid')}
-                options={[
-                  { value: 'paid', label: 'Pagado' },
-                  { value: 'pending', label: 'Pendiente de pago' },
-                ]}
-                ariaLabel="Estado del pago"
-              />
-            </label>
+            <CustomSelect
+              label="Estado del pago"
+              value={payment}
+              onChange={(val) => setPayment(val as 'pending' | 'paid')}
+              options={[
+                { value: 'paid', label: 'Pagado' },
+                { value: 'pending', label: 'Pendiente de pago' },
+              ]}
+              ariaLabel="Estado del pago"
+            />
             <div className="flex items-center justify-between pt-[15px] border-t border-border text-[#716b72] text-xs">
               <span>Total del pedido</span>
-              <strong className="text-primary text-[22px]">{money.format(total)}</strong>
+              <strong className="text-primary text-[22px]">
+                {money.format(total)}
+              </strong>
             </div>
             <div className="flex justify-end gap-[10px] mt-[9px]">
               <Button

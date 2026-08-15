@@ -66,7 +66,9 @@ function FieldError({
 }) {
   const msg = errors[name]
   if (!msg) return null
-  return <span className="block text-[#aa6259] text-[11px] mt-[2px]">{msg}</span>
+  return (
+    <span className="block text-[#aa6259] text-[11px] mt-[2px]">{msg}</span>
+  )
 }
 
 export function ProductCreatePage({
@@ -222,17 +224,27 @@ export function ProductCreatePage({
               Eliminar producto
             </Button>
           )}
-          <Button variant="secondary" onClick={onClose} type="button" icon={<ArrowLeft size={16} aria-hidden="true" />}>
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            type="button"
+            icon={<ArrowLeft size={16} aria-hidden="true" />}
+          >
             Volver
           </Button>
         </div>
       </div>
       <div className="settings-layout">
-        <form className="panel form-grid" onSubmit={submit}>
+        <form
+          className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] grid gap-[15px]"
+          onSubmit={submit}
+        >
           {/* ── INFORMACIÓN BÁSICA ─────────────────────────── */}
           <fieldset className="border border-[#e8e4e6] rounded-[10px] p-4 bg-[#fdfcfc]">
-            <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">Información básica</legend>
-            <label>
+            <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">
+              Información básica
+            </legend>
+            <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
               Nombre del producto
               <Input
                 value={draft.name}
@@ -246,10 +258,10 @@ export function ProductCreatePage({
               />
               <FieldError errors={errors} name="name" />
             </label>
-            <label className="category-row">
-              Categoría
-              <div className="flex gap-[6px] items-stretch">
+            <div className="flex gap-[6px] items-stretch">
+              <div className="min-w-0 flex-1">
                 <CustomSelect
+                  label="Categoría"
                   value={draft.categoryId ?? ''}
                   onChange={(val) =>
                     setDraft({ ...draft, categoryId: val || null })
@@ -263,35 +275,43 @@ export function ProductCreatePage({
                   ]}
                   placeholder="Sin categoría"
                   ariaLabel="Categoría"
-                />
-                <Button
-                  variant="primary"
-                  icon={<Plus size={16} />}
-                  onClick={() => setCategoryManagerOpen(true)}
-                  type="button"
-                  aria-label="Gestionar categorías"
+                  searchable
                 />
               </div>
-            </label>
+              <Button
+                variant="primary"
+                icon={<Plus size={16} />}
+                onClick={() => setCategoryManagerOpen(true)}
+                type="button"
+                aria-label="Gestionar categorías"
+              />
+            </div>
           </fieldset>
 
           {/* ── VARIANTES ───────────────────────────────────── */}
           <fieldset className="border border-[#e8e4e6] rounded-[10px] p-4 bg-[#fdfcfc]">
             <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">
               Variantes
-              <span className="field-help font-normal">
+              <span className="text-[#aaa5a8] text-[10px] font-normal font-normal">
                 Cada variante define su propio SKU, precio y existencias.
               </span>
             </legend>
             {errors.variants && (
-              <span className="block text-[#aa6259] text-[11px] mt-[2px]">{errors.variants}</span>
+              <span className="block text-[#aa6259] text-[11px] mt-[2px]">
+                {errors.variants}
+              </span>
             )}
             {draft.variants.length > 0 ? (
               <ul className="grid gap-[6px] p-0 m-0 list-none">
                 {draft.variants.map((variant, idx) => (
-                  <li key={variant.id ?? idx} className="flex items-center justify-between gap-[10px] p-[10px_12px] border border-[#e8e4e6] rounded-[8px] bg-white hover:bg-[#f3eef4]">
+                  <li
+                    key={variant.id ?? idx}
+                    className="flex items-center justify-between gap-[10px] p-[10px_12px] border border-[#e8e4e6] rounded-[8px] bg-white hover:bg-[#f3eef4]"
+                  >
                     <div className="flex flex-col gap-[2px] min-w-0">
-                      <strong className="text-[13px] text-foreground">{variant.sku}</strong>
+                      <strong className="text-[13px] text-foreground">
+                        {variant.sku}
+                      </strong>
                       <span className="text-[12px] text-muted-foreground">
                         {variant.name && `${variant.name} · `}$
                         {variant.salePrice} · {variant.stock} uds
@@ -334,9 +354,12 @@ export function ProductCreatePage({
 
           {/* ── CATÁLOGO PÚBLICO ───────────────────────────── */}
           <fieldset className="border border-[#e8e4e6] rounded-[10px] p-4 bg-[#fdfcfc]">
-            <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">Catálogo público</legend>
-            <label className="checkbox-label">
+            <legend className="text-[13px] font-bold text-foreground flex items-baseline gap-2">
+              Catálogo público
+            </legend>
+            <label className="flex! grid-cols-[auto_1fr] items-center gap-2!">
               <input
+                className="w-auto!"
                 type="checkbox"
                 checked={draft.published}
                 onChange={(e) =>
@@ -345,7 +368,7 @@ export function ProductCreatePage({
               />
               Mostrar en mi catálogo público
             </label>
-            <label className="mt-2">
+            <label className="mt-2 grid gap-[6px] text-[#716b72] text-[11px] font-bold">
               Descripción pública
               <textarea
                 value={draft.publicDescription}
@@ -358,7 +381,7 @@ export function ProductCreatePage({
               />
               <FieldError errors={errors} name="publicDescription" />
             </label>
-            <label>
+            <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
               Imagen pública (URL)
               <Input
                 type="url"
@@ -392,9 +415,11 @@ export function ProductCreatePage({
         </form>
 
         {/* ── PREVIEW ────────────────────────────────────────── */}
-        <aside className="panel self-start">
+        <aside className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] self-start">
           <span className="eyebrow">VISTA PREVIA</span>
-          <h3 className="text-foreground text-base">Cómo se ve en tu catálogo</h3>
+          <h3 className="text-foreground text-base">
+            Cómo se ve en tu catálogo
+          </h3>
           <div className="mt-[14px] border border-border rounded-xl overflow-hidden bg-white">
             {draft.imageUrl ? (
               <img
@@ -404,7 +429,11 @@ export function ProductCreatePage({
               />
             ) : (
               <div className="w-full h-[160px] flex flex-col items-center justify-center gap-[6px] bg-[#f3f1ef] text-muted-foreground text-xs">
-                <Image size={28} aria-hidden="true" className="text-[#c9bfca]" />
+                <Image
+                  size={28}
+                  aria-hidden="true"
+                  className="text-[#c9bfca]"
+                />
                 <span>Sin imagen</span>
               </div>
             )}
@@ -431,13 +460,22 @@ export function ProductCreatePage({
           <span className="eyebrow">RESUMEN</span>
           <ul className="list-none p-0 mt-2.5 grid gap-[6px] text-xs text-muted-foreground">
             <li>
-              Variantes: <strong className="text-foreground">{draft.variants.length}</strong>
+              Variantes:{' '}
+              <strong className="text-foreground">
+                {draft.variants.length}
+              </strong>
             </li>
             <li>
-              Publicado: <strong className="text-foreground">{draft.published ? 'Sí' : 'No'}</strong>
+              Publicado:{' '}
+              <strong className="text-foreground">
+                {draft.published ? 'Sí' : 'No'}
+              </strong>
             </li>
             <li>
-              SKU principal: <strong className="text-foreground">{draft.variants[0]?.sku || '—'}</strong>
+              SKU principal:{' '}
+              <strong className="text-foreground">
+                {draft.variants[0]?.sku || '—'}
+              </strong>
             </li>
           </ul>
         </aside>

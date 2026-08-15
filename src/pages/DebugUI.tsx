@@ -26,13 +26,7 @@ import { Stat } from '@/components/ui/Stat'
 import { PanelHeading } from '@/components/ui/PanelHeading'
 import { QuickAction } from '@/components/ui/QuickAction'
 import { CustomSelect } from '@/components/ui/CustomSelect'
-import {
-  Palette,
-  SquareStack,
-  ImageIcon,
-  Box,
-  ToggleLeft,
-} from 'lucide-react'
+import { Palette, SquareStack, ImageIcon, Box, ToggleLeft } from 'lucide-react'
 
 function Section({
   title,
@@ -68,19 +62,27 @@ export default function DebugUI() {
         <Section title="Typography">
           <div className="grid gap-3">
             <div className="flex items-baseline gap-4">
-              <span className="text-xs text-muted-foreground w-20">text-xs</span>
+              <span className="text-xs text-muted-foreground w-20">
+                text-xs
+              </span>
               <span className="text-xs">The quick brown fox (11px)</span>
             </div>
             <div className="flex items-baseline gap-4">
-              <span className="text-xs text-muted-foreground w-20">text-sm</span>
+              <span className="text-xs text-muted-foreground w-20">
+                text-sm
+              </span>
               <span className="text-sm">The quick brown fox (13px)</span>
             </div>
             <div className="flex items-baseline gap-4">
-              <span className="text-xs text-muted-foreground w-20">text-base</span>
+              <span className="text-xs text-muted-foreground w-20">
+                text-base
+              </span>
               <span className="text-base">The quick brown fox (15px)</span>
             </div>
             <div className="flex items-baseline gap-4">
-              <span className="text-xs text-muted-foreground w-20">Weights</span>
+              <span className="text-xs text-muted-foreground w-20">
+                Weights
+              </span>
               <span className="text-sm font-normal">Normal</span>
               <span className="text-sm font-semibold">Semibold</span>
               <span className="text-sm font-bold">Bold</span>
@@ -99,12 +101,18 @@ export default function DebugUI() {
           <div className="grid grid-cols-6 gap-3">
             {[
               { name: 'primary', class: 'bg-primary' },
-              { name: 'primary-fg', class: 'bg-primary text-primary-foreground' },
+              {
+                name: 'primary-fg',
+                class: 'bg-primary text-primary-foreground',
+              },
               { name: 'secondary', class: 'bg-secondary' },
               { name: 'muted', class: 'bg-muted' },
               { name: 'destructive', class: 'bg-destructive' },
               { name: 'border', class: 'bg-border' },
-              { name: 'background', class: 'bg-background border border-border' },
+              {
+                name: 'background',
+                class: 'bg-background border border-border',
+              },
               { name: 'sidebar', class: 'bg-sidebar border border-border' },
               { name: 'card', class: 'bg-card border border-border' },
               { name: 'accent', class: 'bg-accent' },
@@ -113,7 +121,9 @@ export default function DebugUI() {
             ].map((c) => (
               <div key={c.name} className="text-center">
                 <div className={`w-full h-10 rounded-lg ${c.class}`} />
-                <span className="text-xs text-muted-foreground mt-1 block">{c.name}</span>
+                <span className="text-xs text-muted-foreground mt-1 block">
+                  {c.name}
+                </span>
               </div>
             ))}
           </div>
@@ -123,7 +133,9 @@ export default function DebugUI() {
         <Section title="Buttons">
           <div className="grid gap-4">
             <div>
-              <p className="text-xs text-muted-foreground mb-2">Variants (md)</p>
+              <p className="text-xs text-muted-foreground mb-2">
+                Variants (md)
+              </p>
               <div className="flex flex-wrap gap-2">
                 <Button variant="primary">Primary</Button>
                 <Button variant="secondary">Secondary</Button>
@@ -134,23 +146,37 @@ export default function DebugUI() {
             <div>
               <p className="text-xs text-muted-foreground mb-2">Sizes</p>
               <div className="flex flex-wrap items-center gap-2">
-                <Button variant="primary" size="sm">Small</Button>
-                <Button variant="primary" size="md">Medium</Button>
+                <Button variant="primary" size="sm">
+                  Small
+                </Button>
+                <Button variant="primary" size="md">
+                  Medium
+                </Button>
               </div>
             </div>
             <div>
               <p className="text-xs text-muted-foreground mb-2">With icons</p>
               <div className="flex flex-wrap gap-2">
-                <Button variant="primary" icon={<Palette size={16} />}>Icon Left</Button>
-                <Button variant="secondary" icon={<Box size={16} />}>With Icon</Button>
-                <Button variant="danger" icon={<ToggleLeft size={16} />}>Danger Icon</Button>
+                <Button variant="primary" icon={<Palette size={16} />}>
+                  Icon Left
+                </Button>
+                <Button variant="secondary" icon={<Box size={16} />}>
+                  With Icon
+                </Button>
+                <Button variant="danger" icon={<ToggleLeft size={16} />}>
+                  Danger Icon
+                </Button>
               </div>
             </div>
             <div>
               <p className="text-xs text-muted-foreground mb-2">Disabled</p>
               <div className="flex flex-wrap gap-2">
-                <Button variant="primary" disabled>Primary</Button>
-                <Button variant="secondary" disabled>Secondary</Button>
+                <Button variant="primary" disabled>
+                  Primary
+                </Button>
+                <Button variant="secondary" disabled>
+                  Secondary
+                </Button>
               </div>
             </div>
             <div>
@@ -177,20 +203,32 @@ export default function DebugUI() {
               <Input placeholder="Deshabilitado" disabled />
             </div>
             <div className="grid gap-1.5">
-              <Label>CustomSelect</Label>
+              <Label>CustomSelect (label flotante + búsqueda)</Label>
               <CustomSelect
+                label="Categoría"
                 value={selectValue}
+                searchable
                 options={[
-                  { value: 'opt1', label: 'Opcion 1' },
-                  { value: 'opt2', label: 'Opcion 2' },
-                  { value: 'opt3', label: 'Opcion 3' },
+                  { value: 'opt1', label: 'Accesorios' },
+                  { value: 'opt2', label: 'Comida casera' },
+                  { value: 'opt3', label: 'Hogar y cocina' },
+                  { value: 'opt4', label: 'Ropa' },
+                  { value: 'opt5', label: 'Tuppers' },
+                  { value: 'opt6', label: 'Postres' },
+                  { value: 'opt7', label: 'Artesanías' },
+                  { value: 'opt8', label: 'Juguetes' },
+                  { value: 'opt9', label: 'Papelería' },
+                  { value: 'opt10', label: 'Cuidado personal' },
                 ]}
                 onChange={setSelectValue}
               />
             </div>
             <div className="grid gap-1.5">
               <Label>shadcn Select</Label>
-              <Select value={selectValue} onValueChange={(v) => v && setSelectValue(v)}>
+              <Select
+                value={selectValue}
+                onValueChange={(v) => v && setSelectValue(v)}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Seleccionar..." />
                 </SelectTrigger>
@@ -212,10 +250,17 @@ export default function DebugUI() {
                 <CardTitle>Card Title</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">Card content goes here.</p>
+                <p className="text-sm text-muted-foreground">
+                  Card content goes here.
+                </p>
               </CardContent>
             </Card>
-            <Stat label="Ventas totales" value="$12,345" detail="+12% vs mes anterior" positive />
+            <Stat
+              label="Ventas totales"
+              value="$12,345"
+              detail="+12% vs mes anterior"
+              positive
+            />
             <Stat label="Productos" value="48" detail="3 con stock bajo" />
             <Stat label="Pedidos" value="156" detail="Este mes" />
           </div>
@@ -273,7 +318,9 @@ export default function DebugUI() {
             <Empty text="No hay elementos para mostrar" />
             <div className="flex items-center gap-2">
               <Spinner label="Cargando" />
-              <span className="text-sm text-muted-foreground">Cargando datos...</span>
+              <span className="text-sm text-muted-foreground">
+                Cargando datos...
+              </span>
             </div>
           </div>
         </Section>
@@ -301,7 +348,10 @@ export default function DebugUI() {
                   Contenido del dialog aqui. Ancho consistente: max-w-lg.
                 </p>
                 <DialogFooter>
-                  <Button variant="primary" onClick={() => setDialogOpen(false)}>
+                  <Button
+                    variant="primary"
+                    onClick={() => setDialogOpen(false)}
+                  >
                     Confirmar
                   </Button>
                 </DialogFooter>
@@ -324,19 +374,27 @@ export default function DebugUI() {
           <div className="grid grid-cols-4 gap-4">
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/20 rounded-sm mx-auto" />
-              <span className="text-xs text-muted-foreground mt-1 block">rounded-sm</span>
+              <span className="text-xs text-muted-foreground mt-1 block">
+                rounded-sm
+              </span>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/20 rounded-md mx-auto" />
-              <span className="text-xs text-muted-foreground mt-1 block">rounded-md</span>
+              <span className="text-xs text-muted-foreground mt-1 block">
+                rounded-md
+              </span>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/20 rounded-lg mx-auto" />
-              <span className="text-xs text-muted-foreground mt-1 block">rounded-lg</span>
+              <span className="text-xs text-muted-foreground mt-1 block">
+                rounded-lg
+              </span>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/20 rounded-full mx-auto" />
-              <span className="text-xs text-muted-foreground mt-1 block">rounded-full</span>
+              <span className="text-xs text-muted-foreground mt-1 block">
+                rounded-full
+              </span>
             </div>
           </div>
         </Section>

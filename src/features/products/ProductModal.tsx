@@ -132,8 +132,8 @@ export function ProductModal({
       title={initial ? 'Editar producto' : 'Añadir producto'}
       onClose={onClose}
     >
-      <form className="form-grid" onSubmit={submit}>
-        <label>
+      <form className="grid gap-[15px]" onSubmit={submit}>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Nombre del producto
           <Input
             name="name"
@@ -142,10 +142,11 @@ export function ProductModal({
             required
           />
         </label>
-        <label className="category-row">
+        <label className="category-row grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Categoría
           <div className="category-selector">
             <select
+              className="appearance-none bg-[url('data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2712%27%20height%3D%2712%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23716b72%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27m6%209%206%206%206-6%27%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_10px_center] pr-[30px]! cursor-pointer"
               name="categoryId"
               value={selectedCategoryId}
               onChange={(e) => setSelectedCategoryId(e.target.value)}
@@ -169,7 +170,9 @@ export function ProductModal({
         {initial && (
           <div className="border border-[#e8e4e6] rounded-[10px] p-[14px] bg-[#fdfcfc]">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[13px] font-bold text-foreground">Variantes</span>
+              <span className="text-[13px] font-bold text-foreground">
+                Variantes
+              </span>
               <Button
                 variant="secondary"
                 onClick={() => setVariantManagerOpen(true)}
@@ -181,9 +184,14 @@ export function ProductModal({
             </div>
             <ul className="grid gap-[6px] p-0 m-0 list-none">
               {initial.variants.map((variant) => (
-                <li key={variant.id} className="flex items-center justify-between gap-[10px] p-[10px_12px] border border-[#e8e4e6] rounded-[8px] bg-white hover:bg-[#f3eef4]">
+                <li
+                  key={variant.id}
+                  className="flex items-center justify-between gap-[10px] p-[10px_12px] border border-[#e8e4e6] rounded-[8px] bg-white hover:bg-[#f3eef4]"
+                >
                   <div className="flex flex-col gap-[2px] min-w-0">
-                    <strong className="text-[13px] text-foreground">{variant.sku}</strong>
+                    <strong className="text-[13px] text-foreground">
+                      {variant.sku}
+                    </strong>
                     <span className="text-[12px] text-muted-foreground">
                       {variant.name && `${variant.name} · `}${variant.salePrice}{' '}
                       · {variant.stock} uds
@@ -222,12 +230,12 @@ export function ProductModal({
         )}
         {!initial && (
           <>
-            <label>
+            <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
               SKU
               <Input name="sku" placeholder="Ej. TUP-REC-1L" required />
             </label>
             <div className="grid grid-cols-2 gap-[15px]">
-              <label>
+              <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
                 Precio de venta
                 <Input
                   name="salePrice"
@@ -238,7 +246,7 @@ export function ProductModal({
                   required
                 />
               </label>
-              <label>
+              <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
                 Costo de inventario
                 <Input
                   name="inventoryCost"
@@ -249,7 +257,7 @@ export function ProductModal({
                 />
               </label>
             </div>
-            <label>
+            <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
               Existencias
               <Input
                 name="stock"
@@ -262,17 +270,20 @@ export function ProductModal({
             </label>
           </>
         )}
-        <fieldset className="grid gap-3 p-[14px] border border-[var(--line)] rounded-[10px]">
-          <legend className="px-[5px] text-primary text-xs font-bold">Publicación</legend>
-          <label className="checkbox-label">
+        <fieldset className="grid gap-3 p-[14px] border border-[#ebe8e4] rounded-[10px]">
+          <legend className="px-[5px] text-primary text-xs font-bold">
+            Publicación
+          </legend>
+          <label className="flex! grid-cols-[auto_1fr] items-center gap-2!">
             <input
+              className="w-auto!"
               name="published"
               type="checkbox"
               defaultChecked={initial?.published ?? false}
             />
             Mostrar en mi catálogo público
           </label>
-          <label>
+          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
             Descripción pública
             <textarea
               name="publicDescription"
@@ -280,7 +291,7 @@ export function ProductModal({
               maxLength={240}
             />
           </label>
-          <label>
+          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
             Imagen pública (URL)
             <Input
               name="imageUrl"

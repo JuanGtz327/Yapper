@@ -1,10 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from './dialog.tsx'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './dialog.tsx'
 
 export function ModalFrame({
   title,

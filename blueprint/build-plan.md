@@ -26,7 +26,7 @@
   - [x] 15d. Split page sections - extract each page block into named components
 - [x] 16. **Real routing** - replace useState-based page switching with wouter routes
 - [x] 17. **Type cleanup** - consolidate types.ts and types/supabase.ts, add missing types, remove loose `any`s
-- [ ] 18. **Full restyle** - migrate from App.css monolith to Tailwind utility classes, add shadcn/ui components
+- [x] 18. **Full restyle** - migrate from App.css monolith to Tailwind utility classes, add shadcn/ui components
   - [x] 18a. Theme & shadcn/ui setup - install shadcn/ui, configure tokens, create base component primitives
   - [x] 18b. Layout restyle - app shell, sidebar, topbar, mobile nav drawer to Tailwind
   - [x] 18c. Dashboard restyle - welcome card, stats grid, charts, quick actions
@@ -38,6 +38,6 @@
   - [x] 18e. Clients, Settings, Stats, Catalog restyle - remaining pages + public catalog + auth screen
     - [x] 18e. Clients, Settings, Stats restyle - ClientsPage, ClientModal, SettingsPage, StatsPage
     - [x] 18e2. Auth & Catalog restyle - AuthScreen, CatalogPage, PublicCatalogPage
-  - [ ] 18f. Cleanup - remove App.css, verify responsive behavior, final pass
+  - [x] 18f. Cleanup - remove App.css, verify responsive behavior, final pass
 - [ ] 19. **Test coverage** - expand tests for critical business logic (orders, payments, product mutations)
 - [ ] 20. **Deploy readiness** - Vercel or Render config, env vars, production build verification

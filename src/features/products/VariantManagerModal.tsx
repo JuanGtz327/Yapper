@@ -92,8 +92,8 @@ export function VariantManagerModal({
       title={variant ? 'Editar variante' : 'Añadir variante'}
       onClose={onClose}
     >
-      <form className="form-grid" onSubmit={submit}>
-        <label>
+      <form className="grid gap-[15px]" onSubmit={submit}>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           SKU
           <Input
             name="sku"
@@ -102,7 +102,7 @@ export function VariantManagerModal({
             required
           />
         </label>
-        <label>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Nombre de variante
           <Input
             name="name"
@@ -111,7 +111,7 @@ export function VariantManagerModal({
           />
         </label>
         <div className="grid grid-cols-2 gap-[15px]">
-          <label>
+          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
             Precio de venta
             <Input
               name="salePrice"
@@ -123,7 +123,7 @@ export function VariantManagerModal({
               required
             />
           </label>
-          <label>
+          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
             Costo de inventario
             <Input
               name="inventoryCost"
@@ -135,7 +135,7 @@ export function VariantManagerModal({
             />
           </label>
         </div>
-        <label>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Existencias
           <Input
             name="stock"
@@ -149,11 +149,17 @@ export function VariantManagerModal({
         </label>
         {optionTypes.length > 0 && (
           <fieldset className="border border-[#e8e4e6] rounded-[10px] p-[14px] bg-[#fdfcfc]">
-            <legend className="text-[13px] font-bold text-foreground">Opciones</legend>
+            <legend className="text-[13px] font-bold text-foreground">
+              Opciones
+            </legend>
             {optionTypes.map((type) => (
-              <label key={type.id}>
+              <label
+                key={type.id}
+                className="grid gap-[6px] text-[#716b72] text-[11px] font-bold"
+              >
                 {type.name}
                 <select
+                  className="appearance-none bg-[url('data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2712%27%20height%3D%2712%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23716b72%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27m6%209%206%206%206-6%27%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_10px_center] pr-[30px]! cursor-pointer"
                   value={selectedOptions[type.id] ?? ''}
                   onChange={(e) =>
                     setSelectedOptions((prev) => ({

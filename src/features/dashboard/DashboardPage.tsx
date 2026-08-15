@@ -95,7 +95,10 @@ export function DashboardPage({
                 <i className="block border-t border-dashed border-[#ece8e6]" />
                 <i className="block border-t border-dashed border-[#ece8e6]" />
               </div>
-              <div className="absolute inset-x-0 top-0 bottom-[23px] flex items-end gap-2 pt-2 px-[2px]" aria-label="Ventas por día">
+              <div
+                className="absolute inset-x-0 top-0 bottom-[23px] flex items-end gap-2 pt-2 px-[2px]"
+                aria-label="Ventas por día"
+              >
                 {sales.length ? (
                   sales.map((item) => (
                     <span

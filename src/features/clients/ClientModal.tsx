@@ -28,8 +28,8 @@ export function ClientModal({
       title={initial ? 'Editar cliente' : 'Nuevo cliente'}
       onClose={onClose}
     >
-      <form className="form-grid" onSubmit={submit}>
-        <label>
+      <form className="grid gap-[15px]" onSubmit={submit}>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Nombre completo
           <Input
             name="name"
@@ -38,7 +38,7 @@ export function ClientModal({
             required
           />
         </label>
-        <label>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Teléfono
           <Input
             name="phone"
@@ -46,7 +46,7 @@ export function ClientModal({
             placeholder="55 1234 5678"
           />
         </label>
-        <label>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Zona o colonia
           <Input
             name="zone"
@@ -54,7 +54,7 @@ export function ClientModal({
             placeholder="Ej. Coyoacán"
           />
         </label>
-        <div className="modal-actions">
+        <div className="flex justify-end gap-[10px] mt-[9px]">
           <Button
             variant="primary"
             disabled={saving}

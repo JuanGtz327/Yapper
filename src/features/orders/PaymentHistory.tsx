@@ -26,24 +26,25 @@ export function PaymentHistory({
   }
 
   return (
-    <div
-      className="mt-4"
-      role="list"
-      aria-label="Historial de abonos"
-    >
+    <div className="mt-4" role="list" aria-label="Historial de abonos">
       <div className="flex items-center gap-[6px] text-muted-foreground mb-[10px]">
         <FileText size={14} aria-hidden="true" />
         <h4 className="m-0 text-xs">Abonos ({payments.length})</h4>
       </div>
       <ul className="list-none m-0 p-0 grid gap-2">
         {payments.map((payment) => (
-          <li key={payment.id} className="flex items-start gap-[10px] py-[10px] px-3 rounded-[8px] bg-[#faf7f9]">
+          <li
+            key={payment.id}
+            className="flex items-start gap-[10px] py-[10px] px-3 rounded-[8px] bg-[#faf7f9]"
+          >
             <div className="grid place-items-center w-7 h-7 rounded-[6px] bg-[#f3eaf4] text-primary text-[10px] font-extrabold shrink-0">
               {METHOD_ICONS[payment.paymentMethod] ?? 'OT'}
             </div>
             <div className="grid gap-[2px] min-w-0">
               <div className="flex items-baseline gap-2">
-                <strong className="text-foreground text-[13px]">{formatMoney(payment.amount, currency)}</strong>
+                <strong className="text-foreground text-[13px]">
+                  {formatMoney(payment.amount, currency)}
+                </strong>
                 <span className="text-muted-foreground text-[11px]">
                   {payment.paymentMethod}
                 </span>
@@ -54,7 +55,9 @@ export function PaymentHistory({
                 </span>
               )}
               {payment.notes && (
-                <span className="text-muted-foreground text-[11px] truncate">{payment.notes}</span>
+                <span className="text-muted-foreground text-[11px] truncate">
+                  {payment.notes}
+                </span>
               )}
               <time className="text-[#b8b3b9] text-[10px]">
                 {new Intl.DateTimeFormat('es-MX', {

@@ -6,6 +6,13 @@ import { safeImageUrl } from '../../lib/security.ts'
 import { normalizeMexicanWhatsApp } from '../../lib/whatsapp.ts'
 import { usePublicCatalog } from '../../hooks/queries/usePublicCatalog.ts'
 
+const catalogColors: Record<string, string> = {
+  coral: 'text-[#b06b57] bg-[#f9e5dc]',
+  mint: 'text-[#579078] bg-[#dff1e6]',
+  sky: 'text-[#52829e] bg-[#e0eff5]',
+  lavender: 'text-[#7963a2] bg-[#ece5f7]',
+}
+
 export function PublicCatalogPage({ slug }: { slug: string }) {
   const { data: catalog, isLoading, error } = usePublicCatalog(slug)
   if (isLoading)
@@ -22,7 +29,9 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
         <div className="grid place-items-center min-h-[70vh] gap-3 text-center text-muted">
           <div className="brand-mark">Y</div>
           <h1 className="text-[28px]">Esta tienda no está disponible</h1>
-          <p className="text-[14px]">El enlace puede estar desactivado o ya no existir.</p>
+          <p className="text-[14px]">
+            El enlace puede estar desactivado o ya no existir.
+          </p>
         </div>
       </main>
     )
@@ -48,13 +57,22 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
         </Button>
       </header>
       <section className="max-w-[1120px] mx-auto mt-[75px] mb-10 max-[520px]:mt-[55px] max-[520px]:mb-[30px]">
-        <span className="eyebrow">COMPRA DIRECTA</span>
-        <h1 className="mt-[7px] mb-[10px] text-[clamp(34px,7vw,62px)]">{catalog.businessName}</h1>
-        <p className="max-w-[560px] text-muted text-[16px] leading-[1.6]">{catalog.publicIntro || 'Conoce nuestros productos disponibles.'}</p>
+        <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+          COMPRA DIRECTA
+        </span>
+        <h1 className="mt-[7px] mb-[10px] text-[clamp(34px,7vw,62px)]">
+          {catalog.businessName}
+        </h1>
+        <p className="max-w-[560px] text-muted text-[16px] leading-[1.6]">
+          {catalog.publicIntro || 'Conoce nuestros productos disponibles.'}
+        </p>
       </section>
-      <section className="grid grid-cols-3 gap-[18px] max-w-[1120px] mx-auto max-[750px]:grid-cols-2 max-[520px]:grid-cols-1" aria-label="Productos publicados">
+      <section
+        className="grid grid-cols-3 gap-[18px] max-w-[1120px] mx-auto max-[750px]:grid-cols-2 max-[520px]:grid-cols-1"
+        aria-label="Productos publicados"
+      >
         {catalog.products.length === 0 ? (
-          <div className="empty-state">
+          <div className="p-[45px] border border-dashed border-[#d9d1d8] rounded-[13px] text-[#817d86] text-center text-[13px] bg-[#fffefa]">
             Aún no hay productos publicados. Vuelve pronto para conocer nuestros
             productos.
           </div>
@@ -62,7 +80,10 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
           catalog.products.map((product) => {
             const imageUrl = safeImageUrl(product.imageUrl)
             return (
-              <article className="overflow-hidden border border-[#ebe8e4] rounded-[16px] bg-[#fffefa] shadow-[0_12px_30px_#30272e0a]" key={product.id}>
+              <article
+                className="overflow-hidden border border-[#ebe8e4] rounded-[16px] bg-[#fffefa] shadow-[0_12px_30px_#30272e0a]"
+                key={product.id}
+              >
                 {imageUrl ? (
                   <img
                     className="w-full h-[210px] object-cover max-[520px]:h-[190px]"
@@ -70,14 +91,20 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
                     alt={`${product.name} — ${product.category}`}
                   />
                 ) : (
-                  <div className={`catalog-image w-full h-[210px] object-cover max-[520px]:h-[190px] ${product.color}`}>
+                  <div
+                    className={`grid place-items-center w-full h-[210px] object-cover max-[520px]:h-[190px] ${catalogColors[product.color] ?? ''}`}
+                  >
                     <Boxes size={52} aria-hidden="true" />
                   </div>
                 )}
                 <div className="p-[18px]">
-                  <span className="text-[#aaa5a8] text-[10px]">{product.category}</span>
+                  <span className="text-[#aaa5a8] text-[10px]">
+                    {product.category}
+                  </span>
                   <h2 className="my-[7px] text-[18px]">{product.name}</h2>
-                  <p className="min-h-[35px] text-muted text-[12px] leading-[1.5]">{product.publicDescription}</p>
+                  <p className="min-h-[35px] text-muted text-[12px] leading-[1.5]">
+                    {product.publicDescription}
+                  </p>
                   <strong className="block mt-[13px] mb-[15px] text-[#6d3c72] text-[20px]">
                     {formatMoney(product.price, catalog.currency)}
                   </strong>

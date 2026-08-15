@@ -120,14 +120,13 @@ export function ProductsPage({
   const totalProfit = totalSaleValue - totalInvestment
 
   return (
-    <section className="page-section">
-      <div className="section-intro">
+    <section className="animate-[page-in_0.25s_ease_both]">
+      <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="eyebrow">CONTROL DE INVENTARIO</span>
-          <h2>Tus productos</h2>
-          <p>Administra precios, existencias y categorías.</p>
+          <h1>Tus productos</h1>
+          <p className='mt-0.5 ml-0.5'>Administra precios, existencias y categorías.</p>
         </div>
-        <div className="section-actions">
+        <div className="flex gap-2 shrink-0">
           <Button
             variant="secondary"
             onClick={onManageCategories}
@@ -136,20 +135,38 @@ export function ProductsPage({
           >
             Categorías
           </Button>
-          <Button variant="secondary" onClick={onAdd} type="button" icon={<Plus size={17} aria-hidden="true" />}>
+          <Button
+            variant="secondary"
+            onClick={onAdd}
+            type="button"
+            icon={<Plus size={17} aria-hidden="true" />}
+          >
             Añadir producto
           </Button>
         </div>
       </div>
       <div className="flex items-center gap-2 mb-[14px] p-3 px-4 border border-[#e3ddd5] rounded-[10px] bg-[#fcfaf8] text-xs">
         <DollarSign size={18} className="text-primary" aria-hidden="true" />
-        <span className="text-muted-foreground">Inversión: {formatMoney(totalInvestment, currency)}</span>
-        <span className="text-muted-foreground">Inventario: {formatMoney(totalSaleValue, currency)}</span>
-        <strong className="ml-auto text-foreground text-[15px]">Ganancia: {formatMoney(totalProfit, currency)}</strong>
+        <span className="text-muted-foreground">
+          Inversión: {formatMoney(totalInvestment, currency)}
+        </span>
+        <span className="text-muted-foreground">
+          Inventario: {formatMoney(totalSaleValue, currency)}
+        </span>
+        <strong className="ml-auto text-foreground text-[15px]">
+          Ganancia: {formatMoney(totalProfit, currency)}
+        </strong>
       </div>
-      <div className="flex items-end gap-[10px] mb-[14px] max-[650px]:flex-col max-[650px]:items-stretch" aria-label="Filtros de productos">
+      <div
+        className="flex items-end gap-[10px] mb-[14px] max-[650px]:flex-col max-[650px]:items-stretch"
+        aria-label="Filtros de productos"
+      >
         <div className="relative w-full max-w-[300px]">
-          <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" aria-hidden="true" />
+          <Search
+            size={16}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            aria-hidden="true"
+          />
           <Input
             className="pl-8"
             aria-label="Buscar productos"
@@ -158,35 +175,31 @@ export function ProductsPage({
             placeholder="Buscar producto"
           />
         </div>
-        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-          Categoría
-          <CustomSelect
-            value={categoryFilter}
-            onChange={setCategoryFilter}
-            ariaLabel="Filtrar por categoría"
-            options={[
-              { value: 'all', label: 'Todas' },
-              ...categories.map((category) => ({
-                value: category,
-                label: category,
-              })),
-            ]}
-          />
-        </label>
-        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-          Existencias
-          <CustomSelect
-            value={stockFilter}
-            onChange={setStockFilter}
-            ariaLabel="Filtrar por existencias"
-            options={[
-              { value: 'all', label: 'Todas' },
-              { value: 'available', label: 'Con existencias' },
-              { value: 'low', label: 'Bajo stock' },
-              { value: 'out', label: 'Agotados' },
-            ]}
-          />
-        </label>
+        <CustomSelect
+          label="Categoría"
+          value={categoryFilter}
+          onChange={setCategoryFilter}
+          ariaLabel="Filtrar por categoría"
+          options={[
+            { value: 'all', label: 'Todas' },
+            ...categories.map((category) => ({
+              value: category,
+              label: category,
+            })),
+          ]}
+        />
+        <CustomSelect
+          label="Existencias"
+          value={stockFilter}
+          onChange={setStockFilter}
+          ariaLabel="Filtrar por existencias"
+          options={[
+            { value: 'all', label: 'Todas' },
+            { value: 'available', label: 'Con existencias' },
+            { value: 'low', label: 'Bajo stock' },
+            { value: 'out', label: 'Agotados' },
+          ]}
+        />
         <span className="ml-auto pb-[10px] text-[#aaa5a8] text-[10px] max-[650px]:ml-0 max-[650px]:pb-0">
           {filtered.length} {filtered.length === 1 ? 'producto' : 'productos'}
         </span>
@@ -195,14 +208,30 @@ export function ProductsPage({
         <table className="w-full border-collapse min-w-[650px] text-xs">
           <thead>
             <tr className="bg-[#6d3c72]">
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] text-left rounded-tl-[12px]">Producto</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] text-left">Categoría</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">SKU</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Costo</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Precio</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Existencias</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Valor</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] rounded-tr-[12px]">Ganancia</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] text-left rounded-tl-[12px]">
+                Producto
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] text-left">
+                Categoría
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                SKU
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                Costo
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                Precio
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                Existencias
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                Valor
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] rounded-tr-[12px]">
+                Ganancia
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -221,7 +250,9 @@ export function ProductsPage({
                   className={cn(
                     'py-[15px] px-[18px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle focus-visible:outline-2 focus-visible:outline-[#6d3c72] focus-visible:outline-offset-[-2px]',
                     row.productIndex % 2 === 1 ? 'bg-[#f9f6fa]' : '',
-                    hoveredProductId === row.product.id ? 'bg-[#f3eef4] cursor-pointer' : '',
+                    hoveredProductId === row.product.id
+                      ? 'bg-[#f3eef4] cursor-pointer'
+                      : '',
                   )}
                   onClick={() => onEdit(row.product)}
                   onKeyDown={(event: KeyboardEvent<HTMLTableRowElement>) => {
@@ -235,28 +266,49 @@ export function ProductsPage({
                 >
                   {row.isFirst && (
                     <>
-                      <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-left text-ink" rowSpan={row.rowSpan}>
-                        <div className={cn('inline-grid place-items-center w-[34px] h-[34px] mr-[10px] rounded-[9px]', productDotColors[row.product.color] ?? '')}>
+                      <td
+                        className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-left text-ink"
+                        rowSpan={row.rowSpan}
+                      >
+                        <div
+                          className={cn(
+                            'inline-grid place-items-center w-[34px] h-[34px] mr-[10px] rounded-[9px]',
+                            productDotColors[row.product.color] ?? '',
+                          )}
+                        >
                           <Boxes size={18} aria-hidden="true" />
                         </div>
                         <strong>{row.product.name}</strong>
                       </td>
-                      <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-left text-ink" rowSpan={row.rowSpan}>
+                      <td
+                        className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-left text-ink"
+                        rowSpan={row.rowSpan}
+                      >
                         {row.product.category}
                       </td>
                     </>
                   )}
                   <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
                     {row.variant?.sku || '—'}
-                    {label && <span className="block text-[11px] font-normal text-muted-foreground mt-[2px]">{label}</span>}
+                    {label && (
+                      <span className="block text-[11px] font-normal text-muted-foreground mt-[2px]">
+                        {label}
+                      </span>
+                    )}
                   </td>
-                  <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-right">{formatMoney(cost, currency)}</td>
+                  <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-right">
+                    {formatMoney(cost, currency)}
+                  </td>
                   <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-ink font-bold text-right">
                     {formatMoney(price, currency)}
                   </td>
                   <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
                     <span
-                      className={stock <= threshold ? 'font-bold text-[#c5804a]' : 'font-bold text-[#5f9e7c]'}
+                      className={
+                        stock <= threshold
+                          ? 'font-bold text-[#c5804a]'
+                          : 'font-bold text-[#5f9e7c]'
+                      }
                     >
                       {stock}
                     </span>

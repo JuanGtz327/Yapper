@@ -1,7 +1,7 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/geist';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -25,7 +25,7 @@
   --card-foreground: oklch(0.2695 0.0131 298.57);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2695 0.0131 298.57);
-  --primary: oklch(0.4380 0.1033 323.71);
+  --primary: oklch(0.438 0.1033 323.71);
   --primary-foreground: oklch(0.99 0.003 85);
   --secondary: oklch(0.9763 0.0029 84.56);
   --secondary-foreground: oklch(0.2695 0.0131 298.57);
@@ -36,8 +36,8 @@
   --destructive: oklch(0.55 0.17 25);
   --border: oklch(0.9322 0.0063 75.4);
   --input: oklch(0.9322 0.0063 75.4);
-  --ring: oklch(0.4380 0.1033 323.71);
-  --chart-1: oklch(0.4380 0.1033 323.71);
+  --ring: oklch(0.438 0.1033 323.71);
+  --chart-1: oklch(0.438 0.1033 323.71);
   --chart-2: oklch(0.5962 0.0143 305.89);
   --chart-3: oklch(0.9322 0.0063 75.4);
   --chart-4: oklch(0.3762 0.0857 323.67);
@@ -45,12 +45,17 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.9967 0.0054 95.1);
   --sidebar-foreground: oklch(0.2695 0.0131 298.57);
-  --sidebar-primary: oklch(0.4380 0.1033 323.71);
+  --sidebar-primary: oklch(0.438 0.1033 323.71);
   --sidebar-primary-foreground: oklch(0.99 0.003 85);
   --sidebar-accent: oklch(0.9763 0.0029 84.56);
   --sidebar-accent-foreground: oklch(0.2695 0.0131 298.57);
   --sidebar-border: oklch(0.9322 0.0063 75.4);
-  --sidebar-ring: oklch(0.4380 0.1033 323.71);
+  --sidebar-ring: oklch(0.438 0.1033 323.71);
+  --ink: #27252c;
+  --line: #ebe8e4;
+  --cream: #f8f7f5;
+  --plum: #6d3c72;
+  --plum-dark: #57305b;
 }
 
 * {
@@ -73,86 +78,46 @@ button {
 }
 
 @theme inline {
-  --font-heading:
-    var(--font-sans);
-  --font-sans:
-    'Geist Variable', sans-serif;
-  --color-sidebar-ring:
-    var(--sidebar-ring);
-  --color-sidebar-border:
-    var(--sidebar-border);
-  --color-sidebar-accent-foreground:
-    var(--sidebar-accent-foreground);
-  --color-sidebar-accent:
-    var(--sidebar-accent);
-  --color-sidebar-primary-foreground:
-    var(--sidebar-primary-foreground);
-  --color-sidebar-primary:
-    var(--sidebar-primary);
-  --color-sidebar-foreground:
-    var(--sidebar-foreground);
-  --color-sidebar:
-    var(--sidebar);
-  --color-chart-5:
-    var(--chart-5);
-  --color-chart-4:
-    var(--chart-4);
-  --color-chart-3:
-    var(--chart-3);
-  --color-chart-2:
-    var(--chart-2);
-  --color-chart-1:
-    var(--chart-1);
-  --color-ring:
-    var(--ring);
-  --color-input:
-    var(--input);
-  --color-border:
-    var(--border);
-  --color-destructive:
-    var(--destructive);
-  --color-accent-foreground:
-    var(--accent-foreground);
-  --color-accent:
-    var(--accent);
-  --color-muted-foreground:
-    var(--muted-foreground);
-  --color-muted:
-    var(--muted);
-  --color-secondary-foreground:
-    var(--secondary-foreground);
-  --color-secondary:
-    var(--secondary);
-  --color-primary-foreground:
-    var(--primary-foreground);
-  --color-primary:
-    var(--primary);
-  --color-popover-foreground:
-    var(--popover-foreground);
-  --color-popover:
-    var(--popover);
-  --color-card-foreground:
-    var(--card-foreground);
-  --color-card:
-    var(--card);
-  --color-foreground:
-    var(--foreground);
-  --color-background:
-    var(--background);
-  --radius-sm:
-    calc(var(--radius) * 0.6);
-  --radius-md:
-    calc(var(--radius) * 0.8);
-  --radius-lg:
-    var(--radius);
-  --radius-xl:
-    calc(var(--radius) * 1.4);
-  --radius-2xl:
-    calc(var(--radius) * 1.8);
-  --radius-3xl:
-    calc(var(--radius) * 2.2);
-  --radius-4xl:
-    calc(var(--radius) * 2.6);
+  --font-heading: var(--font-sans);
+  --font-sans: 'Geist Variable', sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
   --color-nav-hover: #f8f2f8;
   --color-nav-active: #f3eaf4;
   --color-avatar-bg: #f3d7cb;
@@ -206,4 +171,125 @@ button {
   html {
     @apply font-sans;
   }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.stats-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 185px;
+  padding: 0 20px;
+  gap: 22px;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 45px,
+    #f0eeec 46px
+  );
+}
+.stats-bars i {
+  display: block;
+  flex: 1;
+  max-width: 50px;
+  border-radius: 7px 7px 0 0;
+  background: #d9bfd9;
+}
+.stats-bars i:nth-child(6) {
+  background: #6d3c72;
+}
+
+[role='status']::before {
+  content: '';
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  margin-right: 7px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -3px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+h1 {
+  color: var(--ink);
+  font-size: clamp(25px, 3vw, 32px);
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+h2 {
+  color: var(--ink);
+  font-size: 18px;
+  letter-spacing: -0.45px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.Toastify__toast {
+  border-radius: 10px !important;
+  border: 1px solid var(--line) !important;
+  background: var(--sidebar) !important;
+  color: var(--ink) !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  box-shadow: 0 8px 24px #30272e14 !important;
+  padding: 12px 16px !important;
+}
+.Toastify__toast-body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.Toastify__close-button {
+  color: var(--muted) !important;
+  opacity: 0.6 !important;
+  align-self: flex-start !important;
+}
+.Toastify__close-button:hover {
+  opacity: 1 !important;
+}
+.Toastify__progress-bar {
+  height: 3px !important;
+}
+.Toastify__progress-bar--success {
+  background: var(--plum) !important;
+}
+.Toastify__progress-bar--error {
+  background: #aa6259 !important;
+}
+.Toastify__toast--success {
+  border-left: 3px solid var(--plum) !important;
+  --toastify-icon-color-success: var(--plum) !important;
+  --toastify-color-success: var(--plum) !important;
+}
+.Toastify__toast--error {
+  border-left: 3px solid #aa6259 !important;
 }

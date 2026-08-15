@@ -112,21 +112,33 @@ export function OrderTicketModal({
       <div className="order-ticket">
         <dl className="grid grid-cols-2 gap-3.5 m-0">
           <div className="p-3 rounded-[9px] bg-[#faf7f9]">
-            <dt className="text-muted-foreground text-[10px] font-bold">Cliente</dt>
-            <dd className="mt-[5px] text-foreground text-[13px] font-bold">{order.client}</dd>
+            <dt className="text-muted-foreground text-[10px] font-bold">
+              Cliente
+            </dt>
+            <dd className="mt-[5px] text-foreground text-[13px] font-bold">
+              {order.client}
+            </dd>
           </div>
           <div className="p-3 rounded-[9px] bg-[#faf7f9]">
-            <dt className="text-muted-foreground text-[10px] font-bold">Fecha</dt>
-            <dd className="mt-[5px] text-foreground text-[13px] font-bold">{order.date}</dd>
+            <dt className="text-muted-foreground text-[10px] font-bold">
+              Fecha
+            </dt>
+            <dd className="mt-[5px] text-foreground text-[13px] font-bold">
+              {order.date}
+            </dd>
           </div>
           <div className="p-3 rounded-[9px] bg-[#faf7f9]">
-            <dt className="text-muted-foreground text-[10px] font-bold">Entrega</dt>
+            <dt className="text-muted-foreground text-[10px] font-bold">
+              Entrega
+            </dt>
             <dd className="mt-[5px] text-foreground text-[13px] font-bold">
               <StatusBadge value={order.status} />
             </dd>
           </div>
           <div className="p-3 rounded-[9px] bg-[#faf7f9]">
-            <dt className="text-muted-foreground text-[10px] font-bold">Pago</dt>
+            <dt className="text-muted-foreground text-[10px] font-bold">
+              Pago
+            </dt>
             <dd className="mt-[5px] text-foreground text-[13px] font-bold">
               <StatusBadge value={order.payment} />
             </dd>
@@ -144,14 +156,22 @@ export function OrderTicketModal({
           aria-labelledby="ticket-products-title"
         >
           <div className="flex items-center justify-between mb-3.5">
-            <h3 id="ticket-products-title" className="m-0 text-foreground text-sm">Productos</h3>
+            <h3
+              id="ticket-products-title"
+              className="m-0 text-foreground text-sm"
+            >
+              Productos
+            </h3>
             <span className="text-muted-foreground text-[11px]">
               {lineItems.reduce((sum, line) => sum + line.quantity, 0)} piezas
             </span>
           </div>
           {lineItems.length ? (
             <>
-              <div className="grid grid-cols-[minmax(0,1fr)_44px_76px_76px] items-center gap-[10px] max-[650px]:grid-cols-[minmax(0,1fr)_34px_64px_64px] max-[650px]:gap-[6px] pb-2 border-b border-border text-[#aaa5a8] text-[9px] font-bold tracking-[0.6px] uppercase max-[650px]:text-[8px]" aria-hidden="true">
+              <div
+                className="grid grid-cols-[minmax(0,1fr)_44px_76px_76px] items-center gap-[10px] max-[650px]:grid-cols-[minmax(0,1fr)_34px_64px_64px] max-[650px]:gap-[6px] pb-2 border-b border-border text-[#aaa5a8] text-[9px] font-bold tracking-[0.6px] uppercase max-[650px]:text-[8px]"
+                aria-hidden="true"
+              >
                 <span className="text-right">Producto</span>
                 <span className="text-right">Cant.</span>
                 <span className="text-right">Precio</span>
@@ -159,9 +179,14 @@ export function OrderTicketModal({
               </div>
               <ul className="grid gap-0 p-0 m-0 list-none">
                 {lineItems.map((line, index) => (
-                  <li className="grid grid-cols-[minmax(0,1fr)_44px_76px_76px] items-center gap-[10px] max-[650px]:grid-cols-[minmax(0,1fr)_34px_64px_64px] max-[650px]:gap-[6px] py-3 border-b border-dashed border-[#e8e0e7] text-[#5e5960] text-[11px] last:border-b-0" key={`${line.name}-${index}`}>
+                  <li
+                    className="grid grid-cols-[minmax(0,1fr)_44px_76px_76px] items-center gap-[10px] max-[650px]:grid-cols-[minmax(0,1fr)_34px_64px_64px] max-[650px]:gap-[6px] py-3 border-b border-dashed border-[#e8e0e7] text-[#5e5960] text-[11px] last:border-b-0"
+                    key={`${line.name}-${index}`}
+                  >
                     <div className="ticket-product">
-                      <strong className="block text-foreground text-xs max-[650px]:text-[11px]">{line.name}</strong>
+                      <strong className="block text-foreground text-xs max-[650px]:text-[11px]">
+                        {line.name}
+                      </strong>
                       {line.variantLabel && (
                         <span className="block mt-[3px] text-muted-foreground text-[10px] text-muted-foreground text-xs">
                           {line.variantLabel}
@@ -171,9 +196,15 @@ export function OrderTicketModal({
                         {formatMoney(line.unitPrice, currency)} por unidad
                       </span>
                     </div>
-                    <span className="text-foreground font-bold text-right">{line.quantity}</span>
-                    <span className="text-right">{formatMoney(line.unitPrice, currency)}</span>
-                    <strong className="text-right text-primary">{formatMoney(line.total, currency)}</strong>
+                    <span className="text-foreground font-bold text-right">
+                      {line.quantity}
+                    </span>
+                    <span className="text-right">
+                      {formatMoney(line.unitPrice, currency)}
+                    </span>
+                    <strong className="text-right text-primary">
+                      {formatMoney(line.total, currency)}
+                    </strong>
                   </li>
                 ))}
               </ul>
@@ -186,7 +217,9 @@ export function OrderTicketModal({
         </section>
         <div className="flex items-center justify-between mt-[18px] pt-4 border-t-2 border-primary text-foreground text-sm font-bold">
           <span>Total del pedido</span>
-          <strong className="text-primary text-[24px] max-[650px]:text-[21px]">{formatMoney(total, currency)}</strong>
+          <strong className="text-primary text-[24px] max-[650px]:text-[21px]">
+            {formatMoney(total, currency)}
+          </strong>
         </div>
 
         {orderPayments.length > 0 && (

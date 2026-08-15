@@ -43,15 +43,27 @@ export function AuthScreen() {
           </div>
         </div>
         <div>
-          <span className="eyebrow">TU NEGOCIO, MÁS SENCILLO</span>
-          <h1 className="mt-1 mb-[10px] text-[34px]">{isSignUp ? 'Crea tu cuenta' : 'Qué bueno verte'}</h1>
-          <p className="max-w-[300px] text-muted text-[13px] leading-[1.6]">Gestiona pedidos, productos y clientes desde un solo lugar.</p>
+          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
+            TU NEGOCIO, MÁS SENCILLO
+          </span>
+          <h1 className="mt-1 mb-[10px] text-[34px]">
+            {isSignUp ? 'Crea tu cuenta' : 'Qué bueno verte'}
+          </h1>
+          <p className="max-w-[300px] text-muted text-[13px] leading-[1.6]">
+            Gestiona pedidos, productos y clientes desde un solo lugar.
+          </p>
         </div>
         <form className="grid gap-4 mt-9" onSubmit={submit}>
           <label>
-            <span className="block mb-[7px] text-[#716b72] text-[11px] font-bold">Correo electrónico</span>
+            <span className="block mb-[7px] text-[#716b72] text-[11px] font-bold">
+              Correo electrónico
+            </span>
             <div className="flex items-center gap-2">
-              <Mail size={18} className="text-muted-foreground" aria-hidden="true" />
+              <Mail
+                size={18}
+                className="text-muted-foreground"
+                aria-hidden="true"
+              />
               <Input
                 type="email"
                 value={email}
@@ -63,9 +75,15 @@ export function AuthScreen() {
             </div>
           </label>
           <label>
-            <span className="block mb-[7px] text-[#716b72] text-[11px] font-bold">Contraseña</span>
+            <span className="block mb-[7px] text-[#716b72] text-[11px] font-bold">
+              Contraseña
+            </span>
             <div className="flex items-center gap-2">
-              <LockKeyhole size={18} className="text-muted-foreground" aria-hidden="true" />
+              <LockKeyhole
+                size={18}
+                className="text-muted-foreground"
+                aria-hidden="true"
+              />
               <Input
                 type="password"
                 value={password}
@@ -78,7 +96,11 @@ export function AuthScreen() {
             </div>
           </label>
           {message && (
-            <p className="px-3 py-[10px] rounded-[7px] text-[#aa6259] bg-[#fff3f0] text-[11px]" role="alert" aria-live="assertive">
+            <p
+              className="px-3 py-[10px] rounded-[7px] text-[#aa6259] bg-[#fff3f0] text-[11px]"
+              role="alert"
+              aria-live="assertive"
+            >
               {message}
             </p>
           )}
@@ -103,14 +125,18 @@ export function AuthScreen() {
           {isSignUp ? 'Ya tengo una cuenta' : 'Crear una cuenta nueva'}
         </button>
       </section>
-      <div className="auth-aside">
-        <span>Y</span>
-        <h2>
+      <div className="relative flex flex-col justify-end overflow-hidden pt-[70px] px-[9%] pb-[70px] text-white bg-[#6d3c72] max-[650px]:hidden before:content-[''] before:absolute before:w-[520px] before:h-[520px] before:top-[10%] before:right-[-10%] before:border before:border-white/20 before:rounded-full before:shadow-[0_0_0_35px_rgba(255,255,255,0.04),0_0_0_70px_rgba(255,255,255,0.02)]">
+        <span className="absolute top-[14%] right-[24%] text-[#dec6dc] text-[42px]">
+          Y
+        </span>
+        <h2 className="relative text-white text-[clamp(28px,4vw,46px)] leading-[1.1] tracking-[-1.5px]">
           Más tiempo para
           <br />
           hacer crecer tu negocio.
         </h2>
-        <p>Organiza tus ventas con claridad y sin complicaciones.</p>
+        <p className="relative mt-[18px] text-[#dec6dc] text-[14px]">
+          Organiza tus ventas con claridad y sin complicaciones.
+        </p>
       </div>
     </main>
   )

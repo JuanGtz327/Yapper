@@ -54,20 +54,26 @@ export function OrdersPage({
   })
 
   return (
-    <section className="page-section">
-      <div className="section-intro">
+    <section className="animate-[page-in_0.25s_ease_both]">
+      <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="eyebrow">VENTAS</span>
-          <h2>Pedidos</h2>
+          <h1>Pedidos</h1>
           <p>Consulta y da seguimiento a tus pedidos.</p>
         </div>
-        <Button variant="secondary" onClick={onAdd} type="button" icon={<Plus size={17} />}>
+        <Button
+          variant="secondary"
+          onClick={onAdd}
+          type="button"
+          icon={<Plus size={17} />}
+        >
           Crear pedido
         </Button>
       </div>
       <div className="grid grid-cols-3 gap-[13px] mb-[23px] max-[650px]:grid-cols-1">
         <div className="p-[17px_19px] border border-border rounded-[11px] bg-sidebar">
-          <span className="block text-muted-foreground text-[11px]">Este mes</span>
+          <span className="block text-muted-foreground text-[11px]">
+            Este mes
+          </span>
           <strong className="block mt-2 text-foreground text-[21px]">
             {formatMoney(
               thisMonth.reduce((sum, order) => sum + order.total, 0),
@@ -76,13 +82,17 @@ export function OrdersPage({
           </strong>
         </div>
         <div className="p-[17px_19px] border border-border rounded-[11px] bg-sidebar">
-          <span className="block text-muted-foreground text-[11px]">Pendientes</span>
+          <span className="block text-muted-foreground text-[11px]">
+            Pendientes
+          </span>
           <strong className="block mt-2 text-foreground text-[21px]">
             {active.filter((order) => order.status === 'Pendiente').length}
           </strong>
         </div>
         <div className="p-[17px_19px] border border-border rounded-[11px] bg-sidebar">
-          <span className="block text-muted-foreground text-[11px]">Por cobrar</span>
+          <span className="block text-muted-foreground text-[11px]">
+            Por cobrar
+          </span>
           <strong className="block mt-2 text-foreground text-[21px]">
             {formatMoney(
               active
@@ -93,9 +103,16 @@ export function OrdersPage({
           </strong>
         </div>
       </div>
-      <div className="flex items-end gap-[10px] mb-[14px] max-[650px]:flex-col max-[650px]:items-stretch" aria-label="Filtros de pedidos">
+      <div
+        className="flex items-end gap-[10px] mb-[14px] max-[650px]:flex-col max-[650px]:items-stretch"
+        aria-label="Filtros de pedidos"
+      >
         <div className="relative w-full max-w-[300px]">
-          <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" aria-hidden="true" />
+          <Search
+            size={16}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            aria-hidden="true"
+          />
           <Input
             className="pl-8"
             aria-label="Buscar por número de pedido"
@@ -104,33 +121,29 @@ export function OrdersPage({
             placeholder="Buscar número de pedido"
           />
         </div>
-        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold max-[650px]:w-full max-[650px]:min-w-0">
-          Entrega
-          <CustomSelect
-            value={deliveryFilter}
-            onChange={setDeliveryFilter}
-            ariaLabel="Filtrar por entrega"
-            options={[
-              { value: 'all', label: 'Todas' },
-              { value: 'pending', label: 'Pendientes' },
-              { value: 'delivered', label: 'Entregados' },
-              { value: 'cancelled', label: 'Cancelados' },
-            ]}
-          />
-        </label>
-        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold max-[650px]:w-full max-[650px]:min-w-0">
-          Pago
-          <CustomSelect
-            value={paymentFilter}
-            onChange={setPaymentFilter}
-            ariaLabel="Filtrar por pago"
-            options={[
-              { value: 'all', label: 'Todos' },
-              { value: 'paid', label: 'Pagados' },
-              { value: 'pending', label: 'Pendientes' },
-            ]}
-          />
-        </label>
+        <CustomSelect
+          label="Entrega"
+          value={deliveryFilter}
+          onChange={setDeliveryFilter}
+          ariaLabel="Filtrar por entrega"
+          options={[
+            { value: 'all', label: 'Todas' },
+            { value: 'pending', label: 'Pendientes' },
+            { value: 'delivered', label: 'Entregados' },
+            { value: 'cancelled', label: 'Cancelados' },
+          ]}
+        />
+        <CustomSelect
+          label="Pago"
+          value={paymentFilter}
+          onChange={setPaymentFilter}
+          ariaLabel="Filtrar por pago"
+          options={[
+            { value: 'all', label: 'Todos' },
+            { value: 'paid', label: 'Pagados' },
+            { value: 'pending', label: 'Pendientes' },
+          ]}
+        />
         <span className="ml-auto pb-[10px] text-[#aaa5a8] text-[10px] max-[650px]:ml-0 max-[650px]:pb-0">
           {filteredOrders.length}{' '}
           {filteredOrders.length === 1 ? 'pedido' : 'pedidos'}
@@ -143,12 +156,24 @@ export function OrdersPage({
           </caption>
           <thead>
             <tr className="bg-[#6d3c72]">
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] rounded-tl-[12px]">Pedido</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Cliente</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Fecha</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Total</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">Entrega</th>
-              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] rounded-tr-[12px]">Pago</th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] rounded-tl-[12px]">
+                Pedido
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                Cliente
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                Fecha
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                Total
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                Entrega
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] rounded-tr-[12px]">
+                Pago
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -174,12 +199,18 @@ export function OrdersPage({
                   }
                 }}
               >
-                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-ink font-bold text-right">{order.id}</td>
+                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-ink font-bold text-right">
+                  {order.id}
+                </td>
                 <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
                   <strong>{order.client}</strong>
-                  <small className="block mt-[3px] text-[#aaa5a8] text-[10px]">{order.items} productos</small>
+                  <small className="block mt-[3px] text-[#aaa5a8] text-[10px]">
+                    {order.items} productos
+                  </small>
                 </td>
-                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">{order.date}</td>
+                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
+                  {order.date}
+                </td>
                 <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-ink font-bold text-right">
                   {formatMoney(order.total, currency)}
                 </td>
@@ -187,7 +218,11 @@ export function OrdersPage({
                   {order.status === 'Cancelado' ? (
                     <Badge variant="danger">Cancelado</Badge>
                   ) : (
-                    <Badge variant={order.status === 'Entregado' ? 'success' : 'warning'}>
+                    <Badge
+                      variant={
+                        order.status === 'Entregado' ? 'success' : 'warning'
+                      }
+                    >
                       {order.status}
                     </Badge>
                   )}
@@ -214,10 +249,11 @@ export function OrdersPage({
           </tbody>
         </table>
       </div>
-      <div className="hidden max-[650px]:grid max-[650px]:gap-3" aria-label="Pedidos">
-        <p className="sr-only">
-          Selecciona un pedido para ver sus detalles.
-        </p>
+      <div
+        className="hidden max-[650px]:grid max-[650px]:gap-3"
+        aria-label="Pedidos"
+      >
+        <p className="sr-only">Selecciona un pedido para ver sus detalles.</p>
         {filteredOrders.map((order) => (
           <article
             className="grid gap-[15px] p-[17px] border border-border rounded-[13px] bg-sidebar shadow-[0_5px_18px_rgba(48,39,46,0.03)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[#c9a3ca] focus-visible:outline-offset-2"
@@ -252,19 +288,33 @@ export function OrdersPage({
               </Badge>
             </div>
             <div className="flex flex-col gap-1 items-start">
-              <strong className="text-foreground text-[14px]">{order.client}</strong>
-              <span className="text-muted-foreground text-[11px]">{order.date}</span>
+              <strong className="text-foreground text-[14px]">
+                {order.client}
+              </strong>
+              <span className="text-muted-foreground text-[11px]">
+                {order.date}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-3 pt-3 border-t border-border">
-              <span className="text-muted-foreground text-[11px]">{order.items} productos</span>
-              <strong className="text-foreground">{formatMoney(order.total, currency)}</strong>
+              <span className="text-muted-foreground text-[11px]">
+                {order.items} productos
+              </span>
+              <strong className="text-foreground">
+                {formatMoney(order.total, currency)}
+              </strong>
             </div>
             <div className="flex justify-between gap-3 pt-3 border-t border-border text-muted-foreground text-[11px]">
               <span>
-                Entrega <strong className="ml-[3px] text-foreground">{order.status}</strong>
+                Entrega{' '}
+                <strong className="ml-[3px] text-foreground">
+                  {order.status}
+                </strong>
               </span>
               <span>
-                Pago <strong className="ml-[3px] text-foreground">{order.payment}</strong>
+                Pago{' '}
+                <strong className="ml-[3px] text-foreground">
+                  {order.payment}
+                </strong>
               </span>
             </div>
           </article>

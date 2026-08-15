@@ -30,7 +30,7 @@ export function AppSidebar({
         </div>
       </div>
       <nav className="flex-1" aria-label="Navegación principal">
-        <p className="color-muted-text text-[10px] font-bold tracking-[1.1px] mx-[14px] mb-[13px]">
+        <p className="color-muted-text text-[14px] font-bold tracking-[1.1px] mx-[14px] mb-[16px]">
           MENÚ PRINCIPAL
         </p>
         {navItems.map(({ label, icon: Icon }) => (

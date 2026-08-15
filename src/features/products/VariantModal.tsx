@@ -139,8 +139,8 @@ export function VariantModal({
       title={variant ? 'Editar variante' : 'Añadir variante'}
       onClose={onClose}
     >
-      <form className="form-grid" onSubmit={submit}>
-        <label>
+      <form className="grid gap-[15px]" onSubmit={submit}>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           SKU
           <Input
             value={sku}
@@ -149,7 +149,7 @@ export function VariantModal({
             required
           />
         </label>
-        <label>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Nombre de variante
           <Input
             value={name}
@@ -158,7 +158,7 @@ export function VariantModal({
           />
         </label>
         <div className="grid grid-cols-2 gap-[15px]">
-          <label>
+          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
             Precio de venta
             <Input
               type="number"
@@ -170,7 +170,7 @@ export function VariantModal({
               required
             />
           </label>
-          <label>
+          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
             Costo de inventario
             <Input
               type="number"
@@ -182,7 +182,7 @@ export function VariantModal({
             />
           </label>
         </div>
-        <label>
+        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
           Existencias
           <Input
             type="number"
@@ -196,7 +196,9 @@ export function VariantModal({
         </label>
         {optionTypes.length > 0 && (
           <fieldset className="border border-[#e8e4e6] rounded-[10px] p-[14px] bg-[#fdfcfc]">
-            <legend className="text-[13px] font-bold text-foreground">Opciones</legend>
+            <legend className="text-[13px] font-bold text-foreground">
+              Opciones
+            </legend>
             {selections.map((sel, idx) => {
               const type = optionTypes.find((t) => t.id === sel.typeId)
               const valuesForType = type?.values ?? []
@@ -213,6 +215,7 @@ export function VariantModal({
                     }))}
                     placeholder="Tipo..."
                     ariaLabel="Tipo de opción"
+                    searchable
                   />
                   <CustomSelect
                     value={sel.valueId}
@@ -224,6 +227,7 @@ export function VariantModal({
                     placeholder="Valor..."
                     disabled={!sel.typeId}
                     ariaLabel="Valor de opción"
+                    searchable
                   />
                   <Button
                     variant="danger"
@@ -249,7 +253,11 @@ export function VariantModal({
           </fieldset>
         )}
         <div className="flex justify-end gap-[10px] mt-[9px]">
-          <Button variant="primary" type="submit" icon={<Check size={18} aria-hidden="true" />}>
+          <Button
+            variant="primary"
+            type="submit"
+            icon={<Check size={18} aria-hidden="true" />}
+          >
             {variant ? 'Guardar variante' : 'Añadir variante'}
           </Button>
         </div>

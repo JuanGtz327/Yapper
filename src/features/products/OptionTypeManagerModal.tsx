@@ -120,7 +120,10 @@ export function OptionTypeManagerModal({
 
   return (
     <ModalFrame title="Opciones de producto" onClose={onClose}>
-      <p className="field-help" style={{ marginTop: 0 }}>
+      <p
+        className="text-[#aaa5a8] text-[10px] font-normal"
+        style={{ marginTop: 0 }}
+      >
         Crea tipos como Color, Talla o Capacidad. Luego asigna valores a cada
         variante de producto.
       </p>
@@ -156,7 +159,10 @@ export function OptionTypeManagerModal({
         {optionTypes.map((type) => {
           const isExpanded = expandedTypeId === type.id
           return (
-            <li key={type.id} className="border border-[#e8e5e3] rounded-[8px] mb-2 bg-white">
+            <li
+              key={type.id}
+              className="border border-[#e8e5e3] rounded-[8px] mb-2 bg-white"
+            >
               <div className="flex items-center gap-[6px] py-[10px] px-3">
                 <button
                   className="flex items-center gap-[6px] flex-1 min-w-0 border-0 bg-none p-0 cursor-pointer text-[13px] text-foreground hover:text-primary"
@@ -188,9 +194,12 @@ export function OptionTypeManagerModal({
 
               {isExpanded && (
                 <div className="border-t border-[#e8e5e3] py-2 px-3 pb-[10px]">
-                    <ul className="list-none m-0 p-0 flex flex-wrap gap-[6px]">
+                  <ul className="list-none m-0 p-0 flex flex-wrap gap-[6px]">
                     {type.values.map((val) => (
-                      <li key={val.id} className="flex items-center gap-1 py-1 px-2 rounded-[6px] bg-[#f4f2f0] text-xs">
+                      <li
+                        key={val.id}
+                        className="flex items-center gap-1 py-1 px-2 rounded-[6px] bg-[#f4f2f0] text-xs"
+                      >
                         <span>{val.name}</span>
                         <Button
                           variant="danger"
@@ -203,7 +212,9 @@ export function OptionTypeManagerModal({
                       </li>
                     ))}
                     {type.values.length === 0 && (
-                      <li className="text-muted-foreground text-xs py-1">Sin valores aún</li>
+                      <li className="text-muted-foreground text-xs py-1">
+                        Sin valores aún
+                      </li>
                     )}
                   </ul>
                   <form

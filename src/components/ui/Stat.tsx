@@ -17,8 +17,14 @@ export function Stat({
         <span>{label}</span>
         <ArrowUpRight size={17} className="text-muted-foreground" />
       </div>
-      <strong className="block text-foreground text-[27px] tracking-tight font-bold">{value}</strong>
-      <small className={`text-xs ${positive ? 'text-green-600' : 'text-muted-foreground'}`}>{detail}</small>
+      <strong className="block text-foreground text-[27px] tracking-tight font-bold">
+        {value}
+      </strong>
+      <small
+        className={`text-xs ${positive ? 'text-green-600' : 'text-muted-foreground'}`}
+      >
+        {detail}
+      </small>
     </article>
   )
 }

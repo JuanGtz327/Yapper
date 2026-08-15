@@ -135,18 +135,17 @@ export function OrderCreatePage({
   }
 
   return (
-    <section className="page-section w-full">
-      <div className="section-intro mb-[26px] max-[520px]:mb-5">
+    <section className="animate-[page-in_0.25s_ease_both] w-full">
+      <div className="flex items-end justify-between mb-[27px] mb-[26px] max-[520px]:mb-5 max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="eyebrow">VENTAS</span>
-          <h2>{initial ? 'Editar pedido' : 'Nuevo pedido'}</h2>
-          <p>
+          <h1>{initial ? 'Editar pedido' : 'Nuevo pedido'}</h1>
+          <p className='mt-0.5 ml-0.5'>
             {initial
               ? 'Actualiza los productos, cantidades o forma de pago.'
               : 'Completa los datos para registrar una nueva venta.'}
           </p>
         </div>
-        <div className="section-actions">
+        <div className="flex gap-2 shrink-0">
           {onBackToDetail && (
             <Button
               variant="secondary"
@@ -157,7 +156,12 @@ export function OrderCreatePage({
               Volver al pedido
             </Button>
           )}
-          <Button variant="secondary" onClick={onClose} type="button" icon={<ArrowLeft size={16} aria-hidden="true" />}>
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            type="button"
+            icon={<ArrowLeft size={16} aria-hidden="true" />}
+          >
             Volver a pedidos
           </Button>
         </div>
@@ -166,22 +170,21 @@ export function OrderCreatePage({
         <Empty text="Necesitas al menos un cliente y un producto para crear un pedido." />
       ) : (
         <form
-          className="form-grid gap-4 w-full p-[clamp(18px,3vw,30px)] border border-border rounded-[14px] bg-sidebar shadow-[0_10px_28px_rgba(70,46,65,0.06)] max-[520px]:px-[18px] max-[520px]:py-[18px]"
+          className="grid gap-[15px] gap-4 w-full p-[clamp(18px,3vw,30px)] border border-border rounded-[14px] bg-sidebar shadow-[0_10px_28px_rgba(70,46,65,0.06)] max-[520px]:px-[18px] max-[520px]:py-[18px]"
           onSubmit={submit}
         >
-          <label>
-            Cliente
-            <CustomSelect
-              value={clientId}
-              onChange={setClientId}
-              options={clients.map((client) => ({
-                value: client.id,
-                label: client.name,
-              }))}
-              placeholder="Seleccionar cliente..."
-              ariaLabel="Cliente"
-            />
-          </label>
+          <CustomSelect
+            label="Cliente"
+            value={clientId}
+            onChange={setClientId}
+            options={clients.map((client) => ({
+              value: client.id,
+              label: client.name,
+            }))}
+            placeholder="Seleccionar cliente..."
+            ariaLabel="Cliente"
+            searchable
+          />
           <div className="grid gap-[9px]">
             <div className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] text-[#716b72] text-[11px] font-bold max-[520px]:grid-cols-[minmax(0,1fr)_56px_76px_30px] max-[520px]:gap-[5px] max-[520px]:text-[10px]">
               <span>Productos</span>
@@ -192,7 +195,10 @@ export function OrderCreatePage({
             {lines.map((line, index) => {
               const selected = findVariant(line.variantId)
               return (
-                <div className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] max-[520px]:grid-cols-[minmax(0,1fr)_56px_76px_30px] max-[520px]:gap-[5px]" key={`${line.variantId}-${index}`}>
+                <div
+                  className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] max-[520px]:grid-cols-[minmax(0,1fr)_56px_76px_30px] max-[520px]:gap-[5px]"
+                  key={`${line.variantId}-${index}`}
+                >
                   <CustomSelect
                     value={line.variantId}
                     onChange={(value) =>
@@ -214,6 +220,7 @@ export function OrderCreatePage({
                     }))}
                     placeholder="Producto..."
                     ariaLabel="Producto"
+                    searchable
                   />
                   <Input
                     aria-label={`Cantidad ${index + 1}`}
@@ -275,18 +282,16 @@ export function OrderCreatePage({
               <Plus size={15} /> Añadir otro producto
             </button>
           </div>
-          <label>
-            Estado del pago
-            <CustomSelect
-              value={payment}
-              onChange={(value) => setPayment(value as 'pending' | 'paid')}
-              options={[
-                { value: 'paid', label: 'Pagado' },
-                { value: 'pending', label: 'Pendiente de pago' },
-              ]}
-              ariaLabel="Estado del pago"
-            />
-          </label>
+          <CustomSelect
+            label="Estado del pago"
+            value={payment}
+            onChange={(value) => setPayment(value as 'pending' | 'paid')}
+            options={[
+              { value: 'paid', label: 'Pagado' },
+              { value: 'pending', label: 'Pendiente de pago' },
+            ]}
+            ariaLabel="Estado del pago"
+          />
           <div className="flex items-center justify-between pt-[15px] border-t border-border text-[#716b72] text-xs">
             <span>Total del pedido</span>
             <strong className="text-primary text-[22px]">{money(total)}</strong>

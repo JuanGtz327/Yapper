@@ -22,17 +22,16 @@ export function StatsPage({
   const count = periodSales.reduce((sum, item) => sum + item.orders, 0)
   const max = Math.max(...periodSales.map((item) => item.total), 1)
   return (
-    <section className="page-section">
-      <div className="section-intro">
+    <section className="animate-[page-in_0.25s_ease_both]">
+      <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="eyebrow">ANÁLISIS DEL NEGOCIO</span>
-          <h2>Estadísticas</h2>
-          <p>Una vista clara para tomar mejores decisiones.</p>
+          <h1>Estadísticas</h1>
+          <p className='mt-0.5 ml-0.5'>Una vista clara para tomar mejores decisiones.</p>
         </div>
         <label className="inline-flex items-center">
           <span className="sr-only">Periodo de estadísticas</span>
           <CustomSelect
-            className="px-2 py-1.5 border border-[#e5dfdf] rounded-[7px] outline-none text-[#716b72] bg-[#fffefa] text-[11px] focus:border-[#9d72a0]"
+            className="px-2 py-1.5 border border-[#e5dfdf] rounded-[7px] outline-none text-[#716b72] text-[11px] focus:border-[#9d72a0]"
             value={period}
             onChange={(val) => setPeriod(val as '7d' | '6m')}
             options={[
@@ -44,12 +43,18 @@ export function StatsPage({
         </label>
       </div>
       {isLoading && (
-        <div className="data-notice" role="status">
+        <div
+          className="-mt-[17px] mb-[18px] px-[13px] py-[10px] border border-[#d9eadf] rounded-[8px] text-[#579078] bg-[#eff9f1] text-[12px]"
+          role="status"
+        >
           Cargando estadísticas...
         </div>
       )}
       {error && (
-        <div className="data-notice error" role="alert">
+        <div
+          className="-mt-[17px] mb-[18px] px-[13px] py-[10px] border border-[#efd8d5] rounded-[8px] text-[#aa6259] bg-[#fff3f0] text-[12px]"
+          role="alert"
+        >
           No pudimos cargar las estadísticas. Inténtalo de nuevo.
         </div>
       )}
@@ -72,7 +77,7 @@ export function StatsPage({
           detail="Actividad registrada"
         />
       </div>
-      <div className="panel min-h-[300px]">
+      <div className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] min-h-[300px]">
         <h2>Resumen de ventas</h2>
         <div className="relative h-[220px] mt-[25px] border-b border-[#ebe8e4]">
           <div className="stats-bars">

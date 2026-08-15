@@ -23,20 +23,28 @@ export function ClientsPage({
     client.name.toLowerCase().includes(search.toLowerCase()),
   )
   return (
-    <section className="page-section">
-      <div className="section-intro">
+    <section className="animate-[page-in_0.25s_ease_both]">
+      <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="eyebrow">RELACIONES</span>
-          <h2>Tus clientes</h2>
-          <p>Ten a mano sus datos e historial de pedidos.</p>
+          <h1>Tus clientes</h1>
+          <p className='mt-0.5 ml-0.5'>Ten a mano sus datos e historial de pedidos.</p>
         </div>
-        <Button variant="secondary" onClick={onAdd} type="button" icon={<Plus size={17} />}>
+        <Button
+          variant="secondary"
+          onClick={onAdd}
+          type="button"
+          icon={<Plus size={17} />}
+        >
           Nuevo cliente
         </Button>
       </div>
       <div className="flex items-center justify-between mb-3 text-[#aaa5a8] text-[11px]">
         <div className="relative w-full max-w-[300px]">
-          <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" aria-hidden="true" />
+          <Search
+            size={16}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            aria-hidden="true"
+          />
           <Input
             className="pl-8"
             aria-label="Buscar cliente"
@@ -49,9 +57,14 @@ export function ClientsPage({
       </div>
       <div className="grid grid-cols-2 gap-[14px]">
         {visible.map((client) => (
-          <article className="p-[19px] border border-[#ebe8e4] rounded-[13px] bg-[#fffefa]" key={client.id}>
+          <article
+            className="p-[19px] border border-[#ebe8e4] rounded-[13px] bg-[#fffefa]"
+            key={client.id}
+          >
             <div className="flex items-center justify-between">
-              <div className="inline-grid place-items-center w-[34px] h-[34px] rounded-full bg-[#f3d7cb] text-[#734b4c] text-[11px] font-bold">{client.initials}</div>
+              <div className="inline-grid place-items-center w-[34px] h-[34px] rounded-full bg-[#f3d7cb] text-[#734b4c] text-[11px] font-bold">
+                {client.initials}
+              </div>
               <div className="flex gap-2 items-center justify-center">
                 <Button
                   variant="primary"
@@ -69,8 +82,12 @@ export function ClientsPage({
                 />
               </div>
             </div>
-            <h3 className="mt-[14px] mb-[6px] text-ink text-[14px]">{client.name}</h3>
-            <p className="text-[#928c92] text-[11px] mt-[3px]">{client.phone}</p>
+            <h3 className="mt-[14px] mb-[6px] text-ink text-[14px]">
+              {client.name}
+            </h3>
+            <p className="text-[#928c92] text-[11px] mt-[3px]">
+              {client.phone}
+            </p>
             <p className="text-[#928c92] text-[11px] mt-[3px]">{client.zone}</p>
             <div className="flex items-center justify-between mt-[17px] pt-[13px] border-t border-[#ebe8e4] text-[#6d3c72] text-[11px] font-bold">
               <span>{client.orders} pedidos</span>

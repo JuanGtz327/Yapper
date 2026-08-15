@@ -77,7 +77,9 @@ export function PaymentForm({
   return (
     <form className="grid gap-3.5" onSubmit={handleSubmit} noValidate>
       <label className="grid gap-[6px]">
-        <span className="text-muted-foreground text-[11px] font-bold">Monto</span>
+        <span className="text-muted-foreground text-[11px] font-bold">
+          Monto
+        </span>
         <div>
           <Input
             type="number"
@@ -94,7 +96,11 @@ export function PaymentForm({
             required
           />
         </div>
-        {error && <span className="text-[#b94b4b] text-[11px] font-semibold">{error}</span>}
+        {error && (
+          <span className="text-[#b94b4b] text-[11px] font-semibold">
+            {error}
+          </span>
+        )}
       </label>
 
       <div className="flex gap-2">
@@ -127,7 +133,9 @@ export function PaymentForm({
       </div>
 
       <label className="grid gap-[6px]">
-        <span className="text-muted-foreground text-[11px] font-bold">Método de pago</span>
+        <span className="text-muted-foreground text-[11px] font-bold">
+          Método de pago
+        </span>
         <div
           className="flex gap-[6px]"
           role="radiogroup"
@@ -150,7 +158,9 @@ export function PaymentForm({
       </label>
 
       <label className="grid gap-[6px]">
-        <span className="text-muted-foreground text-[11px] font-bold">Referencia (opcional)</span>
+        <span className="text-muted-foreground text-[11px] font-bold">
+          Referencia (opcional)
+        </span>
         <Input
           type="text"
           value={reference}
@@ -161,7 +171,9 @@ export function PaymentForm({
       </label>
 
       <label className="grid gap-[6px]">
-        <span className="text-muted-foreground text-[11px] font-bold">Notas (opcional)</span>
+        <span className="text-muted-foreground text-[11px] font-bold">
+          Notas (opcional)
+        </span>
         <Input
           type="text"
           value={notes}

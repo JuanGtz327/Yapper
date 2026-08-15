@@ -32,7 +32,9 @@ export function PaymentModal({
     <ModalFrame title={`Abono — ${order.id}`} onClose={onClose}>
       <div className="grid gap-[6px] p-3.5 rounded-[10px] bg-[#faf7f9] mb-4">
         <div className="flex items-center justify-between text-[13px] text-foreground">
-          <span className="text-muted-foreground text-xs">Total del pedido</span>
+          <span className="text-muted-foreground text-xs">
+            Total del pedido
+          </span>
           <strong className="text-sm">{formatMoney(total, currency)}</strong>
         </div>
         <div className="flex items-center justify-between text-[13px] text-foreground">
@@ -43,7 +45,9 @@ export function PaymentModal({
         </div>
         <div className="flex items-center justify-between text-[13px] text-foreground pt-2 mt-1 border-t border-border">
           <span className="text-muted-foreground text-xs">Saldo restante</span>
-          <strong className="text-primary text-[15px]">{formatMoney(remaining, currency)}</strong>
+          <strong className="text-primary text-[15px]">
+            {formatMoney(remaining, currency)}
+          </strong>
         </div>
       </div>
       <PaymentForm

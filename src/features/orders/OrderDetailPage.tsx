@@ -105,17 +105,21 @@ export function OrderDetailPage({
   const canEdit = order.status !== 'Cancelado' && !isPaid
 
   return (
-    <section className="page-section max-w-[1100px]">
-      <div className="section-intro">
+    <section className="animate-[page-in_0.25s_ease_both] max-w-[1100px]">
+      <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="eyebrow">VENTAS</span>
-          <h2>Detalles del pedido {order.id}</h2>
-          <p>
+          <h1>Detalles del pedido {order.id}</h1>
+          <p className='mt-0.5 ml-0.5'>
             {order.client} — {order.date}
           </p>
         </div>
-        <div className="section-actions">
-          <Button variant="secondary" onClick={onBack} type="button" icon={<ArrowLeft size={16} aria-hidden="true" />}>
+        <div className="flex gap-2 shrink-0">
+          <Button
+            variant="secondary"
+            onClick={onBack}
+            type="button"
+            icon={<ArrowLeft size={16} aria-hidden="true" />}
+          >
             Volver a pedidos
           </Button>
           {canEdit && (
@@ -147,22 +151,38 @@ export function OrderDetailPage({
       <div className="grid grid-cols-[1fr_340px] gap-6 items-start max-[860px]:grid-cols-1">
         <div className="grid gap-5">
           <div className="p-5 border border-border rounded-xl bg-sidebar">
-            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">Resumen</h3>
+            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">
+              Resumen
+            </h3>
             <dl className="grid grid-cols-2 gap-3.5 m-0">
               <div className="p-3 rounded-[9px] bg-[#faf7f9]">
-                <dt className="text-muted-foreground text-[10px] font-bold">Pedido</dt>
-                <dd className="mt-[5px] text-foreground text-[13px] font-bold font-mono tracking-[0.5px]">{order.id}</dd>
+                <dt className="text-muted-foreground text-[10px] font-bold">
+                  Pedido
+                </dt>
+                <dd className="mt-[5px] text-foreground text-[13px] font-bold font-mono tracking-[0.5px]">
+                  {order.id}
+                </dd>
               </div>
               <div className="p-3 rounded-[9px] bg-[#faf7f9]">
-                <dt className="text-muted-foreground text-[10px] font-bold">Cliente</dt>
-                <dd className="mt-[5px] text-foreground text-[13px] font-bold">{order.client}</dd>
+                <dt className="text-muted-foreground text-[10px] font-bold">
+                  Cliente
+                </dt>
+                <dd className="mt-[5px] text-foreground text-[13px] font-bold">
+                  {order.client}
+                </dd>
               </div>
               <div className="p-3 rounded-[9px] bg-[#faf7f9]">
-                <dt className="text-muted-foreground text-[10px] font-bold">Fecha</dt>
-                <dd className="mt-[5px] text-foreground text-[13px] font-bold">{order.date}</dd>
+                <dt className="text-muted-foreground text-[10px] font-bold">
+                  Fecha
+                </dt>
+                <dd className="mt-[5px] text-foreground text-[13px] font-bold">
+                  {order.date}
+                </dd>
               </div>
               <div className="p-3 rounded-[9px] bg-[#faf7f9]">
-                <dt className="text-muted-foreground text-[10px] font-bold">Total</dt>
+                <dt className="text-muted-foreground text-[10px] font-bold">
+                  Total
+                </dt>
                 <dd className="mt-[5px] text-foreground text-[13px] font-bold !text-primary !text-lg">
                   {formatMoney(total, currency)}
                 </dd>
@@ -171,10 +191,15 @@ export function OrderDetailPage({
           </div>
 
           <div className="p-5 border border-border rounded-xl bg-sidebar">
-            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">Productos</h3>
+            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">
+              Productos
+            </h3>
             {lineItems.length ? (
               <div>
-                <div className="grid grid-cols-[1fr_60px_100px_100px] gap-2 py-2 border-b border-border text-muted-foreground text-[10px] font-bold" aria-hidden="true">
+                <div
+                  className="grid grid-cols-[1fr_60px_100px_100px] gap-2 py-2 border-b border-border text-muted-foreground text-[10px] font-bold"
+                  aria-hidden="true"
+                >
                   <span>Producto</span>
                   <span>Cant.</span>
                   <span>Precio</span>
@@ -182,7 +207,10 @@ export function OrderDetailPage({
                 </div>
                 <ul className="list-none m-0 p-0">
                   {lineItems.map((line, index) => (
-                    <li key={`${line.name}-${index}`} className="grid grid-cols-[1fr_60px_100px_100px] gap-2 items-start py-2.5 border-b border-border text-[13px] text-foreground last:border-b-0">
+                    <li
+                      key={`${line.name}-${index}`}
+                      className="grid grid-cols-[1fr_60px_100px_100px] gap-2 items-start py-2.5 border-b border-border text-[13px] text-foreground last:border-b-0"
+                    >
                       <div className="grid gap-[2px]">
                         <strong className="text-[13px]">{line.name}</strong>
                         {line.variantLabel && (
@@ -202,7 +230,9 @@ export function OrderDetailPage({
                 </ul>
                 <div className="flex justify-between items-center mt-3 pt-3 border-t-2 border-primary text-sm font-bold">
                   <span>Total</span>
-                  <strong className="text-primary text-[18px]">{formatMoney(total, currency)}</strong>
+                  <strong className="text-primary text-[18px]">
+                    {formatMoney(total, currency)}
+                  </strong>
                 </div>
               </div>
             ) : (
@@ -215,16 +245,20 @@ export function OrderDetailPage({
 
         <div className="grid gap-5 sticky top-6 max-[860px]:static">
           <div className="p-5 border border-border rounded-xl bg-sidebar">
-            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">Estado</h3>
+            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">
+              Estado
+            </h3>
             {order.status === 'Cancelado' ? (
               <div className="flex items-center gap-2 py-2.5 px-3 rounded-[8px] bg-[#faf7f9] text-muted-foreground text-xs font-bold">
                 <Badge variant="danger">Cancelado</Badge>
                 Pedido cancelado
               </div>
             ) : (
-                <div className="grid gap-3.5">
+              <div className="grid gap-3.5">
                 <fieldset className="min-w-0 m-0 p-0 border-0">
-                  <legend className="block mb-1.5 text-muted-foreground text-[11px] font-bold">Entrega</legend>
+                  <legend className="block mb-1.5 text-muted-foreground text-[11px] font-bold">
+                    Entrega
+                  </legend>
                   <div
                     className="flex p-[3px] border border-[#ded8dd] rounded-[9px] bg-[#faf7f9]"
                     role="radiogroup"
@@ -251,7 +285,9 @@ export function OrderDetailPage({
                   </div>
                 </fieldset>
                 <fieldset className="min-w-0 m-0 p-0 border-0">
-                  <legend className="block mb-1.5 text-muted-foreground text-[11px] font-bold">Pago</legend>
+                  <legend className="block mb-1.5 text-muted-foreground text-[11px] font-bold">
+                    Pago
+                  </legend>
                   {order.payment === 'Pagado' ? (
                     <div className="flex items-center">
                       <Badge variant="success">Pagado</Badge>
@@ -292,7 +328,9 @@ export function OrderDetailPage({
           </div>
 
           <div className="p-5 border border-border rounded-xl bg-sidebar">
-            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">Pago</h3>
+            <h3 className="m-0 mb-4 text-foreground text-sm tracking-[-0.3px]">
+              Pago
+            </h3>
             <PaymentProgress
               total={total}
               paidAmount={paidAmount}

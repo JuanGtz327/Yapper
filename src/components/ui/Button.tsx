@@ -13,9 +13,9 @@ const buttonVariants = cva(
           'border-primary/30 bg-primary/5 text-primary hover:bg-primary/10',
         secondary:
           'bg-[#ffffff] text-[#6d3c72] border border-[#6d3c72]/30 hover:bg-[#6d3c72]/10',
-        ghost: 'bg-transparent text-foreground hover:bg-primary hover:text-white',
-        destructive:
-          'bg-destructive text-white hover:bg-destructive/85',
+        ghost:
+          'bg-transparent text-foreground hover:bg-primary hover:text-white',
+        destructive: 'bg-destructive text-white hover:bg-destructive/85',
       },
       size: {
         default: 'h-10 px-4 py-2',
@@ -60,7 +60,9 @@ export function Button({
       data-slot="button"
       className={cn(
         buttonVariants({
-          variant: shadcnVariant as VariantProps<typeof buttonVariants>['variant'],
+          variant: shadcnVariant as VariantProps<
+            typeof buttonVariants
+          >['variant'],
           size: shadcnSize as VariantProps<typeof buttonVariants>['size'],
         }),
         isIconOnly && 'h-8 w-8 px-0',
@@ -68,7 +70,11 @@ export function Button({
       )}
       {...props}
     >
-      {icon && <span className={cn('inline-flex shrink-0', !isIconOnly && 'mr-1.5')}>{icon}</span>}
+      {icon && (
+        <span className={cn('inline-flex shrink-0', !isIconOnly && 'mr-1.5')}>
+          {icon}
+        </span>
+      )}
       {children}
     </ButtonPrimitive>
   )

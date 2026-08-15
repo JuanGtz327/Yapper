@@ -3,13 +3,11 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Route, Switch, useLocation } from 'wouter'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/ReactToastify.css'
-import './App.css'
 import { AuthScreen } from './features/auth/AuthScreen.tsx'
 import { PublicCatalogPage } from './features/catalog/PublicCatalogPage.tsx'
 import DebugUI from './pages/DebugUI.tsx'
 import { Spinner } from './components/ui/Spinner.tsx'
 import { AppSidebar } from './components/layout/AppSidebar.tsx'
-import { Topbar } from './components/layout/Topbar.tsx'
 import { MobileNavDrawer } from './components/layout/MobileNavDrawer.tsx'
 import { ModalManager } from './components/layout/ModalManager.tsx'
 import { PageRouter } from './components/layout/PageRouter.tsx'
@@ -123,13 +121,6 @@ function DashboardContent({
         accountLabel={user?.email || 'Modo demo'}
       />
       <main className="w-full max-w-[1200px] mx-auto px-[54px] pt-[47px] pb-[60px] max-[850px]:w-full max-[850px]:px-[25px] max-[850px]:pt-[35px] max-[850px]:pb-[50px] max-[650px]:px-[16px] max-[650px]:pt-[25px]">
-        <Topbar
-          page={page}
-          businessName={settings.businessName}
-          menuOpen={mobileMenuOpen}
-          hamburgerRef={hamburgerRef}
-          onOpenMenu={() => setMobileMenuOpen(true)}
-        />
         {dataLoading && (
           <div className="-mt-[17px] mb-[18px] px-[13px] py-[10px] border border-[#d9eadf] rounded-lg text-[#579078] bg-[#eff9f1] text-xs">
             <Spinner label="Sincronizando tus datos" /> Sincronizando tus

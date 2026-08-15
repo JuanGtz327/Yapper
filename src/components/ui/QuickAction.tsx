@@ -26,10 +26,18 @@ export function QuickAction({
       onClick={onClick}
       className="flex items-center gap-3 w-full px-3 py-3 border-0 bg-transparent cursor-pointer text-left hover:bg-primary/10 rounded-lg transition-colors"
     >
-      <span className={`grid place-items-center w-[37px] h-[37px] rounded-[10px] ${colorMap[color] ?? ''}`}>{icon}</span>
+      <span
+        className={`grid place-items-center w-[37px] h-[37px] rounded-[10px] ${colorMap[color] ?? ''}`}
+      >
+        {icon}
+      </span>
       <span className="flex-1">
-        <strong className="block text-foreground text-sm font-semibold">{title}</strong>
-        <small className="block text-muted-foreground text-xs mt-0.5">{detail}</small>
+        <strong className="block text-foreground text-sm font-semibold">
+          {title}
+        </strong>
+        <small className="block text-muted-foreground text-xs mt-0.5">
+          {detail}
+        </small>
       </span>
       <ArrowUpRight size={17} className="text-muted-foreground" />
     </button>

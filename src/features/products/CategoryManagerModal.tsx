@@ -103,7 +103,11 @@ export function CategoryManagerModal({
               onClick={() => onSelect(cat.id)}
               type="button"
             >
-              <Tag size={14} aria-hidden="true" className="text-primary shrink-0" />
+              <Tag
+                size={14}
+                aria-hidden="true"
+                className="text-primary shrink-0"
+              />
               {cat.name}
             </button>
             <Button
