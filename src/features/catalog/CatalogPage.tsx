@@ -39,29 +39,29 @@ export function CatalogPage({
             información interna.
           </p>
         </div>
+        {url && (
+          <div className="flex items-center gap-[9px]">
+            <span className="mr-auto text-[#579078] text-[12px] font-bold">
+              Catálogo público listo
+            </span>
+            <Button
+              variant="secondary"
+              onClick={() => void navigator.clipboard?.writeText(url)}
+              type="button"
+              icon={<Copy size={16} />}
+            >
+              Copiar enlace
+            </Button>
+            <Button
+              variant="secondary"
+              icon={<ExternalLink size={16} />}
+              onClick={() => window.open(url, '_blank', 'noreferrer')}
+            >
+              Abrir tienda
+            </Button>
+          </div>
+        )}
       </div>
-      {url && (
-        <div className="flex items-center gap-[9px] -mt-[10px] mb-[22px]">
-          <span className="mr-auto text-[#579078] text-[12px] font-bold">
-            Catálogo público listo
-          </span>
-          <Button
-            variant="secondary"
-            onClick={() => void navigator.clipboard?.writeText(url)}
-            type="button"
-            icon={<Copy size={16} />}
-          >
-            Copiar enlace
-          </Button>
-          <Button
-            variant="secondary"
-            icon={<ExternalLink size={16} />}
-            onClick={() => window.open(url, '_blank', 'noreferrer')}
-          >
-            Abrir tienda
-          </Button>
-        </div>
-      )}
       <div className="grid grid-cols-3 gap-4 max-[650px]:grid-cols-1">
         {products.filter((product) => product.published).length === 0 ? (
           <div className="p-[45px] border border-dashed border-[#d9d1d8] rounded-[13px] text-[#817d86] text-center text-[13px] bg-[#fffefa]">
