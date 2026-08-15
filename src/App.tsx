@@ -43,13 +43,8 @@ function DashboardApp() {
 
   if (authLoading)
     return (
-      <main className="grid place-content-center justify-items-center min-h-screen gap-3 text-muted-text">
-        <div className="grid place-items-center w-[38px] h-[38px] rounded-xl bg-primary text-primary-foreground text-[23px] font-bold -rotate-7">
-          Y
-        </div>
-        <p className="text-[13px]">
-          <Spinner label="Cargando Yapper" /> Cargando Yapper...
-        </p>
+      <main className="flex items-center justify-center min-h-screen bg-background">
+        <Spinner label="Cargando Yapper" />
       </main>
     )
   if (isSupabaseConfigured && !user) return <AuthScreen />
