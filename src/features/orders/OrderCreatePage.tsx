@@ -138,9 +138,6 @@ export function OrderCreatePage({
     <section className="animate-[page-in_0.25s_ease_both] w-full">
       <div className="flex items-end justify-between mb-[27px] max-[520px]:mb-5 max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
-          <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
-            VENTAS
-          </span>
           <h1>{initial ? 'Editar pedido' : 'Nuevo pedido'}</h1>
           <p className="mt-0.5 ml-0.5">
             {initial
@@ -241,22 +238,22 @@ export function OrderCreatePage({
                     />
                     <Input
                       aria-label={`Cantidad ${index + 1}`}
-                      value={line.quantity}
-                      onChange={(event) =>
-                        setLines((current) =>
-                          current.map((item, itemIndex) =>
-                            itemIndex === index
-                              ? {
-                                  ...item,
-                                  quantity: Number(event.target.value),
-                                }
-                              : item,
-                          ),
-                        )
-                      }
                       type="number"
                       min="1"
                       max={availableStock(line.variantId)}
+                      step="1"
+                      value={String(line.quantity)}
+                      onChange={(event) => {
+                        const val = event.target.value
+                        const num = val === '' ? 1 : Math.max(1, Number(val))
+                        setLines((current) =>
+                          current.map((item, itemIndex) =>
+                            itemIndex === index
+                              ? { ...item, quantity: num }
+                              : item,
+                          ),
+                        )
+                      }}
                       step="1"
                     />
                     <span className="text-foreground text-[13px] font-bold text-right whitespace-nowrap max-[520px]:text-xs">

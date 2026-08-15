@@ -172,16 +172,16 @@ export function OrderModal({
                     />
                     <Input
                       aria-label="Cantidad"
-                      value={line.quantity}
-                      onChange={(event) =>
-                        updateLine(index, {
-                          quantity: Number(event.target.value),
-                        })
-                      }
                       type="number"
                       min="1"
                       max={selectedOpt?.variant.stock ?? 1}
                       step="1"
+                      value={String(line.quantity)}
+                      onChange={(event) => {
+                        const val = event.target.value
+                        const num = val === '' ? 1 : Math.max(1, Number(val))
+                        updateLine(index, { quantity: num })
+                      }}
                     />
                     <span className="text-foreground text-[13px] font-bold text-right whitespace-nowrap">
                       {money.format(
