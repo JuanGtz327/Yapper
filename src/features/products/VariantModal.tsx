@@ -139,120 +139,127 @@ export function VariantModal({
       title={variant ? 'Editar variante' : 'Añadir variante'}
       onClose={onClose}
     >
-      <form className="grid gap-[15px]" onSubmit={submit}>
-        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-          SKU
-          <Input
-            value={sku}
-            onChange={(e) => setSku(e.target.value)}
-            placeholder="Ej. TUP-REC-1L-NEG"
-            required
-          />
-        </label>
-        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-          Nombre de variante
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Ej. Negro, 1L"
-          />
-        </label>
-        <div className="grid grid-cols-2 gap-[15px]">
+      <form className="grid gap-6" onSubmit={submit}>
+        {/* ── INFORMACIÓN BÁSICA ─────────────────────────── */}
+        <div className="grid gap-4">
+          <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">INFORMACIÓN BÁSICA</span>
           <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-            Precio de venta
+            SKU
             <Input
-              type="number"
-              min="0"
-              step="1"
-              value={salePrice || ''}
-              onChange={(e) => setSalePrice(Number(e.target.value))}
-              placeholder="$ 0"
+              value={sku}
+              onChange={(e) => setSku(e.target.value)}
+              placeholder="Ej. TUP-REC-1L-NEG"
               required
             />
           </label>
           <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-            Costo de inventario
+            Nombre de variante
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Ej. Negro, 1L"
+            />
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
+              Precio de venta
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                value={salePrice || ''}
+                onChange={(e) => setSalePrice(Number(e.target.value))}
+                placeholder="$ 0"
+                required
+              />
+            </label>
+            <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
+              Costo de inventario
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                value={inventoryCost || ''}
+                onChange={(e) => setInventoryCost(Number(e.target.value))}
+                placeholder="$ 0"
+              />
+            </label>
+          </div>
+          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
+            Existencias
             <Input
               type="number"
               min="0"
               step="1"
-              value={inventoryCost || ''}
-              onChange={(e) => setInventoryCost(Number(e.target.value))}
-              placeholder="$ 0"
+              value={stock || ''}
+              onChange={(e) => setStock(Number(e.target.value))}
+              placeholder="0"
+              required
             />
           </label>
         </div>
-        <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-          Existencias
-          <Input
-            type="number"
-            min="0"
-            step="1"
-            value={stock || ''}
-            onChange={(e) => setStock(Number(e.target.value))}
-            placeholder="0"
-            required
-          />
-        </label>
+
+        {/* ── OPCIONES ────────────────────────────────────── */}
         {optionTypes.length > 0 && (
-          <fieldset className="border border-[#e8e4e6] rounded-[10px] p-[14px] bg-[#fdfcfc]">
-            <legend className="text-[13px] font-bold text-foreground">
-              Opciones
-            </legend>
-            {selections.map((sel, idx) => {
-              const type = optionTypes.find((t) => t.id === sel.typeId)
-              const valuesForType = type?.values ?? []
-              return (
-                <div key={idx} className="flex gap-[6px] items-center">
-                  <CustomSelect
-                    value={sel.typeId}
-                    onChange={(val) =>
-                      updateSelection(idx, { typeId: val, valueId: '' })
-                    }
-                    options={optionTypes.map((t) => ({
-                      value: t.id,
-                      label: t.name,
-                    }))}
-                    placeholder="Tipo..."
-                    ariaLabel="Tipo de opción"
-                    searchable
-                  />
-                  <CustomSelect
-                    value={sel.valueId}
-                    onChange={(val) => updateSelection(idx, { valueId: val })}
-                    options={valuesForType.map((v) => ({
-                      value: v.id,
-                      label: v.name,
-                    }))}
-                    placeholder="Valor..."
-                    disabled={!sel.typeId}
-                    ariaLabel="Valor de opción"
-                    searchable
-                  />
-                  <Button
-                    variant="danger"
-                    icon={<X size={15} />}
-                    onClick={() => removeSelection(idx)}
-                    type="button"
-                    aria-label="Quitar opción"
-                  />
-                </div>
-              )
-            })}
-            {availableTypes.length > 0 && (
-              <Button
-                variant="secondary"
-                className="mt-2 text-xs"
-                onClick={addSelection}
-                type="button"
-                icon={<Plus size={14} aria-hidden="true" />}
-              >
-                Agregar opción
-              </Button>
-            )}
-          </fieldset>
+          <>
+            <div className="h-px bg-[#e8e4e6]" />
+            <div className="grid gap-4">
+              <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">OPCIONES</span>
+              {selections.map((sel, idx) => {
+                const type = optionTypes.find((t) => t.id === sel.typeId)
+                const valuesForType = type?.values ?? []
+                return (
+                  <div key={idx} className="flex gap-[6px] items-center">
+                    <CustomSelect
+                      value={sel.typeId}
+                      onChange={(val) =>
+                        updateSelection(idx, { typeId: val, valueId: '' })
+                      }
+                      options={optionTypes.map((t) => ({
+                        value: t.id,
+                        label: t.name,
+                      }))}
+                      placeholder="Tipo..."
+                      ariaLabel="Tipo de opción"
+                      searchable
+                    />
+                    <CustomSelect
+                      value={sel.valueId}
+                      onChange={(val) => updateSelection(idx, { valueId: val })}
+                      options={valuesForType.map((v) => ({
+                        value: v.id,
+                        label: v.name,
+                      }))}
+                      placeholder="Valor..."
+                      disabled={!sel.typeId}
+                      ariaLabel="Valor de opción"
+                      searchable
+                    />
+                    <Button
+                      variant="danger"
+                      icon={<X size={15} />}
+                      onClick={() => removeSelection(idx)}
+                      type="button"
+                      aria-label="Quitar opción"
+                    />
+                  </div>
+                )
+              })}
+              {availableTypes.length > 0 && (
+                <Button
+                  variant="secondary"
+                  onClick={addSelection}
+                  type="button"
+                  icon={<Plus size={14} aria-hidden="true" />}
+                >
+                  Agregar opción
+                </Button>
+              )}
+            </div>
+          </>
         )}
-        <div className="flex justify-end gap-[10px] mt-[9px]">
+
+        <div className="flex justify-end gap-[10px]">
           <Button
             variant="primary"
             type="submit"
