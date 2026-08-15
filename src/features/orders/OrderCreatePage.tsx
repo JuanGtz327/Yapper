@@ -245,7 +245,7 @@ export function OrderCreatePage({
                       value={String(line.quantity)}
                       onChange={(event) => {
                         const val = event.target.value
-                        const num = val === '' ? 1 : Math.max(1, Number(val))
+                        const num = val === '' ? 0 : Number(val)
                         setLines((current) =>
                           current.map((item, itemIndex) =>
                             itemIndex === index
