@@ -63,7 +63,7 @@ function DialogContent({
             aria-label="Cerrar"
             render={
               <Button
-                variant="ghost"
+                variant="danger"
                 className="absolute top-2 right-2"
                 size="sm"
               />
