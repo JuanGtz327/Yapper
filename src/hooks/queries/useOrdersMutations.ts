@@ -83,7 +83,8 @@ export function useOrdersMutations(user: User | null) {
         },
         ...(current ?? []),
       ])
-      qc.invalidateQueries({ queryKey: qk.sales(user, '7d') })
+      void qc.invalidateQueries({ queryKey: qk.orders(user) })
+      void qc.invalidateQueries({ queryKey: qk.sales(user, '7d') })
     },
   })
 
