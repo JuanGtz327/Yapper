@@ -1,9 +1,11 @@
 import { useState, useEffect, type FormEvent } from 'react'
-import { Check, Settings, Palette } from 'lucide-react'
+import { Check, Palette } from 'lucide-react'
 import type { BusinessSettings } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Button } from '../../components/ui/Button.tsx'
 import { Input } from '../../components/ui/Input.tsx'
+import { Checkbox } from '../../components/ui/Checkbox.tsx'
+import { Textarea } from '../../components/ui/Textarea.tsx'
 import { useToast } from '../../hooks/useToast.ts'
 
 export function SettingsPage({
@@ -77,71 +79,68 @@ export function SettingsPage({
       </div>
       <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(260px,1fr)] gap-4 max-[650px]:grid-cols-1">
         <form
-          className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] grid gap-[15px] max-w-[620px] max-[650px]:max-w-none"
+          className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] grid gap-6 max-w-[620px] max-[650px]:max-w-none"
           onSubmit={submit}
         >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="inline-grid place-items-center w-10 h-10 rounded-[11px] text-[#6d3c72] bg-[#f3eaf4]">
-              <Settings size={20} />
-            </div>
-            <div>
-              <h3 className="text-ink text-[16px]">Preferencias del negocio</h3>
-              <p className="mt-1 text-muted text-[12px] leading-[1.5]">
-                Estos datos se guardan en tu cuenta.
-              </p>
-            </div>
-          </div>
-          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-            Nombre del negocio
-            <Input
-              value={draft.businessName}
-              onChange={(event) =>
-                setDraft({ ...draft, businessName: event.target.value })
-              }
-              minLength={2}
-              maxLength={120}
-              required
-            />
-          </label>
-          <CustomSelect
-            label="Moneda predeterminada"
-            value={draft.currency}
-            onChange={(val) => setDraft({ ...draft, currency: val })}
-            ariaLabel="Moneda predeterminada"
-            options={[
-              { value: 'MXN', label: 'Peso mexicano (MXN)' },
-              { value: 'USD', label: 'Dólar estadounidense (USD)' },
-              { value: 'CAD', label: 'Dólar canadiense (CAD)' },
-            ]}
-          />
-          <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
-            Umbral de stock bajo
-            <span className="text-[#aaa5a8] text-[10px] font-normal">
-              Te avisaremos cuando un producto llegue a esta cantidad.
+          {/* ── PREFERENCIAS ────────────────────────────────── */}
+          <div className="grid gap-4">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+              PREFERENCIAS
             </span>
-            <Input
-              value={draft.lowStockThreshold}
-              onChange={(event) =>
-                setDraft({
-                  ...draft,
-                  lowStockThreshold: Number(event.target.value),
-                })
-              }
-              type="number"
-              min="0"
-              max="10000"
-              step="1"
-              required
+            <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
+              Nombre del negocio
+              <Input
+                value={draft.businessName}
+                onChange={(event) =>
+                  setDraft({ ...draft, businessName: event.target.value })
+                }
+                minLength={2}
+                maxLength={120}
+                required
+              />
+            </label>
+            <CustomSelect
+              label="Moneda predeterminada"
+              value={draft.currency}
+              onChange={(val) => setDraft({ ...draft, currency: val })}
+              ariaLabel="Moneda predeterminada"
+              options={[
+                { value: 'MXN', label: 'Peso mexicano (MXN)' },
+                { value: 'USD', label: 'Dólar estadounidense (USD)' },
+                { value: 'CAD', label: 'Dólar canadiense (CAD)' },
+              ]}
             />
-          </label>
-          <fieldset className="grid gap-3 p-[14px] border border-[#ebe8e4] rounded-[10px]">
-            <legend className="px-[5px] text-[#6d3c72] text-[12px] font-bold">
-              Catálogo público
-            </legend>
-            <label className="!flex grid-cols-[auto_1fr] items-center gap-2">
-              <input
-                type="checkbox"
-                className="w-auto"
+            <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
+              Umbral de stock bajo
+              <span className="text-[#aaa5a8] text-[10px] font-normal">
+                Te avisaremos cuando un producto llegue a esta cantidad.
+              </span>
+              <Input
+                value={draft.lowStockThreshold}
+                onChange={(event) =>
+                  setDraft({
+                    ...draft,
+                    lowStockThreshold: Number(event.target.value),
+                  })
+                }
+                type="number"
+                min="0"
+                max="10000"
+                step="1"
+                required
+              />
+            </label>
+          </div>
+
+          <div className="h-px bg-[#e8e4e6]" />
+
+          {/* ── CATÁLOGO PÚBLICO ───────────────────────────── */}
+          <div className="grid gap-4">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+              CATÁLOGO PÚBLICO
+            </span>
+            <label className="flex! items-center gap-2! text-[#716b72] text-[11px] font-bold">
+              <Checkbox
                 checked={draft.publicCatalogEnabled}
                 onChange={(event) =>
                   setDraft({
@@ -182,7 +181,7 @@ export function SettingsPage({
             </label>
             <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
               Presentación pública
-              <textarea
+              <Textarea
                 value={draft.publicIntro}
                 onChange={(event) =>
                   setDraft({ ...draft, publicIntro: event.target.value })
@@ -196,7 +195,7 @@ export function SettingsPage({
                 Tu enlace: {window.location.origin}/tienda/{draft.publicSlug}
               </p>
             )}
-          </fieldset>
+          </div>
           <div className="flex justify-end gap-[10px] mt-[9px]">
             <Button
               variant="primary"
@@ -208,36 +207,40 @@ export function SettingsPage({
             </Button>
           </div>
         </form>
-        <aside className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] self-start">
-          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
-            CUENTA
-          </span>
-          <h3 className="text-ink text-[16px] mt-[7px]">Sesión actual</h3>
-          <p className="mt-1 text-muted text-[12px] leading-[1.5]">
-            Tu información está protegida y solo tú puedes acceder a ella.
-          </p>
-          <Button variant="danger" onClick={onSignOut} type="button">
-            Cerrar sesión
-          </Button>
-          <div className="h-px bg-[#e8e5e3] my-[18px]" />
-          <span className="block text-[10px] font-bold uppercase tracking-[0.7px] text-[#817d86]">
-            INVENTARIO
-          </span>
-          <h3 className="text-ink text-[16px] mt-[7px]">
-            Opciones de producto
-          </h3>
-          <p className="mt-1 text-muted text-[12px] leading-[1.5]">
-            Administra tipos como Color, Talla o Capacidad y sus valores.
-          </p>
-          <Button
-            variant="secondary"
-            className="mt-[10px]"
-            onClick={onOpenOptionTypes}
-            type="button"
-            icon={<Palette size={16} />}
-          >
-            Gestionar opciones
-          </Button>
+        <aside className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] self-start grid gap-6">
+          <div>
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+              CUENTA
+            </span>
+            <h3 className="text-ink text-[16px] mt-[7px]">Sesión actual</h3>
+            <p className="mt-1 text-muted text-[12px] leading-[1.5]">
+              Tu información está protegida y solo tú puedes acceder a ella.
+            </p>
+            <Button variant="danger" onClick={onSignOut} type="button">
+              Cerrar sesión
+            </Button>
+          </div>
+          <div className="h-px bg-[#e8e4e6]" />
+          <div>
+            <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+              INVENTARIO
+            </span>
+            <h3 className="text-ink text-[16px] mt-[7px]">
+              Opciones de producto
+            </h3>
+            <p className="mt-1 text-muted text-[12px] leading-[1.5]">
+              Administra tipos como Color, Talla o Capacidad y sus valores.
+            </p>
+            <Button
+              variant="secondary"
+              className="mt-[10px]"
+              onClick={onOpenOptionTypes}
+              type="button"
+              icon={<Palette size={16} />}
+            >
+              Gestionar opciones
+            </Button>
+          </div>
         </aside>
       </div>
     </section>
