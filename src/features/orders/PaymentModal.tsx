@@ -30,26 +30,34 @@ export function PaymentModal({
 
   return (
     <ModalFrame title={`Abono — ${order.id}`} onClose={onClose}>
-      <div className="grid gap-[6px] p-3.5 rounded-[10px] bg-[#faf7f9] mb-4">
-        <div className="flex items-center justify-between text-[13px] text-foreground">
-          <span className="text-muted-foreground text-xs">
-            Total del pedido
-          </span>
-          <strong className="text-sm">{formatMoney(total, currency)}</strong>
-        </div>
-        <div className="flex items-center justify-between text-[13px] text-foreground">
-          <span className="text-muted-foreground text-xs">Ya abonado</span>
-          <strong className="text-primary text-[15px]">
-            {formatMoney(paidAmount, currency)}
-          </strong>
-        </div>
-        <div className="flex items-center justify-between text-[13px] text-foreground pt-2 mt-1 border-t border-border">
-          <span className="text-muted-foreground text-xs">Saldo restante</span>
-          <strong className="text-primary text-[15px]">
-            {formatMoney(remaining, currency)}
-          </strong>
+      <div className="grid gap-4">
+        <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+          RESUMEN DEL PEDIDO
+        </span>
+        <div className="grid gap-2 p-3.5 rounded-[10px] bg-[#faf7f9]">
+          <div className="flex items-center justify-between text-[13px] text-foreground">
+            <span className="text-muted-foreground text-xs">
+              Total del pedido
+            </span>
+            <strong className="text-sm">{formatMoney(total, currency)}</strong>
+          </div>
+          <div className="flex items-center justify-between text-[13px] text-foreground">
+            <span className="text-muted-foreground text-xs">Ya abonado</span>
+            <strong className="text-primary text-[15px]">
+              {formatMoney(paidAmount, currency)}
+            </strong>
+          </div>
+          <div className="flex items-center justify-between text-[13px] text-foreground pt-2 mt-1 border-t border-border">
+            <span className="text-muted-foreground text-xs">
+              Saldo restante
+            </span>
+            <strong className="text-primary text-[15px]">
+              {formatMoney(remaining, currency)}
+            </strong>
+          </div>
         </div>
       </div>
+      <div className="h-px bg-[#e8e4e6] my-4" />
       <PaymentForm
         total={total}
         paidAmount={paidAmount}
