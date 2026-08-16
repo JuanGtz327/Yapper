@@ -918,7 +918,9 @@ describe('useOrdersMutations', () => {
         })
       })
 
-      const products = queryClient.getQueryData<Product[]>(qk.products(mockUser))
+      const products = queryClient.getQueryData<Product[]>(
+        qk.products(mockUser),
+      )
       expect(products![0].variants[0].stock).toBe(24) // 25 - 3 + 2(old) = 24
     })
 
@@ -944,7 +946,14 @@ describe('useOrdersMutations', () => {
       })
       queryClient.setQueryData(qk.clients(mockUser), [
         { ...mockClients[0], orders: 5 },
-        { id: 'c2', name: 'María', phone: '5598765432', zone: 'Norte', orders: 3, initials: 'MG' },
+        {
+          id: 'c2',
+          name: 'María',
+          phone: '5598765432',
+          zone: 'Norte',
+          orders: 3,
+          initials: 'MG',
+        },
       ])
       queryClient.setQueryData(qk.products(mockUser), mockProducts)
       queryClient.setQueryData(qk.orders(mockUser), [demoOrder])

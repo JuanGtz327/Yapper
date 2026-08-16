@@ -70,7 +70,9 @@ describe('useSettingsMutation', () => {
 
     const { result } = renderHook(() => useSettingsMutation(mockUser), {
       wrapper: ({ children }) => (
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
       ),
     })
 
@@ -79,7 +81,9 @@ describe('useSettingsMutation', () => {
     })
 
     await waitFor(() => {
-      const cached = queryClient.getQueryData<BusinessSettings>(qk.settings(mockUser))
+      const cached = queryClient.getQueryData<BusinessSettings>(
+        qk.settings(mockUser),
+      )
       expect(cached?.businessName).toBe('Nuevo')
     })
   })

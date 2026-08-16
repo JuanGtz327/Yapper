@@ -303,7 +303,12 @@ describe('Repositorio de clientes', () => {
   describe('loadClients', () => {
     it('debería cargar clientes con order counts e iniciales', async () => {
       const mockClientRows = [
-        { id: 'c1', name: 'Juan Pérez', phone: '5512345678', address: 'Centro' },
+        {
+          id: 'c1',
+          name: 'Juan Pérez',
+          phone: '5512345678',
+          address: 'Centro',
+        },
       ]
       const mockOrderRows = [
         { client_id: 'c1' },
@@ -311,11 +316,15 @@ describe('Repositorio de clientes', () => {
         { client_id: 'c2' },
       ]
 
-      const orderMock = vi.fn().mockResolvedValue({ data: mockClientRows, error: null })
+      const orderMock = vi
+        .fn()
+        .mockResolvedValue({ data: mockClientRows, error: null })
       const eqUserClient = vi.fn().mockReturnValue({ order: orderMock })
       const selectClient = vi.fn().mockReturnValue({ eq: eqUserClient })
 
-      const neqMock = vi.fn().mockResolvedValue({ data: mockOrderRows, error: null })
+      const neqMock = vi
+        .fn()
+        .mockResolvedValue({ data: mockOrderRows, error: null })
       const eqUserOrder = vi.fn().mockReturnValue({ neq: neqMock })
       const selectOrder = vi.fn().mockReturnValue({ eq: eqUserOrder })
 
@@ -339,7 +348,9 @@ describe('Repositorio de clientes', () => {
         { id: 'c1', name: 'Juan', phone: '5512345678', address: '' },
       ]
 
-      const orderMock = vi.fn().mockResolvedValue({ data: mockClientRows, error: null })
+      const orderMock = vi
+        .fn()
+        .mockResolvedValue({ data: mockClientRows, error: null })
       const eqUserClient = vi.fn().mockReturnValue({ order: orderMock })
       const selectClient = vi.fn().mockReturnValue({ eq: eqUserClient })
 
@@ -361,7 +372,9 @@ describe('Repositorio de clientes', () => {
 
     it('debería propagar errores de la consulta', async () => {
       const eqUserClient = vi.fn().mockReturnValue({
-        order: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
+        order: vi
+          .fn()
+          .mockResolvedValue({ data: null, error: { message: 'DB error' } }),
       })
       const selectClient = vi.fn().mockReturnValue({ eq: eqUserClient })
 
@@ -379,7 +392,9 @@ describe('Repositorio de clientes', () => {
         { id: 'c1', name: 'Juan', phone: '5512345678', address: 'Centro' },
       ]
 
-      const rangeMock = vi.fn().mockResolvedValue({ data: mockClientRows, count: 1, error: null })
+      const rangeMock = vi
+        .fn()
+        .mockResolvedValue({ data: mockClientRows, count: 1, error: null })
       const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
       const eqUserMock = vi.fn().mockReturnValue({ order: orderMock })
       const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
@@ -407,7 +422,13 @@ describe('Repositorio de clientes', () => {
     })
 
     it('debería propagar errores de la consulta', async () => {
-      const rangeMock = vi.fn().mockResolvedValue({ data: null, count: 0, error: { message: 'DB error' } })
+      const rangeMock = vi
+        .fn()
+        .mockResolvedValue({
+          data: null,
+          count: 0,
+          error: { message: 'DB error' },
+        })
       const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
       const eqUserMock = vi.fn().mockReturnValue({ order: orderMock })
       const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
@@ -1597,7 +1618,11 @@ describe('Repositorio de pedidos', () => {
   })
 
   describe('loadOrdersPage', () => {
-    function makeOrderQueryChain(data: unknown[], count: number, error: unknown = null) {
+    function makeOrderQueryChain(
+      data: unknown[],
+      count: number,
+      error: unknown = null,
+    ) {
       const rangeMock = vi.fn().mockResolvedValue({ data, count, error })
       const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
       const eqUserMock = vi.fn().mockReturnValue({ order: orderMock })
@@ -1644,7 +1669,9 @@ describe('Repositorio de pedidos', () => {
     })
 
     it('debería filtrar por status', async () => {
-      const rangeMock = vi.fn().mockResolvedValue({ data: [], count: 0, error: null })
+      const rangeMock = vi
+        .fn()
+        .mockResolvedValue({ data: [], count: 0, error: null })
       const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
       const eqStatusMock = vi.fn().mockReturnValue({ order: orderMock })
       const eqUserMock = vi.fn().mockReturnValue({ eq: eqStatusMock })
@@ -1657,13 +1684,19 @@ describe('Repositorio de pedidos', () => {
         .mockReturnValueOnce({ select: itemsQuery.select })
 
       const { loadOrdersPage } = await import('./repository.ts')
-      await loadOrdersPage(mockUser, { page: 1, pageSize: 25 }, { status: 'delivered' })
+      await loadOrdersPage(
+        mockUser,
+        { page: 1, pageSize: 25 },
+        { status: 'delivered' },
+      )
 
       expect(supabaseFromMock).toHaveBeenCalledWith('orders')
     })
 
     it('debería filtrar por paymentStatus paidOrPartial', async () => {
-      const rangeMock = vi.fn().mockResolvedValue({ data: [], count: 0, error: null })
+      const rangeMock = vi
+        .fn()
+        .mockResolvedValue({ data: [], count: 0, error: null })
       const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
       const inPaymentMock = vi.fn().mockReturnValue({ order: orderMock })
       const eqUserMock = vi.fn().mockReturnValue({ in: inPaymentMock })
@@ -1676,7 +1709,11 @@ describe('Repositorio de pedidos', () => {
         .mockReturnValueOnce({ select: itemsQuery.select })
 
       const { loadOrdersPage } = await import('./repository.ts')
-      await loadOrdersPage(mockUser, { page: 1, pageSize: 25 }, { paymentStatus: 'paidOrPartial' })
+      await loadOrdersPage(
+        mockUser,
+        { page: 1, pageSize: 25 },
+        { paymentStatus: 'paidOrPartial' },
+      )
 
       expect(supabaseFromMock).toHaveBeenCalledWith('orders')
     })
@@ -2076,7 +2113,9 @@ describe('Repositorio de settings', () => {
         whatsapp_number: '5512345678',
         public_intro: 'Hola',
       }
-      const maybeSingleMock = vi.fn().mockResolvedValue({ data: settingsRow, error: null })
+      const maybeSingleMock = vi
+        .fn()
+        .mockResolvedValue({ data: settingsRow, error: null })
       const eqMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock })
 
@@ -2096,7 +2135,9 @@ describe('Repositorio de settings', () => {
     })
 
     it('debería devolver defaultSettings cuando no hay fila', async () => {
-      const maybeSingleMock = vi.fn().mockResolvedValue({ data: null, error: null })
+      const maybeSingleMock = vi
+        .fn()
+        .mockResolvedValue({ data: null, error: null })
       const eqMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock })
 
@@ -2139,7 +2180,9 @@ describe('Repositorio de settings', () => {
         whatsapp_number: '',
         public_intro: '',
       }
-      const singleMock = vi.fn().mockResolvedValue({ data: savedRow, error: null })
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: savedRow, error: null })
       const selectMock = vi.fn().mockReturnValue({ single: singleMock })
       const upsertMock = vi.fn().mockReturnValue({ select: selectMock })
 
@@ -2178,7 +2221,9 @@ describe('Repositorio de settings', () => {
         whatsapp_number: null,
         public_intro: null,
       }
-      const singleMock = vi.fn().mockResolvedValue({ data: savedRow, error: null })
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: savedRow, error: null })
       const selectMock = vi.fn().mockReturnValue({ single: singleMock })
       const upsertMock = vi.fn().mockReturnValue({ select: selectMock })
 

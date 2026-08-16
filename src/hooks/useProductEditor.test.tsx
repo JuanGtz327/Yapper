@@ -365,7 +365,9 @@ describe('useProductEditor', () => {
         new Error('duplicate key value violates unique constraint'),
         { code: '23505' },
       )
-      vi.mocked(repository.createProductWithVariants).mockRejectedValue(duplicateError)
+      vi.mocked(repository.createProductWithVariants).mockRejectedValue(
+        duplicateError,
+      )
 
       const { result } = renderHook(
         () => useProductEditor(mockUser, { invalidateQueries: vi.fn() } as any),
