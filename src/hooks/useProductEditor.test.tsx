@@ -312,4 +312,132 @@ describe('useProductEditor', () => {
       )
     })
   })
+
+  describe('handleProductSubmit - create path', () => {
+    it('debería crear producto con variantes usando createWithVariants', async () => {
+      vi.mocked(repository.createProductWithVariants).mockResolvedValue({
+        id: 'p-new',
+        name: 'Playera',
+        category: 'Ropa',
+        categoryId: 'cat1',
+        published: true,
+        publicDescription: '',
+        imageUrl: null,
+        color: 'sky',
+        variants: [],
+      })
+
+      const { result } = renderHook(
+        () => useProductEditor(mockUser, { invalidateQueries: vi.fn() } as any),
+        { wrapper: createWrapper() },
+      )
+
+      const draft: ProductDraft = {
+        name: 'Playera',
+        categoryId: 'cat1',
+        published: true,
+        publicDescription: '',
+        imageUrl: '',
+        variants: [
+          {
+            sku: 'PLA-001',
+            name: 'Negro',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValueIds: [],
+          },
+        ],
+      }
+
+      let returned: boolean = false
+      await act(async () => {
+        returned = await result.current.handleProductSubmit(draft)
+      })
+
+      expect(returned).toBe(true)
+      expect(repository.createProductWithVariants).toHaveBeenCalled()
+      expect(mockToast.success).toHaveBeenCalledWith('Producto creado')
+    })
+
+    it('debería mostrar error de SKU duplicado en create con code 23505', async () => {
+      const duplicateError = Object.assign(
+        new Error('duplicate key value violates unique constraint'),
+        { code: '23505' },
+      )
+      vi.mocked(repository.createProductWithVariants).mockRejectedValue(duplicateError)
+
+      const { result } = renderHook(
+        () => useProductEditor(mockUser, { invalidateQueries: vi.fn() } as any),
+        { wrapper: createWrapper() },
+      )
+
+      const draft: ProductDraft = {
+        name: 'Playera',
+        categoryId: 'cat1',
+        published: true,
+        publicDescription: '',
+        imageUrl: '',
+        variants: [
+          {
+            sku: 'PLA-001',
+            name: 'Negro',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValueIds: [],
+          },
+        ],
+      }
+
+      let returned: boolean = false
+      await act(async () => {
+        returned = await result.current.handleProductSubmit(draft)
+      })
+
+      expect(returned).toBe(false)
+      expect(mockToast.error).toHaveBeenCalledWith(
+        expect.stringContaining('SKU'),
+      )
+    })
+
+    it('debería mostrar error genérico en create cuando falla el servidor', async () => {
+      vi.mocked(repository.createProductWithVariants).mockRejectedValue(
+        new Error('Connection timeout'),
+      )
+
+      const { result } = renderHook(
+        () => useProductEditor(mockUser, { invalidateQueries: vi.fn() } as any),
+        { wrapper: createWrapper() },
+      )
+
+      const draft: ProductDraft = {
+        name: 'Playera',
+        categoryId: 'cat1',
+        published: true,
+        publicDescription: '',
+        imageUrl: '',
+        variants: [
+          {
+            sku: 'PLA-001',
+            name: 'Negro',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValueIds: [],
+          },
+        ],
+      }
+
+      let returned: boolean = false
+      await act(async () => {
+        returned = await result.current.handleProductSubmit(draft)
+      })
+
+      expect(returned).toBe(false)
+      expect(mockToast.error).toHaveBeenCalledWith(
+        'No pudimos guardar el producto. Inténtalo de nuevo.',
+      )
+    })
+  })
 })

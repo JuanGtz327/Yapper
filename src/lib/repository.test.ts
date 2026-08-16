@@ -299,6 +299,128 @@ describe('Repositorio de clientes', () => {
       )
     })
   })
+
+  describe('loadClients', () => {
+    it('debería cargar clientes con order counts e iniciales', async () => {
+      const mockClientRows = [
+        { id: 'c1', name: 'Juan Pérez', phone: '5512345678', address: 'Centro' },
+      ]
+      const mockOrderRows = [
+        { client_id: 'c1' },
+        { client_id: 'c1' },
+        { client_id: 'c2' },
+      ]
+
+      const orderMock = vi.fn().mockResolvedValue({ data: mockClientRows, error: null })
+      const eqUserClient = vi.fn().mockReturnValue({ order: orderMock })
+      const selectClient = vi.fn().mockReturnValue({ eq: eqUserClient })
+
+      const neqMock = vi.fn().mockResolvedValue({ data: mockOrderRows, error: null })
+      const eqUserOrder = vi.fn().mockReturnValue({ neq: neqMock })
+      const selectOrder = vi.fn().mockReturnValue({ eq: eqUserOrder })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockImplementation((table: string) => {
+        if (table === 'clients') return { select: selectClient }
+        return { select: selectOrder }
+      })
+
+      const { loadClients } = await import('./repository.ts')
+      const result = await loadClients(mockUser)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].zone).toBe('Centro')
+      expect(result[0].orders).toBe(2)
+      expect(result[0].initials).toBe('JP')
+    })
+
+    it('debería usar "Sin zona" cuando address es vacío', async () => {
+      const mockClientRows = [
+        { id: 'c1', name: 'Juan', phone: '5512345678', address: '' },
+      ]
+
+      const orderMock = vi.fn().mockResolvedValue({ data: mockClientRows, error: null })
+      const eqUserClient = vi.fn().mockReturnValue({ order: orderMock })
+      const selectClient = vi.fn().mockReturnValue({ eq: eqUserClient })
+
+      const neqMock = vi.fn().mockResolvedValue({ data: [], error: null })
+      const eqUserOrder = vi.fn().mockReturnValue({ neq: neqMock })
+      const selectOrder = vi.fn().mockReturnValue({ eq: eqUserOrder })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockImplementation((table: string) => {
+        if (table === 'clients') return { select: selectClient }
+        return { select: selectOrder }
+      })
+
+      const { loadClients } = await import('./repository.ts')
+      const result = await loadClients(mockUser)
+
+      expect(result[0].zone).toBe('Sin zona')
+    })
+
+    it('debería propagar errores de la consulta', async () => {
+      const eqUserClient = vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
+      })
+      const selectClient = vi.fn().mockReturnValue({ eq: eqUserClient })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockReturnValue({ select: selectClient })
+
+      const { loadClients } = await import('./repository.ts')
+      await expect(loadClients(mockUser)).rejects.toThrow('DB error')
+    })
+  })
+
+  describe('loadClientsPage', () => {
+    it('debería paginar resultados correctamente', async () => {
+      const mockClientRows = [
+        { id: 'c1', name: 'Juan', phone: '5512345678', address: 'Centro' },
+      ]
+
+      const rangeMock = vi.fn().mockResolvedValue({ data: mockClientRows, count: 1, error: null })
+      const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
+      const eqUserMock = vi.fn().mockReturnValue({ order: orderMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock
+        .mockReturnValueOnce({ select: selectMock })
+        .mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              neq: vi.fn().mockReturnValue({
+                in: vi.fn().mockResolvedValue({ data: [], error: null }),
+              }),
+            }),
+          }),
+        })
+
+      const { loadClientsPage } = await import('./repository.ts')
+      const result = await loadClientsPage(mockUser, { page: 1, pageSize: 10 })
+
+      expect(result.data).toHaveLength(1)
+      expect(result.total).toBe(1)
+      expect(result.page).toBe(1)
+      expect(result.pageSize).toBe(10)
+    })
+
+    it('debería propagar errores de la consulta', async () => {
+      const rangeMock = vi.fn().mockResolvedValue({ data: null, count: 0, error: { message: 'DB error' } })
+      const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
+      const eqUserMock = vi.fn().mockReturnValue({ order: orderMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockReturnValue({ select: selectMock })
+
+      const { loadClientsPage } = await import('./repository.ts')
+      await expect(
+        loadClientsPage(mockUser, { page: 1, pageSize: 25 }),
+      ).rejects.toThrow('DB error')
+    })
+  })
 })
 
 describe('Repositorio de productos', () => {
@@ -1934,6 +2056,175 @@ describe('Repositorio de catálogo público', () => {
     await expect(loadPublicCatalog('mi-negocio')).rejects.toThrow(
       'column p.price does not exist',
     )
+  })
+})
+
+describe('Repositorio de settings', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockRpc.mockResolvedValue({ data: null, error: null })
+  })
+
+  describe('loadSettings', () => {
+    it('debería devolver settings mapeados cuando existe la fila', async () => {
+      const settingsRow = {
+        business_name: 'Mi Negocio',
+        currency: 'USD',
+        low_stock_threshold: 10,
+        public_catalog_enabled: true,
+        public_slug: 'mi-negocio',
+        whatsapp_number: '5512345678',
+        public_intro: 'Hola',
+      }
+      const maybeSingleMock = vi.fn().mockResolvedValue({ data: settingsRow, error: null })
+      const eqMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqMock })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockReturnValue({ select: selectMock })
+
+      const { loadSettings } = await import('./repository.ts')
+      const result = await loadSettings(mockUser)
+
+      expect(result.businessName).toBe('Mi Negocio')
+      expect(result.currency).toBe('USD')
+      expect(result.lowStockThreshold).toBe(10)
+      expect(result.publicCatalogEnabled).toBe(true)
+      expect(result.publicSlug).toBe('mi-negocio')
+      expect(result.whatsappNumber).toBe('5512345678')
+      expect(result.publicIntro).toBe('Hola')
+    })
+
+    it('debería devolver defaultSettings cuando no hay fila', async () => {
+      const maybeSingleMock = vi.fn().mockResolvedValue({ data: null, error: null })
+      const eqMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqMock })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockReturnValue({ select: selectMock })
+
+      const { loadSettings } = await import('./repository.ts')
+      const result = await loadSettings(mockUser)
+
+      expect(result.businessName).toBe('Mi negocio')
+      expect(result.currency).toBe('MXN')
+      expect(result.lowStockThreshold).toBe(5)
+      expect(result.publicCatalogEnabled).toBe(false)
+    })
+
+    it('debería propagar errores de la consulta', async () => {
+      const maybeSingleMock = vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: 'DB error' },
+      })
+      const eqMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqMock })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockReturnValue({ select: selectMock })
+
+      const { loadSettings } = await import('./repository.ts')
+      await expect(loadSettings(mockUser)).rejects.toThrow('DB error')
+    })
+  })
+
+  describe('saveSettings', () => {
+    it('debería hacer upsert y devolver settings guardados', async () => {
+      const savedRow = {
+        business_name: 'Nuevo',
+        currency: 'EUR',
+        low_stock_threshold: 3,
+        public_catalog_enabled: false,
+        public_slug: '',
+        whatsapp_number: '',
+        public_intro: '',
+      }
+      const singleMock = vi.fn().mockResolvedValue({ data: savedRow, error: null })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const upsertMock = vi.fn().mockReturnValue({ select: selectMock })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockReturnValue({ upsert: upsertMock })
+
+      const { saveSettings } = await import('./repository.ts')
+      const result = await saveSettings(mockUser, {
+        businessName: 'Nuevo',
+        currency: 'EUR',
+        lowStockThreshold: 3,
+        publicCatalogEnabled: false,
+        publicSlug: '',
+        whatsappNumber: '',
+        publicIntro: '',
+      })
+
+      expect(result.businessName).toBe('Nuevo')
+      expect(result.currency).toBe('EUR')
+      expect(upsertMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user_id: 'user-123',
+          business_name: 'Nuevo',
+          currency: 'EUR',
+        }),
+      )
+    })
+
+    it('debería manejar null en campos opcionales', async () => {
+      const savedRow = {
+        business_name: 'Test',
+        currency: 'MXN',
+        low_stock_threshold: 5,
+        public_catalog_enabled: false,
+        public_slug: null,
+        whatsapp_number: null,
+        public_intro: null,
+      }
+      const singleMock = vi.fn().mockResolvedValue({ data: savedRow, error: null })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const upsertMock = vi.fn().mockReturnValue({ select: selectMock })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockReturnValue({ upsert: upsertMock })
+
+      const { saveSettings } = await import('./repository.ts')
+      const result = await saveSettings(mockUser, {
+        businessName: 'Test',
+        currency: 'MXN',
+        lowStockThreshold: 5,
+        publicCatalogEnabled: false,
+        publicSlug: null as unknown as string,
+        whatsappNumber: null as unknown as string,
+        publicIntro: null as unknown as string,
+      })
+
+      expect(result.publicSlug).toBe('')
+      expect(result.whatsappNumber).toBe('')
+      expect(result.publicIntro).toBe('')
+    })
+
+    it('debería propagar errores del upsert', async () => {
+      const singleMock = vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: 'upsert failed' },
+      })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const upsertMock = vi.fn().mockReturnValue({ select: selectMock })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockReturnValue({ upsert: upsertMock })
+
+      const { saveSettings } = await import('./repository.ts')
+      await expect(
+        saveSettings(mockUser, {
+          businessName: 'Test',
+          currency: 'MXN',
+          lowStockThreshold: 5,
+          publicCatalogEnabled: false,
+          publicSlug: '',
+          whatsappNumber: '',
+          publicIntro: '',
+        }),
+      ).rejects.toThrow('upsert failed')
+    })
   })
 })
 
