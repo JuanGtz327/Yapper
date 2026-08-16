@@ -48,6 +48,6 @@
   - [x] 19c. **E2E foundation** - configurar Playwright, entorno aislado, autenticación reutilizable, fixtures, seed y comandos
   - [x] 19d. **Order lifecycle E2E** - crear pedido completo, calcular total, guardar, registrar pago, cambiar estado y verificar inventario
   - [x] 19e. **Inventory and product lifecycle E2E** - crear producto, categoría, opciones y variante; actualizar individualmente título, precio, costo, SKU y stock
-  - [ ] 19f. **Clients and payments E2E** - alta/edición de cliente, historial, pagos parciales y pagos completos
+  - [x] 19f. **Clients and payments E2E** - alta/edición de cliente, historial, pagos parciales y pagos completos
   - [ ] 19g. **Catalog, settings, stats and auth E2E** - autenticación, configuración, publicación del catálogo, acceso público y estadísticas
 - [ ] 20. **Deploy readiness** - Vercel or Render config, env vars, production build verification
