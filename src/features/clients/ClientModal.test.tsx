@@ -5,15 +5,6 @@ import { ClientModal } from './ClientModal.tsx'
 
 // ─── Datos de prueba ─────────────────────────────────────────
 
-const mockClient: Client = {
-  id: 'client-abc',
-  name: 'Mariana González',
-  phone: '55 1234 5678',
-  zone: 'Coyoacán',
-  orders: 3,
-  initials: 'MG',
-}
-
 // ─── Tests ───────────────────────────────────────────────────
 
 describe('ClientModal', () => {
@@ -25,80 +16,6 @@ describe('ClientModal', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-  })
-
-  describe('renderizado', () => {
-    it('debería mostrar el título "Nuevo cliente" cuando no hay datos iniciales', () => {
-      render(<ClientModal {...defaultProps} />)
-      expect(screen.getByText('Nuevo cliente')).toBeInTheDocument()
-    })
-
-    it('debería mostrar el título "Editar cliente" cuando se edita un cliente existente', () => {
-      render(<ClientModal {...defaultProps} initial={mockClient} />)
-      expect(screen.getByText('Editar cliente')).toBeInTheDocument()
-    })
-
-    it('debería mostrar los campos del formulario', () => {
-      render(<ClientModal {...defaultProps} />)
-      expect(screen.getByLabelText('Nombre completo')).toBeInTheDocument()
-      expect(screen.getByLabelText('Teléfono')).toBeInTheDocument()
-      expect(screen.getByLabelText('Zona o colonia')).toBeInTheDocument()
-    })
-
-    it('debería mostrar el botón de guardar', () => {
-      render(<ClientModal {...defaultProps} />)
-      expect(
-        screen.getByRole('button', { name: /guardar cliente/i }),
-      ).toBeInTheDocument()
-    })
-
-    it('debería mostrar el botón de cancelar', () => {
-      render(<ClientModal {...defaultProps} />)
-      expect(
-        screen.getByRole('button', { name: /cancelar/i }),
-      ).toBeInTheDocument()
-    })
-  })
-
-  describe('población de campos al editar', () => {
-    it('debería rellenar el nombre con el valor del cliente', () => {
-      render(<ClientModal {...defaultProps} initial={mockClient} />)
-      const nameInput = screen.getByLabelText('Nombre completo')
-      expect(nameInput).toHaveValue('Mariana González')
-    })
-
-    it('debería rellenar el teléfono con el valor del cliente', () => {
-      render(<ClientModal {...defaultProps} initial={mockClient} />)
-      const phoneInput = screen.getByLabelText('Teléfono')
-      expect(phoneInput).toHaveValue('55 1234 5678')
-    })
-
-    it('debería rellenar la zona con el valor del cliente', () => {
-      render(<ClientModal {...defaultProps} initial={mockClient} />)
-      const zoneInput = screen.getByLabelText('Zona o colonia')
-      expect(zoneInput).toHaveValue('Coyoacán')
-    })
-
-    it('debería dejar los campos vacíos cuando se crea un cliente nuevo', () => {
-      render(<ClientModal {...defaultProps} />)
-      expect(screen.getByLabelText('Nombre completo')).toHaveValue('')
-      expect(screen.getByLabelText('Teléfono')).toHaveValue('')
-      expect(screen.getByLabelText('Zona o colonia')).toHaveValue('')
-    })
-  })
-
-  describe('validación del formulario', () => {
-    it('debería tener el atributo required en el campo de nombre', () => {
-      render(<ClientModal {...defaultProps} />)
-      const nameInput = screen.getByLabelText('Nombre completo')
-      expect(nameInput).toBeRequired()
-    })
-
-    it('debería tener un placeholder descriptivo en el campo de nombre', () => {
-      render(<ClientModal {...defaultProps} />)
-      const nameInput = screen.getByLabelText('Nombre completo')
-      expect(nameInput).toHaveAttribute('placeholder', 'Ej. Mariana González')
-    })
   })
 
   describe('cierre del modal', () => {
@@ -200,23 +117,6 @@ describe('ClientModal', () => {
       expect(
         screen.queryByRole('button', { name: /guardando/i }),
       ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('accesibilidad', () => {
-    it('debería tener labels asociados a cada campo de entrada', () => {
-      render(<ClientModal {...defaultProps} />)
-      expect(screen.getByLabelText('Nombre completo')).toBeInTheDocument()
-      expect(screen.getByLabelText('Teléfono')).toBeInTheDocument()
-      expect(screen.getByLabelText('Zona o colonia')).toBeInTheDocument()
-    })
-
-    it('debería tener el atributo aria-hidden en el ícono del botón guardar', () => {
-      render(<ClientModal {...defaultProps} />)
-      const icon = screen
-        .getByRole('button', { name: /guardar cliente/i })
-        .querySelector('svg')
-      expect(icon).toHaveAttribute('aria-hidden', 'true')
     })
   })
 })

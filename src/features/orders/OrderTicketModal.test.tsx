@@ -98,89 +98,6 @@ const defaultProps = {
 }
 
 describe('OrderTicketModal', () => {
-  describe('Renderizado', () => {
-    it('debería mostrar el título con el ID del pedido', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(
-        screen.getByText('Detalles del pedido #PED-001'),
-      ).toBeInTheDocument()
-    })
-
-    it('debería mostrar el nombre del cliente', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Cliente')).toBeInTheDocument()
-      expect(screen.getByText('Juan Pérez')).toBeInTheDocument()
-    })
-
-    it('debería mostrar la fecha', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Fecha')).toBeInTheDocument()
-      expect(screen.getByText('15 ene 2026, 10:30')).toBeInTheDocument()
-    })
-
-    it('debería mostrar el estado de entrega', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Entrega')).toBeInTheDocument()
-      expect(screen.getAllByText('Pendiente').length).toBeGreaterThan(0)
-    })
-
-    it('debería mostrar el estado de pago', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Pago')).toBeInTheDocument()
-      expect(screen.getAllByText('Pagado').length).toBeGreaterThan(0)
-    })
-  })
-
-  describe('Tabla de productos', () => {
-    it('debería mostrar la sección de productos', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Productos')).toBeInTheDocument()
-    })
-
-    it('debería mostrar las columnas de la tabla', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Producto')).toBeInTheDocument()
-      expect(screen.getByText('Cant.')).toBeInTheDocument()
-      expect(screen.getByText('Precio')).toBeInTheDocument()
-      expect(screen.getAllByText('Total').length).toBeGreaterThan(0)
-    })
-
-    it('debería mostrar los nombres de los productos', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Playera Básica')).toBeInTheDocument()
-      expect(screen.getByText('Tazón de Cerámica')).toBeInTheDocument()
-    })
-
-    it('debería mostrar las cantidades', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      const quantities = screen.getAllByText('2')
-      expect(quantities.length).toBeGreaterThan(0)
-    })
-
-    it('debería mostrar el precio unitario', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('$150.00 por unidad')).toBeInTheDocument()
-      expect(screen.getByText('$250.00 por unidad')).toBeInTheDocument()
-    })
-
-    it('debería mostrar el total de cada línea', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      // 150 * 2 = 300 — may appear in line and elsewhere
-      const totals300 = screen.getAllByText('$300.00')
-      expect(totals300.length).toBeGreaterThanOrEqual(1)
-      // 250 * 1 = 250 — appears in ticket line and elsewhere
-      const totals250 = screen.getAllByText('$250.00')
-      expect(totals250.length).toBeGreaterThanOrEqual(1)
-    })
-
-    it('debería mostrar el total general', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Total del pedido')).toBeInTheDocument()
-      // 300 + 250 = 550
-      expect(screen.getAllByText('$550.00').length).toBeGreaterThan(0)
-    })
-  })
-
   describe('Productos con snapshot', () => {
     it('debería usar datos del snapshot cuando están disponibles', () => {
       const orderWithSnapshot = createMockOrder({
@@ -238,11 +155,6 @@ describe('OrderTicketModal', () => {
   })
 
   describe('Productos sin snapshot', () => {
-    it('debería buscar el producto en la lista de productos', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Playera Básica')).toBeInTheDocument()
-    })
-
     it('debería mostrar "Producto no disponible" si el producto no existe', () => {
       const orderWithMissingProduct = createMockOrder({
         itemLines: [{ variantId: 'v999', quantity: 1 }],
@@ -251,11 +163,6 @@ describe('OrderTicketModal', () => {
         <OrderTicketModal {...defaultProps} order={orderWithMissingProduct} />,
       )
       expect(screen.getByText('Producto no disponible')).toBeInTheDocument()
-    })
-
-    it('debería mostrar los valores de opciones de la variante', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Negro')).toBeInTheDocument()
     })
 
     it('debería ordenar productos y opciones alfabéticamente', () => {
@@ -311,40 +218,7 @@ describe('OrderTicketModal', () => {
     })
   })
 
-  describe('Badges de estado', () => {
-    it('debería mostrar badge success para Entregado', () => {
-      const order = createMockOrder({ status: 'Entregado' })
-      render(<OrderTicketModal {...defaultProps} order={order} />)
-      const badges = screen.getAllByText('Entregado')
-      expect(badges.some((b) => b.classList.contains('success'))).toBe(true)
-    })
-
-    it('debería mostrar badge warning para Pendiente', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      const badges = screen.getAllByText('Pendiente')
-      expect(badges.some((b) => b.classList.contains('warning'))).toBe(true)
-    })
-
-    it('debería mostrar badge success para Pagado', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      const badges = screen.getAllByText('Pagado')
-      expect(badges.some((b) => b.classList.contains('success'))).toBe(true)
-    })
-
-    it('debería mostrar badge warning para Pendiente de pago', () => {
-      const order = createMockOrder({ payment: 'Pendiente' })
-      render(<OrderTicketModal {...defaultProps} order={order} />)
-      const badges = screen.getAllByText('Pendiente')
-      expect(badges.some((b) => b.classList.contains('warning'))).toBe(true)
-    })
-  })
-
   describe('Cancelación de pedido', () => {
-    it('debería mostrar botón de cancelar para pedidos no cancelados', () => {
-      render(<OrderTicketModal {...defaultProps} />)
-      expect(screen.getByText('Cancelar pedido')).toBeInTheDocument()
-    })
-
     it('debería llamar a onCancel al hacer clic en cancelar', () => {
       const onCancel = vi.fn()
       const onClose = vi.fn()

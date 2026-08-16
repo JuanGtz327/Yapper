@@ -66,12 +66,15 @@ export function CatalogCard({
   lowStockThreshold?: number
 }) {
   const imageUrl = safeImageUrl(product.imageUrl)
-  const selectedIdx = selectedVariantId != null
-    ? (() => {
-        const byId = product.variants.findIndex((v) => v.id === selectedVariantId)
-        return byId >= 0 ? byId : Number(selectedVariantId) || 0
-      })()
-    : 0
+  const selectedIdx =
+    selectedVariantId != null
+      ? (() => {
+          const byId = product.variants.findIndex(
+            (v) => v.id === selectedVariantId,
+          )
+          return byId >= 0 ? byId : Number(selectedVariantId) || 0
+        })()
+      : 0
   const selected = product.variants[selectedIdx] ?? product.variants[0]
   const variantHint = selected?.name ? ` (${selected.name})` : ''
 
@@ -137,11 +140,8 @@ export function CatalogCard({
                   <span
                     className="block w-[22px] h-[22px] rounded-full transition-all duration-200"
                     style={{
-                      backgroundColor:
-                        sphereColors[idx % sphereColors.length],
-                      transform: isSelected
-                        ? 'scale(1.15)'
-                        : 'scale(1)',
+                      backgroundColor: sphereColors[idx % sphereColors.length],
+                      transform: isSelected ? 'scale(1.15)' : 'scale(1)',
                       boxShadow: isSelected
                         ? `0 0 0 2px #fff, 0 0 0 3.5px ${sphereColors[idx % sphereColors.length]}`
                         : '0 1px 3px rgba(0,0,0,0.12)',
@@ -164,12 +164,18 @@ export function CatalogCard({
                 ? 'bg-[#ccc] text-[#888] pointer-events-none cursor-not-allowed'
                 : 'text-white bg-[#258c67] hover:bg-[#1e7657]'
             }`}
-            href={selected?.stock === 0 ? undefined : `https://wa.me/${whatsapp.number}?text=${encodeURIComponent(`Hola, ${whatsapp.businessName}. Me interesa ${product.name}${variantHint}. Vi su catálogo público.`)}`}
+            href={
+              selected?.stock === 0
+                ? undefined
+                : `https://wa.me/${whatsapp.number}?text=${encodeURIComponent(`Hola, ${whatsapp.businessName}. Me interesa ${product.name}${variantHint}. Vi su catálogo público.`)}`
+            }
             aria-disabled={selected?.stock === 0}
             tabIndex={selected?.stock === 0 ? -1 : undefined}
           >
             <MessageCircle size={17} />
-            {selected?.stock === 0 ? 'Sin stock disponible' : 'Preguntar por WhatsApp'}
+            {selected?.stock === 0
+              ? 'Sin stock disponible'
+              : 'Preguntar por WhatsApp'}
           </a>
         )}
       </div>

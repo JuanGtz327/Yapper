@@ -56,42 +56,6 @@ const defaultProps = {
 }
 
 describe('DashboardPage', () => {
-  describe('Renderizado', () => {
-    it('debería renderizar el título del resumen', () => {
-      render(<DashboardPage {...defaultProps} />)
-      expect(screen.getByText('Todo bajo control')).toBeInTheDocument()
-    })
-
-    it('debería renderizar la sección de ventas de 7 días', () => {
-      render(<DashboardPage {...defaultProps} />)
-      expect(screen.getByText('Ventas últimos 7 días')).toBeInTheDocument()
-    })
-
-    it('debería renderizar la sección de pedidos pendientes', () => {
-      render(<DashboardPage {...defaultProps} />)
-      expect(
-        screen.getByText('Pedidos pendientes de entrega'),
-      ).toBeInTheDocument()
-    })
-
-    it('debería renderizar la sección de productos activos', () => {
-      render(<DashboardPage {...defaultProps} />)
-      expect(screen.getByText('Productos activos')).toBeInTheDocument()
-    })
-
-    it('debería renderizar acciones rápidas', () => {
-      render(<DashboardPage {...defaultProps} />)
-      expect(screen.getByText('Nuevo pedido')).toBeInTheDocument()
-      expect(screen.getByText('Añadir producto')).toBeInTheDocument()
-      expect(screen.getByText('Nuevo cliente')).toBeInTheDocument()
-    })
-
-    it('debería renderizar ventas recientes', () => {
-      render(<DashboardPage {...defaultProps} />)
-      expect(screen.getByText('Ventas recientes')).toBeInTheDocument()
-    })
-  })
-
   describe('Cálculos', () => {
     it('debería contar solo pedidos no cancelados como activos', () => {
       const orders = [
@@ -161,31 +125,6 @@ describe('DashboardPage', () => {
       ]
       render(<DashboardPage {...defaultProps} orders={orders} />)
       expect(screen.getAllByText('0').length).toBeGreaterThan(0)
-    })
-  })
-
-  describe('Gráfico de ventas', () => {
-    it('debería renderizar barras del gráfico por cada día', () => {
-      const { container } = render(<DashboardPage {...defaultProps} />)
-      const barChart = container.querySelector('[aria-label="Ventas por día"]')
-      expect(barChart).toBeInTheDocument()
-      expect(barChart!.querySelectorAll('span')).toHaveLength(
-        defaultSales.length,
-      )
-    })
-
-    it('debería mostrar mensaje de vacío cuando no hay ventas', () => {
-      render(<DashboardPage {...defaultProps} sales={[]} />)
-      expect(
-        screen.getByText('Aún no hay ventas en este periodo.'),
-      ).toBeInTheDocument()
-    })
-
-    it('debería renderizar las etiquetas de días', () => {
-      render(<DashboardPage {...defaultProps} />)
-      expect(screen.getByText('Lun')).toBeInTheDocument()
-      expect(screen.getByText('Mar')).toBeInTheDocument()
-      expect(screen.getByText('Mié')).toBeInTheDocument()
     })
   })
 

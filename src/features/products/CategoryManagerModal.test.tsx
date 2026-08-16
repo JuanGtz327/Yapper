@@ -42,37 +42,6 @@ describe('CategoryManagerModal', () => {
     vi.clearAllMocks()
   })
 
-  describe('Renderizado', () => {
-    it('debería mostrar el título "Categorías"', () => {
-      render(<CategoryManagerModal {...defaultProps} />)
-      expect(screen.getByText('Categorías')).toBeInTheDocument()
-    })
-
-    it('debería mostrar el campo de entrada para nueva categoría', () => {
-      render(<CategoryManagerModal {...defaultProps} />)
-      expect(
-        screen.getByPlaceholderText('Nueva categoría...'),
-      ).toBeInTheDocument()
-    })
-
-    it('debería mostrar el botón de añadir', () => {
-      render(<CategoryManagerModal {...defaultProps} />)
-      expect(screen.getByText('Añadir')).toBeInTheDocument()
-    })
-
-    it('debería mostrar la lista de categorías existentes', () => {
-      render(<CategoryManagerModal {...defaultProps} />)
-      expect(screen.getByText('Ropa')).toBeInTheDocument()
-      expect(screen.getByText('Accesorios')).toBeInTheDocument()
-      expect(screen.getByText('Electrónica')).toBeInTheDocument()
-    })
-
-    it('debería mostrar botón de cerrar', () => {
-      render(<CategoryManagerModal {...defaultProps} />)
-      expect(screen.getByLabelText('Cerrar')).toBeInTheDocument()
-    })
-  })
-
   describe('Estado vacío', () => {
     it('debería mostrar mensaje cuando no hay categorías', () => {
       render(<CategoryManagerModal {...defaultProps} categories={[]} />)
@@ -262,21 +231,6 @@ describe('CategoryManagerModal', () => {
       fireEvent.click(screen.getByLabelText('Cerrar'))
 
       expect(onClose).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('Accesibilidad', () => {
-    it('debería tener aria-label en el campo de entrada', () => {
-      render(<CategoryManagerModal {...defaultProps} />)
-      expect(
-        screen.getByLabelText('Nombre de la nueva categoría'),
-      ).toBeInTheDocument()
-    })
-
-    it('debería tener aria-label en botones de eliminar', () => {
-      render(<CategoryManagerModal {...defaultProps} />)
-      expect(screen.getByLabelText('Eliminar Ropa')).toBeInTheDocument()
-      expect(screen.getByLabelText('Eliminar Accesorios')).toBeInTheDocument()
     })
   })
 })

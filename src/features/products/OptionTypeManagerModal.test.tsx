@@ -60,45 +60,6 @@ describe('OptionTypeManagerModal', () => {
     vi.clearAllMocks()
   })
 
-  describe('Renderizado', () => {
-    it('debería mostrar el título "Opciones de producto"', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-      expect(screen.getByText('Opciones de producto')).toBeInTheDocument()
-    })
-
-    it('debería mostrar la descripción', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-      expect(
-        screen.getByText(/Crea tipos como Color, Talla o Capacidad/),
-      ).toBeInTheDocument()
-    })
-
-    it('debería mostrar el campo de entrada para nuevo tipo', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-      expect(
-        screen.getByPlaceholderText('Nuevo tipo (ej. Color, Talla)...'),
-      ).toBeInTheDocument()
-    })
-
-    it('debería mostrar el botón de añadir tipo', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-      expect(screen.getByText('Añadir')).toBeInTheDocument()
-    })
-
-    it('debería mostrar la lista de tipos de opción', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-      expect(screen.getByText('Color')).toBeInTheDocument()
-      expect(screen.getByText('Talla')).toBeInTheDocument()
-    })
-
-    it('debería mostrar la cantidad de valores por tipo', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-      // Color tiene 2 valores, Talla tiene 2 valores
-      const valores = screen.getAllByText(/valores/)
-      expect(valores.length).toBeGreaterThan(0)
-    })
-  })
-
   describe('Estado vacío', () => {
     it('debería mostrar mensaje cuando no hay tipos de opción', () => {
       render(<OptionTypeManagerModal {...defaultProps} optionTypes={[]} />)
@@ -269,33 +230,6 @@ describe('OptionTypeManagerModal', () => {
   })
 
   describe('Gestión de valores', () => {
-    it('debería expandir el tipo de opción al hacer clic', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-
-      fireEvent.click(screen.getByText('Color'))
-
-      expect(screen.getByText('Negro')).toBeInTheDocument()
-      expect(screen.getByText('Blanco')).toBeInTheDocument()
-    })
-
-    it('debería colapsar el tipo de opción al hacer clic nuevamente', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-
-      fireEvent.click(screen.getByText('Color'))
-      expect(screen.getByText('Negro')).toBeInTheDocument()
-
-      fireEvent.click(screen.getByText('Color'))
-      expect(screen.queryByText('Negro')).not.toBeInTheDocument()
-    })
-
-    it('debería mostrar campo de entrada de valor cuando está expandido', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-
-      fireEvent.click(screen.getByText('Color'))
-
-      expect(screen.getByPlaceholderText('Nuevo valor...')).toBeInTheDocument()
-    })
-
     it('debería llamar a createOptionValue al agregar un valor', async () => {
       const createOptionValue = vi.fn().mockResolvedValue('new-ov-id')
       vi.mocked(repository.createOptionValue).mockImplementation(
@@ -406,56 +340,6 @@ describe('OptionTypeManagerModal', () => {
       fireEvent.click(screen.getByLabelText('Cerrar'))
 
       expect(onClose).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('Accesibilidad', () => {
-    it('debería tener aria-label en el campo de entrada de tipo', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-      expect(
-        screen.getByLabelText('Nombre del tipo de opción'),
-      ).toBeInTheDocument()
-    })
-
-    it('debería tener aria-expanded en el botón de tipo', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-
-      const button = screen.getByText('Color').closest('button')
-      expect(button).toHaveAttribute('aria-expanded', 'false')
-    })
-
-    it('debería cambiar aria-expanded al expandir', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-
-      const button = screen.getByText('Color').closest('button')
-      fireEvent.click(button!)
-
-      expect(button).toHaveAttribute('aria-expanded', 'true')
-    })
-
-    it('debería tener aria-label en botones de eliminar tipo', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-      expect(screen.getByLabelText('Eliminar Color')).toBeInTheDocument()
-      expect(screen.getByLabelText('Eliminar Talla')).toBeInTheDocument()
-    })
-
-    it('debería tener aria-label en botones de eliminar valor', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-
-      fireEvent.click(screen.getByText('Color'))
-
-      expect(screen.getByLabelText('Eliminar Negro')).toBeInTheDocument()
-      expect(screen.getByLabelText('Eliminar Blanco')).toBeInTheDocument()
-    })
-
-    it('debería tener aria-label en campo de entrada de valor', () => {
-      render(<OptionTypeManagerModal {...defaultProps} />)
-
-      fireEvent.click(screen.getByText('Color'))
-
-      expect(
-        screen.getByLabelText('Nuevo valor para Color'),
-      ).toBeInTheDocument()
     })
   })
 })

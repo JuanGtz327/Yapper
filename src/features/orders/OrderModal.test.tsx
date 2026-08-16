@@ -71,64 +71,6 @@ describe('OrderModal', () => {
     Element.prototype.scrollIntoView = vi.fn()
   })
 
-  describe('Renderizado', () => {
-    it('debería mostrar el título "Crear pedido"', () => {
-      render(<OrderModal {...defaultProps} />)
-      expect(screen.getByText('Crear pedido')).toBeInTheDocument()
-    })
-
-    it('debería mostrar el select de clientes', () => {
-      render(<OrderModal {...defaultProps} />)
-      expect(screen.getByText('Cliente')).toBeInTheDocument()
-    })
-
-    it('debería mostrar los clientes disponibles', async () => {
-      const user = userEvent.setup()
-      render(<OrderModal {...defaultProps} />)
-      const dialog = screen.getByRole('dialog')
-      const clientLabel = within(dialog).getByText('Cliente').closest('label')!
-      const trigger = clientLabel.querySelector('.custom-select-trigger')!
-      await user.click(trigger)
-      expect(
-        screen.getByRole('option', { name: 'Juan Pérez' }),
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('option', { name: 'María García' }),
-      ).toBeInTheDocument()
-    })
-
-    it('debería mostrar el select de estado de pago', () => {
-      render(<OrderModal {...defaultProps} />)
-      expect(screen.getByText('Estado del pago')).toBeInTheDocument()
-    })
-
-    it('debería mostrar las opciones de pago', async () => {
-      const user = userEvent.setup()
-      render(<OrderModal {...defaultProps} />)
-      const trigger = screen.getByRole('button', { name: /estado del pago/i })
-      await user.click(trigger)
-      expect(screen.getByRole('option', { name: 'Pagado' })).toBeInTheDocument()
-      expect(
-        screen.getByRole('option', { name: 'Pendiente de pago' }),
-      ).toBeInTheDocument()
-    })
-
-    it('debería mostrar el total del pedido', () => {
-      render(<OrderModal {...defaultProps} />)
-      expect(screen.getByText('Total del pedido')).toBeInTheDocument()
-    })
-
-    it('debería mostrar el botón de guardar', () => {
-      render(<OrderModal {...defaultProps} />)
-      expect(screen.getByText('Guardar pedido')).toBeInTheDocument()
-    })
-
-    it('debería mostrar el botón de cancelar', () => {
-      render(<OrderModal {...defaultProps} />)
-      expect(screen.getByText('Cancelar')).toBeInTheDocument()
-    })
-  })
-
   describe('Líneas de producto', () => {
     it('debería mostrar al menos una línea de producto', () => {
       render(<OrderModal {...defaultProps} />)

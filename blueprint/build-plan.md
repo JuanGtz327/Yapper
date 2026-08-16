@@ -39,5 +39,12 @@
     - [x] 18e. Clients, Settings, Stats restyle - ClientsPage, ClientModal, SettingsPage, StatsPage
     - [x] 18e2. Auth & Catalog restyle - AuthScreen, CatalogPage, PublicCatalogPage
   - [x] 18f. Cleanup - remove App.css, verify responsive behavior, final pass
-- [ ] 19. **Test coverage** - expand tests for critical business logic (orders, payments, product mutations)
+- [ ] 19. **Business test strategy** - estrategia de pruebas centrada en reglas y flujos de negocio
+  - [x] 19a. **Test audit and cleanup** - eliminar tests que solo validan renderizado, clases o textos sin comportamiento relevante
+  - [ ] 19b. **Unit tests for business actions** - probar cada acción importante de productos, variantes, inventario, pedidos, pagos, clientes y configuración
+  - [ ] 19c. **E2E foundation** - configurar Playwright, entorno aislado, autenticación reutilizable, fixtures, seed y comandos
+  - [ ] 19d. **Order lifecycle E2E** - crear pedido completo, calcular total, guardar, registrar pago, cambiar estado y verificar inventario
+  - [ ] 19e. **Inventory and product lifecycle E2E** - crear producto, categoría, opciones y variante; actualizar individualmente título, precio, costo, SKU y stock
+  - [ ] 19f. **Clients and payments E2E** - alta/edición de cliente, historial, pagos parciales y pagos completos
+  - [ ] 19g. **Catalog, settings, stats and auth E2E** - autenticación, configuración, publicación del catálogo, acceso público y estadísticas
 - [ ] 20. **Deploy readiness** - Vercel or Render config, env vars, production build verification

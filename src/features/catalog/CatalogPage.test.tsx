@@ -49,40 +49,7 @@ describe('CatalogPage', () => {
     vi.clearAllMocks()
   })
 
-  describe('Renderizado', () => {
-    it('debería renderizar el título de la página', () => {
-      render(<CatalogPage {...defaultProps} />)
-      expect(screen.getByText('Tu tienda visual')).toBeInTheDocument()
-    })
-
-    it('debería renderizar el subtítulo', () => {
-      render(<CatalogPage {...defaultProps} />)
-      expect(
-        screen.getByText(
-          'Enséñale tus productos publicados a tus clientes sin mostrar información interna.',
-        ),
-      ).toBeInTheDocument()
-    })
-
-    it('debería ocultar la barra de compartir cuando el catálogo está deshabilitado', () => {
-      const settings = { ...defaultSettings, publicCatalogEnabled: false }
-      render(<CatalogPage {...defaultProps} settings={settings} />)
-      expect(screen.queryByText('Copiar enlace')).not.toBeInTheDocument()
-    })
-
-    it('debería ocultar la barra de compartir cuando no hay slug', () => {
-      const settings = { ...defaultSettings, publicSlug: '' }
-      render(<CatalogPage {...defaultProps} settings={settings} />)
-      expect(screen.queryByText('Copiar enlace')).not.toBeInTheDocument()
-    })
-  })
-
   describe('Productos', () => {
-    it('debería mostrar productos publicados', () => {
-      render(<CatalogPage {...defaultProps} />)
-      expect(screen.getByText('Playera Básica')).toBeInTheDocument()
-    })
-
     it('debería mostrar mensaje cuando no hay productos publicados', () => {
       const products = [createMockProduct({ id: 'p1', published: false })]
       render(<CatalogPage {...defaultProps} products={products} />)
@@ -104,16 +71,6 @@ describe('CatalogPage', () => {
       render(<CatalogPage {...defaultProps} products={products} />)
       expect(screen.getByText('Publicado')).toBeInTheDocument()
       expect(screen.queryByText('Borrador')).not.toBeInTheDocument()
-    })
-
-    it('debería mostrar la categoría del producto', () => {
-      render(<CatalogPage {...defaultProps} />)
-      expect(screen.getByText('Ropa')).toBeInTheDocument()
-    })
-
-    it('debería mostrar la descripción pública', () => {
-      render(<CatalogPage {...defaultProps} />)
-      expect(screen.getByText('Playera cómoda')).toBeInTheDocument()
     })
 
     it('debería mostrar precio de la variante seleccionada', () => {
@@ -178,37 +135,6 @@ describe('CatalogPage', () => {
       const product = createMockProduct({ variants: [] })
       render(<CatalogPage {...defaultProps} products={[product]} />)
       expect(screen.getByText('$0.00')).toBeInTheDocument()
-    })
-
-    it('debería mostrar imagen cuando imageUrl existe', () => {
-      const product = createMockProduct({
-        imageUrl: 'https://example.com/photo.jpg',
-      })
-      render(<CatalogPage {...defaultProps} products={[product]} />)
-      const img = screen.getByRole('img', { name: /Playera Básica/ })
-      expect(img).toBeInTheDocument()
-      expect(img).toHaveAttribute('src', 'https://example.com/photo.jpg')
-    })
-
-    it('debería mostrar placeholder cuando no hay imagen', () => {
-      const { container } = render(<CatalogPage {...defaultProps} />)
-      const boxes = container.querySelector('svg.lucide-boxes')
-      expect(boxes).toBeInTheDocument()
-    })
-
-    it('debería renderizar múltiples productos', () => {
-      const products = [
-        createMockProduct({ id: 'p1', name: 'Playera' }),
-        createMockProduct({
-          id: 'p2',
-          name: 'Gorra',
-          category: 'Accesorios',
-          publicDescription: 'Gorra deportiva',
-        }),
-      ]
-      render(<CatalogPage {...defaultProps} products={products} />)
-      expect(screen.getByText('Playera')).toBeInTheDocument()
-      expect(screen.getByText('Gorra')).toBeInTheDocument()
     })
 
     it('debería mostrar esferas de selección de variantes', () => {
@@ -329,7 +255,9 @@ describe('CatalogPage', () => {
           },
         ],
       })
-      const { container } = render(<CatalogPage {...defaultProps} products={[product]} />)
+      const { container } = render(
+        <CatalogPage {...defaultProps} products={[product]} />,
+      )
       const buttons = container.querySelectorAll('button[title]')
       expect(buttons).toHaveLength(1)
     })

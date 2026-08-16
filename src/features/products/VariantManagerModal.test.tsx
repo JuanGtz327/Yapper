@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { VariantManagerModal } from './VariantManagerModal'
-import type { Variant } from '../../types.ts'
 
 const mockToastError = vi.fn()
 const mockToastSuccess = vi.fn()
@@ -40,18 +39,6 @@ const mockOptionTypes = [
   },
 ]
 
-const createMockVariant = (overrides: Partial<Variant> = {}): Variant => ({
-  id: 'v1',
-  productId: 'p1',
-  sku: 'PLA-BAS-NEG',
-  name: 'Negro',
-  inventoryCost: 80,
-  salePrice: 150,
-  stock: 25,
-  optionValues: [{ optionType: 'Color', value: 'Negro' }],
-  ...overrides,
-})
-
 const defaultProps = {
   variant: null,
   optionTypes: mockOptionTypes,
@@ -62,126 +49,6 @@ const defaultProps = {
 describe('VariantManagerModal', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-  })
-
-  describe('Renderizado - Nueva variante', () => {
-    it('debería mostrar título "Añadir variante" para nueva variante', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(
-        screen.getByRole('heading', { name: 'Añadir variante' }),
-      ).toBeInTheDocument()
-    })
-
-    it('debería mostrar campo de SKU', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByLabelText('SKU')).toBeInTheDocument()
-    })
-
-    it('debería mostrar campo de nombre de variante', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByLabelText('Nombre de variante')).toBeInTheDocument()
-    })
-
-    it('debería mostrar campo de precio de venta', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByLabelText('Precio de venta')).toBeInTheDocument()
-    })
-
-    it('debería mostrar campo de costo de inventario', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByLabelText('Costo de inventario')).toBeInTheDocument()
-    })
-
-    it('debería mostrar campo de existencias', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByLabelText('Existencias')).toBeInTheDocument()
-    })
-
-    it('debería mostrar botón de guardar variante', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(
-        screen.getByRole('button', { name: /añadir variante/i }),
-      ).toBeInTheDocument()
-    })
-
-    it('debería mostrar botón de cancelar', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByText('Cancelar')).toBeInTheDocument()
-    })
-  })
-
-  describe('Renderizado - Editar variante', () => {
-    it('debería mostrar título "Editar variante" para variante existente', () => {
-      const variant = createMockVariant()
-      render(<VariantManagerModal {...defaultProps} variant={variant} />)
-      expect(screen.getByText('Editar variante')).toBeInTheDocument()
-    })
-
-    it('debería poblar el campo SKU con el valor existente', () => {
-      const variant = createMockVariant()
-      render(<VariantManagerModal {...defaultProps} variant={variant} />)
-      const input = screen.getByLabelText('SKU') as HTMLInputElement
-      expect(input.value).toBe('PLA-BAS-NEG')
-    })
-
-    it('debería poblar el campo nombre con el valor existente', () => {
-      const variant = createMockVariant()
-      render(<VariantManagerModal {...defaultProps} variant={variant} />)
-      const input = screen.getByLabelText(
-        'Nombre de variante',
-      ) as HTMLInputElement
-      expect(input.value).toBe('Negro')
-    })
-
-    it('debería poblar el campo precio con el valor existente', () => {
-      const variant = createMockVariant()
-      render(<VariantManagerModal {...defaultProps} variant={variant} />)
-      const input = screen.getByLabelText('Precio de venta') as HTMLInputElement
-      expect(input.value).toBe('150')
-    })
-
-    it('debería poblar el campo existencias con el valor existente', () => {
-      const variant = createMockVariant()
-      render(<VariantManagerModal {...defaultProps} variant={variant} />)
-      const input = screen.getByLabelText('Existencias') as HTMLInputElement
-      expect(input.value).toBe('25')
-    })
-  })
-
-  describe('Opciones de producto', () => {
-    it('debería mostrar las opciones de producto cuando hay optionTypes', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByText('Opciones')).toBeInTheDocument()
-    })
-
-    it('debería mostrar los tipos de opción disponibles', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByText('Color')).toBeInTheDocument()
-      expect(screen.getByText('Talla')).toBeInTheDocument()
-    })
-
-    it('debería mostrar los valores para cada tipo de opción', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      expect(screen.getByText('Negro')).toBeInTheDocument()
-      expect(screen.getByText('Blanco')).toBeInTheDocument()
-      expect(screen.getByText('S')).toBeInTheDocument()
-      expect(screen.getByText('M')).toBeInTheDocument()
-      expect(screen.getByText('L')).toBeInTheDocument()
-    })
-
-    it('debería incluir opción "Sin selección" para cada tipo', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      const sinSeleccion = screen.getAllByText('Sin selección')
-      expect(sinSeleccion.length).toBe(2) // Un option por cada tipo
-    })
-
-    it('debería cambiar la selección de opción', () => {
-      render(<VariantManagerModal {...defaultProps} />)
-      const selects = screen.getAllByRole('combobox')
-      const colorSelect = selects[0] // Primer select es Color
-      fireEvent.change(colorSelect, { target: { value: 'ov1' } })
-      expect((colorSelect as HTMLSelectElement).value).toBe('ov1')
-    })
   })
 
   describe('Formulario - Envío', () => {

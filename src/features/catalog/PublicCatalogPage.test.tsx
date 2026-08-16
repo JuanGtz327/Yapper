@@ -54,11 +54,6 @@ describe('PublicCatalogPage', () => {
     mockCatalogError = null
   })
 
-  it('debería renderizar productos del catálogo', () => {
-    render(<PublicCatalogPage slug="mi-negocio" />)
-    expect(screen.getByText('Playera')).toBeInTheDocument()
-  })
-
   it('debería mostrar estado de carga', () => {
     mockCatalogIsLoading = true
     mockCatalogData = undefined
@@ -91,12 +86,6 @@ describe('PublicCatalogPage', () => {
     expect(
       screen.getByText(/Aún no hay productos publicados/),
     ).toBeInTheDocument()
-  })
-
-  it('debería mostrar esferas de selección de variantes', () => {
-    render(<PublicCatalogPage slug="mi-negocio" />)
-    expect(screen.getByTitle('Negro')).toBeInTheDocument()
-    expect(screen.getByTitle('Blanco')).toBeInTheDocument()
   })
 
   it('debería mostrar precio de la variante seleccionada', () => {
@@ -153,50 +142,6 @@ describe('PublicCatalogPage', () => {
     expect(link?.getAttribute('href')).toContain(
       encodeURIComponent('Me interesa Playera (Blanco)'),
     )
-  })
-
-  it('debería mostrar una esfera por cada variante', () => {
-    mockCatalogData = {
-      ...defaultCatalog,
-      products: [
-        {
-          ...defaultCatalog.products[0],
-          variants: [
-            {
-              name: 'Negro M',
-              optionValues: [
-                { optionType: 'Color', value: 'Negro' },
-                { optionType: 'Talla', value: 'M' },
-              ],
-              salePrice: 150,
-              stock: 5,
-            },
-            {
-              name: 'Negro L',
-              optionValues: [
-                { optionType: 'Color', value: 'Negro' },
-                { optionType: 'Talla', value: 'L' },
-              ],
-              salePrice: 150,
-              stock: 3,
-            },
-            {
-              name: 'Blanco M',
-              optionValues: [
-                { optionType: 'Color', value: 'Blanco' },
-                { optionType: 'Talla', value: 'M' },
-              ],
-              salePrice: 160,
-              stock: 4,
-            },
-          ],
-        },
-      ],
-    }
-    render(<PublicCatalogPage slug="mi-negocio" />)
-    expect(screen.getByTitle('Negro M')).toBeInTheDocument()
-    expect(screen.getByTitle('Negro L')).toBeInTheDocument()
-    expect(screen.getByTitle('Blanco M')).toBeInTheDocument()
   })
 
   it('debería mostrar un círculo incluso con una sola variante', () => {
