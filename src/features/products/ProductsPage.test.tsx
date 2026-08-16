@@ -274,6 +274,19 @@ describe('ProductsPage', () => {
       fireEvent.click(screen.getAllByRole('row')[1])
       expect(onEdit).toHaveBeenCalledWith(product)
     })
+
+    it('debería usar onView cuando se proporciona para abrir el detalle', () => {
+      const onView = vi.fn()
+      const product = defaultProps.products[0]
+      render(<ProductsPage {...defaultProps} onView={onView} />)
+
+      fireEvent.click(
+        screen.getByRole('row', { name: `Abrir ${product.name}` }),
+      )
+
+      expect(onView).toHaveBeenCalledWith(product)
+      expect(defaultProps.onEdit).not.toHaveBeenCalled()
+    })
   })
 
   describe('Estado vacío', () => {

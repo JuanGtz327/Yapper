@@ -22,6 +22,8 @@ import type {
   PaginationParams,
   PaginatedResult,
   ProductFilters,
+  VariantPriceHistoryRow,
+  VariantPriceHistory,
 } from '../types.ts'
 import { safeImageUrl } from './security.ts'
 
@@ -177,6 +179,53 @@ async function hydrateProducts(user: User, products: ProductRow[]) {
       variants: productVariants,
     }
   })
+}
+
+// ─── PRODUCT DETAIL ──────────────────────────────────────────
+
+export async function loadProductById(
+  user: User,
+  productId: string,
+): Promise<Product | null> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, name, category_id, published, public_description, image_url')
+    .eq('user_id', user.id)
+    .eq('id', productId)
+    .maybeSingle()
+  if (error) throw error
+  if (!data) return null
+  const hydrated = await hydrateProducts(user, [data as ProductRow])
+  return hydrated[0] ?? null
+}
+
+export async function loadVariantPriceHistory(
+  user: User,
+  variantId: string,
+  from?: string,
+  to?: string,
+): Promise<VariantPriceHistory[]> {
+  let query = supabase
+    .from('variant_price_history')
+    .select(
+      'id, variant_id, product_id, sku, variant_name, sale_price, inventory_cost, changed_at',
+    )
+    .eq('user_id', user.id)
+    .eq('variant_id', variantId)
+  if (from) query = query.gte('changed_at', from)
+  if (to) query = query.lt('changed_at', to)
+  const { data, error } = await query.order('changed_at', { ascending: false })
+  if (error) throw error
+  return (data as VariantPriceHistoryRow[]).map((row) => ({
+    id: row.id,
+    variantId: row.variant_id,
+    productId: row.product_id,
+    sku: row.sku,
+    variantName: row.variant_name,
+    salePrice: Number(row.sale_price),
+    inventoryCost: Number(row.inventory_cost),
+    changedAt: row.changed_at,
+  }))
 }
 
 // ─── CATEGORIES ──────────────────────────────────────────────
@@ -481,6 +530,17 @@ export async function updateVariant(
     p_sale_price: variant.salePrice,
     p_stock: variant.stock,
     p_option_value_ids: variant.optionValueIds,
+  })
+  if (error) throw error
+}
+
+export async function updateVariantPrice(
+  variantId: string,
+  salePrice: number,
+): Promise<void> {
+  const { error } = await supabase.rpc('update_variant_price', {
+    p_variant_id: variantId,
+    p_sale_price: salePrice,
   })
   if (error) throw error
 }

@@ -6,6 +6,7 @@ import { useProductsMutations } from './queries/useProductsMutations.ts'
 import {
   createVariant,
   updateVariant,
+  updateVariantPrice,
   deleteVariant,
 } from '../lib/repository.ts'
 import { useToast, toastMessages } from './useToast.ts'
@@ -31,18 +32,22 @@ export function useProductEditor(user: User | null, qc: QueryClient) {
     })
   }
 
-  const handleProductSubmit = async (draft: ProductDraft): Promise<boolean> => {
-    if (productEditor?.mode === 'edit' && productEditor.product) {
+  const handleProductSubmit = async (
+    draft: ProductDraft,
+    productOverride?: Product | null,
+  ): Promise<boolean> => {
+    const editingProduct = productEditor?.product ?? productOverride ?? null
+    if (editingProduct) {
       try {
         await productMutations.update.mutateAsync({
-          ...productEditor.product,
+          ...editingProduct,
           name: draft.name,
           categoryId: draft.categoryId,
           published: draft.published,
           publicDescription: draft.publicDescription,
           imageUrl: draft.imageUrl || null,
         })
-        const existingVariants = productEditor.product.variants
+        const existingVariants = editingProduct.variants
 
         for (const existing of existingVariants) {
           if (!draft.variants.some((v) => v.id === existing.id)) {
@@ -52,16 +57,28 @@ export function useProductEditor(user: User | null, qc: QueryClient) {
 
         for (const v of draft.variants) {
           if (v.id && !v.id.startsWith('pending-')) {
-            await updateVariant(v.id, {
-              sku: v.sku,
-              name: v.name,
-              inventoryCost: v.inventoryCost,
-              salePrice: v.salePrice,
-              stock: v.stock,
-              optionValueIds: v.optionValueIds,
-            })
+            const existing = existingVariants.find((item) => item.id === v.id)
+            const onlyPriceChanged =
+              existing &&
+              existing.sku === v.sku &&
+              existing.name === v.name &&
+              existing.inventoryCost === v.inventoryCost &&
+              existing.stock === v.stock &&
+              existing.salePrice !== v.salePrice
+            if (onlyPriceChanged) {
+              await updateVariantPrice(v.id, v.salePrice)
+            } else {
+              await updateVariant(v.id, {
+                sku: v.sku,
+                name: v.name,
+                inventoryCost: v.inventoryCost,
+                salePrice: v.salePrice,
+                stock: v.stock,
+                optionValueIds: v.optionValueIds,
+              })
+            }
           } else {
-            await createVariant(productEditor.product.id, {
+            await createVariant(editingProduct.id, {
               sku: v.sku,
               name: v.name,
               inventoryCost: v.inventoryCost,
@@ -74,8 +91,14 @@ export function useProductEditor(user: User | null, qc: QueryClient) {
         toast.success(toastMessages.product.updated)
         void qc.invalidateQueries({ queryKey: qk.products(user) })
         return true
-      } catch {
-        toast.error('No pudimos guardar el producto. Inténtalo de nuevo.')
+      } catch (error: any) {
+        if (error?.code === '23505') {
+          toast.error(
+            'Ya existe otra variante con ese SKU. Usa un SKU diferente.',
+          )
+        } else {
+          toast.error('No pudimos guardar el producto. Inténtalo de nuevo.')
+        }
         return false
       }
     }
@@ -101,8 +124,14 @@ export function useProductEditor(user: User | null, qc: QueryClient) {
       toast.success(toastMessages.product.created)
       setProductEditor(null)
       return true
-    } catch {
-      toast.error('No pudimos guardar el producto. Inténtalo de nuevo.')
+    } catch (error: any) {
+      if (error?.code === '23505') {
+        toast.error(
+          'Ya existe otra variante con ese SKU. Usa un SKU diferente.',
+        )
+      } else {
+        toast.error('No pudimos guardar el producto. Inténtalo de nuevo.')
+      }
       return false
     }
   }

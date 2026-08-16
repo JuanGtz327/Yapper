@@ -142,7 +142,9 @@ export function VariantModal({
       <form className="grid gap-6" onSubmit={submit}>
         {/* ── INFORMACIÓN BÁSICA ─────────────────────────── */}
         <div className="grid gap-4">
-          <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">INFORMACIÓN BÁSICA</span>
+          <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+            INFORMACIÓN BÁSICA
+          </span>
           <label className="grid gap-[6px] text-[#716b72] text-[11px] font-bold">
             SKU
             <Input
@@ -204,7 +206,9 @@ export function VariantModal({
           <>
             <div className="h-px bg-[#e8e4e6]" />
             <div className="grid gap-4">
-              <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">OPCIONES</span>
+              <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
+                OPCIONES
+              </span>
               {selections.map((sel, idx) => {
                 const type = optionTypes.find((t) => t.id === sel.typeId)
                 const valuesForType = type?.values ?? []

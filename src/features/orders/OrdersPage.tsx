@@ -233,6 +233,16 @@ export function OrdersPage({
             </tr>
           </thead>
           <tbody>
+            {visibleOrders.length === 0 && (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="px-[14px] py-[40px] text-center text-muted-foreground text-sm"
+                >
+                  No hay pedidos para mostrar.
+                </td>
+              </tr>
+            )}
             {visibleOrders.map((order, idx) => (
               <tr
                 className={cn(
@@ -310,6 +320,11 @@ export function OrdersPage({
         aria-label="Pedidos"
       >
         <p className="sr-only">Selecciona un pedido para ver sus detalles.</p>
+        {visibleOrders.length === 0 && (
+          <p className="text-center text-muted-foreground text-sm py-8">
+            No hay pedidos para mostrar.
+          </p>
+        )}
         {visibleOrders.map((order) => (
           <article
             className="grid gap-[15px] p-[17px] border border-border rounded-[13px] bg-sidebar shadow-[0_5px_18px_rgba(48,39,46,0.03)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[#c9a3ca] focus-visible:outline-offset-2"

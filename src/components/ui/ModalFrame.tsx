@@ -24,7 +24,9 @@ export function ModalFrame({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className={cn('max-w-lg', className)}>
         <DialogHeader>
-          <DialogTitle className="text-[#6d3c72] text-lg font-bold">{title}</DialogTitle>
+          <DialogTitle className="text-[#6d3c72] text-lg font-bold">
+            {title}
+          </DialogTitle>
         </DialogHeader>
         <div className="h-px bg-[#e8e4e6]" />
         {children}

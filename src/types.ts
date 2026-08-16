@@ -225,3 +225,25 @@ export type OrderItemRow = {
   unit_cost_snapshot: number
   line_total: number
 }
+
+export type VariantPriceHistoryRow = {
+  id: string
+  variant_id: string | null
+  product_id: string | null
+  sku: string
+  variant_name: string
+  sale_price: number
+  inventory_cost: number
+  changed_at: string
+}
+
+export type VariantPriceHistory = {
+  id: string
+  variantId: string | null
+  productId: string | null
+  sku: string
+  variantName: string
+  salePrice: number
+  inventoryCost: number
+  changedAt: string
+}

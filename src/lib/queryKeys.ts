@@ -38,4 +38,8 @@ export const qk = {
   optionTypes: (user: User | null) =>
     ['users', uid(user), 'optionTypes'] as const,
   publicCatalog: (slug: string) => ['publicCatalog', slug] as const,
+  variantPriceHistory: (user: User | null, variantId: string) =>
+    ['users', uid(user), 'variantPriceHistory', variantId] as const,
+  productDetail: (user: User | null, productId: string) =>
+    ['users', uid(user), 'productDetail', productId] as const,
 }

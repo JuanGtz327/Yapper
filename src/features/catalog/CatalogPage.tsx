@@ -35,7 +35,7 @@ export function CatalogPage({
       <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
           <h1>Tu tienda visual</h1>
-          <p className='mt-0.5 ml-0.5'>
+          <p className="mt-0.5 ml-0.5">
             Enséñale tus productos publicados a tus clientes sin mostrar
             información interna.
           </p>

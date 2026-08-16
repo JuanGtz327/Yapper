@@ -78,6 +78,7 @@ export function ProductsPage({
   onAdd,
   onManageCategories,
   onEdit,
+  onView,
 }: {
   products: Product[]
   threshold: number
@@ -100,6 +101,7 @@ export function ProductsPage({
   onAdd: () => void
   onManageCategories: () => void
   onEdit: (product: Product) => void
+  onView?: (product: Product) => void
 }) {
   const [hoveredProductId, setHoveredProductId] = useState<string | null>(null)
   const [categoryFilter, setCategoryFilter] = useState('all')
@@ -135,6 +137,7 @@ export function ProductsPage({
   })
   const visibleProducts = serverPagination ? products : filtered
   const rows = flattenProducts(visibleProducts)
+  const openProduct = onView ?? onEdit
 
   const totalInvestment = products.reduce(
     (sum, product) =>
@@ -315,11 +318,11 @@ export function ProductsPage({
                       ? 'bg-[#f3eef4] cursor-pointer'
                       : '',
                   )}
-                  onClick={() => onEdit(row.product)}
+                  onClick={() => openProduct(row.product)}
                   onKeyDown={(event: KeyboardEvent<HTMLTableRowElement>) => {
                     if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault()
-                      onEdit(row.product)
+                      openProduct(row.product)
                     }
                   }}
                   onMouseEnter={() => setHoveredProductId(row.product.id)}

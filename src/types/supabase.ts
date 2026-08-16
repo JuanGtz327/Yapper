@@ -179,47 +179,6 @@ export type Database = {
           },
         ]
       }
-      order_payments: {
-        Row: {
-          amount: number
-          created_at: string
-          id: string
-          notes: string | null
-          order_id: string
-          payment_method: string
-          reference: string | null
-          user_id: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          id?: string
-          notes?: string | null
-          order_id: string
-          payment_method: string
-          reference?: string | null
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          id?: string
-          notes?: string | null
-          order_id?: string
-          payment_method?: string
-          reference?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "order_payments_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       order_items: {
         Row: {
           id: string
@@ -284,14 +243,54 @@ export type Database = {
           },
         ]
       }
+      order_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          notes: string | null
+          order_id: string
+          payment_method: string
+          reference: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id: string
+          payment_method: string
+          reference?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id?: string
+          payment_method?: string
+          reference?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           client_id: string | null
+          client_name_snapshot: string
           created_at: string
           delivered_at: string | null
           id: string
           notes: string
           order_number: string
+          paid_amount: number
           payment_status: string
           status: string
           total: number
@@ -299,11 +298,13 @@ export type Database = {
         }
         Insert: {
           client_id?: string | null
+          client_name_snapshot?: string
           created_at?: string
           delivered_at?: string | null
           id?: string
           notes?: string
           order_number: string
+          paid_amount?: number
           payment_status?: string
           status?: string
           total?: number
@@ -311,11 +312,13 @@ export type Database = {
         }
         Update: {
           client_id?: string | null
+          client_name_snapshot?: string
           created_at?: string
           delivered_at?: string | null
           id?: string
           notes?: string
           order_number?: string
+          paid_amount?: number
           payment_status?: string
           status?: string
           total?: number
@@ -464,6 +467,42 @@ export type Database = {
           },
         ]
       }
+      variant_price_history: {
+        Row: {
+          changed_at: string
+          id: string
+          inventory_cost: number
+          product_id: string | null
+          sale_price: number
+          sku: string
+          user_id: string
+          variant_id: string | null
+          variant_name: string
+        }
+        Insert: {
+          changed_at?: string
+          id?: string
+          inventory_cost: number
+          product_id?: string | null
+          sale_price: number
+          sku?: string
+          user_id: string
+          variant_id?: string | null
+          variant_name?: string
+        }
+        Update: {
+          changed_at?: string
+          id?: string
+          inventory_cost?: number
+          product_id?: string | null
+          sale_price?: number
+          sku?: string
+          user_id?: string
+          variant_id?: string | null
+          variant_name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -480,8 +519,33 @@ export type Database = {
         Args: { p_name: string; p_option_type_id: string }
         Returns: string
       }
-      create_order: {
-        Args: { p_client_id: string; p_items: Json; p_payment_status?: string }
+      create_order:
+        | {
+            Args: {
+              p_client_id: string
+              p_items: Json
+              p_payment_status?: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_client_id: string
+              p_client_name?: string
+              p_items: Json
+              p_payment_status?: string
+            }
+            Returns: string
+          }
+      create_product_with_variants: {
+        Args: {
+          p_category_id?: string
+          p_image_url?: string
+          p_name: string
+          p_public_description?: string
+          p_published?: boolean
+          p_variants?: Json
+        }
         Returns: string
       }
       create_variant: {
@@ -524,6 +588,16 @@ export type Database = {
           sale_total: number
         }[]
       }
+      register_payment: {
+        Args: {
+          p_amount: number
+          p_notes?: string
+          p_order_id: string
+          p_payment_method: string
+          p_reference?: string
+        }
+        Returns: Json
+      }
       sales_aggregates: {
         Args: { p_period?: string }
         Returns: {
@@ -531,6 +605,16 @@ export type Database = {
           orders: number
           total: number
         }[]
+      }
+      update_order: {
+        Args: {
+          p_client_id: string
+          p_client_name?: string
+          p_items: Json
+          p_order_id: string
+          p_payment_status?: string
+        }
+        Returns: undefined
       }
       update_order_payment: {
         Args: { p_order_id: string; p_payment_status: string }
@@ -566,6 +650,10 @@ export type Database = {
           p_variant_id: string
           p_variant_name: string
         }
+        Returns: undefined
+      }
+      update_variant_price: {
+        Args: { p_sale_price: number; p_variant_id: string }
         Returns: undefined
       }
     }

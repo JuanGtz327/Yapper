@@ -1,4 +1,10 @@
-export function Spinner({ label, size = 40 }: { label: string; size?: number }) {
+export function Spinner({
+  label,
+  size = 40,
+}: {
+  label: string
+  size?: number
+}) {
   return (
     <span className="inline-flex items-center gap-3" role="status">
       <span

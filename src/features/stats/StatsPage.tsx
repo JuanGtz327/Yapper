@@ -26,7 +26,9 @@ export function StatsPage({
       <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
         <div>
           <h1>Estadísticas</h1>
-          <p className='mt-0.5 ml-0.5'>Una vista clara para tomar mejores decisiones.</p>
+          <p className="mt-0.5 ml-0.5">
+            Una vista clara para tomar mejores decisiones.
+          </p>
         </div>
         <label className="inline-flex items-center">
           <span className="sr-only">Periodo de estadísticas</span>

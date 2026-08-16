@@ -18,6 +18,7 @@ import { CatalogPage } from '../../features/catalog/CatalogPage.tsx'
 import { StatsPage } from '../../features/stats/StatsPage.tsx'
 import { SettingsPage } from '../../features/settings/SettingsPage.tsx'
 import { ProductCreatePage } from '../../features/products/ProductCreatePage.tsx'
+import { ProductDetailPage } from '../../features/products/ProductDetailPage.tsx'
 import type { Page, Modal } from '../../lib/navigation.ts'
 import type { BusinessSettings } from '../../types.ts'
 import { routes, routeToPage } from '../../lib/routes.ts'
@@ -53,7 +54,10 @@ type PageRouterProps = {
   openModal: (type: Modal, editing?: Client) => void
   onNavigate: (page: Page) => void
   onProductCreated: () => void
-  handleProductSubmit: (draft: ProductDraft) => Promise<boolean>
+  handleProductSubmit: (
+    draft: ProductDraft,
+    product?: Product | null,
+  ) => Promise<boolean>
   handleVariantsChanged: () => void
   handleOrderSubmit: (
     clientId: string,
@@ -196,7 +200,7 @@ export function PageRouter({
                 onVariantsChanged={handleVariantsChanged}
                 onClose={() => onNavigate('Almacén')}
                 onRemove={removeProduct}
-                onSubmit={handleProductSubmit}
+                onSubmit={(draft) => handleProductSubmit(draft, null)}
               />
             )
           }
@@ -210,7 +214,20 @@ export function PageRouter({
                 onVariantsChanged={handleVariantsChanged}
                 onClose={() => onNavigate('Almacén')}
                 onRemove={removeProduct}
-                onSubmit={handleProductSubmit}
+                onSubmit={(draft) => handleProductSubmit(draft, editingProduct)}
+              />
+            )
+          }
+          if (editingProduct && productParams) {
+            return (
+              <ProductDetailPage
+                user={user}
+                productId={editingProduct.id}
+                currency={currency}
+                onBack={() => onNavigate('Almacén')}
+                onEdit={() =>
+                  setLocation(`/almacen/${editingProduct.id}/editar`)
+                }
               />
             )
           }
@@ -241,6 +258,7 @@ export function PageRouter({
               onStockChange={(stock) => updateListUrl({ stock, page: 1 })}
               onAdd={() => setLocation('/almacen/nuevo')}
               onManageCategories={() => openModal('categories')}
+              onView={(product) => setLocation(`/almacen/${product.id}`)}
               onEdit={(product) => setLocation(`/almacen/${product.id}/editar`)}
             />
           )
