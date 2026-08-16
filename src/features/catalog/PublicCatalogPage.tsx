@@ -1,20 +1,17 @@
-import { Boxes, Copy, MessageCircle } from 'lucide-react'
+import { useState } from 'react'
+import { Copy } from 'lucide-react'
 import { Spinner } from '../../components/ui/Spinner.tsx'
 import { Button } from '../../components/ui/Button.tsx'
-import { formatMoney } from '../../lib/format.ts'
-import { safeImageUrl } from '../../lib/security.ts'
+import { CatalogCard } from './CatalogCard.tsx'
 import { normalizeMexicanWhatsApp } from '../../lib/whatsapp.ts'
 import { usePublicCatalog } from '../../hooks/queries/usePublicCatalog.ts'
 
-const catalogColors: Record<string, string> = {
-  coral: 'text-[#b06b57] bg-[#f9e5dc]',
-  mint: 'text-[#579078] bg-[#dff1e6]',
-  sky: 'text-[#52829e] bg-[#e0eff5]',
-  lavender: 'text-[#7963a2] bg-[#ece5f7]',
-}
-
 export function PublicCatalogPage({ slug }: { slug: string }) {
   const { data: catalog, isLoading, error } = usePublicCatalog(slug)
+  const [selectedVariants, setSelectedVariants] = useState<
+    Record<string, string>
+  >({})
+
   if (isLoading)
     return (
       <main className="min-h-screen py-7 px-[clamp(18px,6vw,90px)] pb-[70px] bg-[#f8f7f5] max-[520px]:px-4 max-[520px]:pb-[45px]">
@@ -27,7 +24,9 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
     return (
       <main className="min-h-screen py-7 px-[clamp(18px,6vw,90px)] pb-[70px] bg-[#f8f7f5] max-[520px]:px-4 max-[520px]:pb-[45px]">
         <div className="grid place-items-center min-h-[70vh] gap-3 text-center text-muted-foreground">
-          <div className="brand-mark">Y</div>
+          <div className="grid place-items-center w-[38px] h-[38px] rounded-xl text-white bg-primary text-[23px] font-bold -rotate-7">
+            Y
+          </div>
           <h1 className="text-[28px]">Esta tienda no está disponible</h1>
           <p className="text-[14px]">
             El enlace puede estar desactivado o ya no existir.
@@ -35,14 +34,18 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
         </div>
       </main>
     )
+
+  const whatsappNum = normalizeMexicanWhatsApp(catalog.whatsappNumber)
+
   return (
     <main className="min-h-screen py-7 px-[clamp(18px,6vw,90px)] pb-[70px] bg-[#f8f7f5] max-[520px]:px-4 max-[520px]:pb-[45px]">
       <header className="flex items-center justify-between max-w-[1120px] mx-auto">
-        <div className="brand p-0">
-          <div className="brand-mark">Y</div>
+        <div className="flex items-center gap-[11px]">
+          <div className="grid place-items-center w-[38px] h-[38px] rounded-xl text-white bg-primary text-[23px] font-bold -rotate-7 shrink-0">
+            Y
+          </div>
           <div>
-            <strong>{catalog.businessName}</strong>
-            <span>Catálogo público</span>
+            <strong>Yapper</strong>
           </div>
         </div>
         <Button
@@ -56,9 +59,9 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
           Compartir
         </Button>
       </header>
-      <section className="max-w-[1120px] mx-auto mt-[75px] mb-10 max-[520px]:mt-[55px] max-[520px]:mb-[30px]">
+      <section className="max-w-[1120px] mx-auto mt-[25px] mb-10 max-[520px]:mt-[55px] max-[520px]:mb-[30px]">
         <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72]">
-          COMPRA DIRECTA
+          SELECCIÓN PRODUCTOS
         </span>
         <h1 className="mt-[7px] mb-[10px] text-[clamp(34px,7vw,62px)]">
           {catalog.businessName}
@@ -77,50 +80,28 @@ export function PublicCatalogPage({ slug }: { slug: string }) {
             productos.
           </div>
         ) : (
-          catalog.products.map((product) => {
-            const imageUrl = safeImageUrl(product.imageUrl)
-            return (
-              <article
-                className="overflow-hidden border border-[#ebe8e4] rounded-[16px] bg-[#fffefa] shadow-[0_12px_30px_#30272e0a]"
-                key={product.id}
-              >
-                {imageUrl ? (
-                  <img
-                    className="w-full h-[210px] object-cover max-[520px]:h-[190px]"
-                    src={imageUrl}
-                    alt={`${product.name} — ${product.category}`}
-                  />
-                ) : (
-                  <div
-                    className={`grid place-items-center w-full h-[210px] object-cover max-[520px]:h-[190px] ${catalogColors[product.color] ?? ''}`}
-                  >
-                    <Boxes size={52} aria-hidden="true" />
-                  </div>
-                )}
-                <div className="p-[18px]">
-                  <span className="text-[#aaa5a8] text-[10px]">
-                    {product.category}
-                  </span>
-                  <h2 className="my-[7px] text-[18px]">{product.name}</h2>
-                  <p className="min-h-[35px] text-muted-foreground text-[12px] leading-[1.5]">
-                    {product.publicDescription}
-                  </p>
-                  <strong className="block mt-[13px] mb-[15px] text-[#6d3c72] text-[20px]">
-                    {formatMoney(product.price, catalog.currency)}
-                  </strong>
-                  {normalizeMexicanWhatsApp(catalog.whatsappNumber) && (
-                    <a
-                      className="inline-flex items-center justify-center gap-[7px] w-full py-[11px] px-3 rounded-[9px] text-white bg-[#258c67] text-[12px] font-bold no-underline hover:bg-[#1e7657]"
-                      href={`https://wa.me/${normalizeMexicanWhatsApp(catalog.whatsappNumber)}?text=${encodeURIComponent(`Hola, ${catalog.businessName}. Me interesa ${product.name}. Vi su catálogo público.`)}`}
-                    >
-                      <MessageCircle size={17} />
-                      Preguntar por WhatsApp
-                    </a>
-                  )}
-                </div>
-              </article>
-            )
-          })
+          catalog.products.map((product) => (
+            <CatalogCard
+              key={product.id}
+              product={product}
+              currency={catalog.currency}
+              selectedVariantId={selectedVariants[product.id]}
+              onSelectVariant={(variantId) =>
+                setSelectedVariants((prev) => ({
+                  ...prev,
+                  [product.id]: variantId,
+                }))
+              }
+              whatsapp={
+                whatsappNum
+                  ? {
+                      number: whatsappNum,
+                      businessName: catalog.businessName,
+                    }
+                  : undefined
+              }
+            />
+          ))
         )}
       </section>
     </main>

@@ -20,6 +20,12 @@ const demoCatalog: PublicCatalog = {
       imageUrl: product.imageUrl,
       color: product.color,
       price: product.variants[0]?.salePrice ?? 0,
+      variants: product.variants.map((v) => ({
+        name: v.name,
+        optionValues: v.optionValues,
+        salePrice: v.salePrice,
+        stock: v.stock,
+      })),
     })),
 }
 

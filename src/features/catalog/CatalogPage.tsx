@@ -1,21 +1,8 @@
-import { Boxes, Copy, ExternalLink } from 'lucide-react'
-import { formatMoney } from '../../lib/format.ts'
-import { safeImageUrl } from '../../lib/security.ts'
+import { useState } from 'react'
+import { Copy, ExternalLink } from 'lucide-react'
 import { Button } from '../../components/ui/Button.tsx'
-import { Badge } from '../../components/ui/badge.tsx'
+import { CatalogCard } from './CatalogCard.tsx'
 import type { BusinessSettings, Product } from '../../types.ts'
-
-const catalogColors: Record<string, string> = {
-  coral: 'text-[#b06b57] bg-[#f9e5dc]',
-  mint: 'text-[#579078] bg-[#dff1e6]',
-  sky: 'text-[#52829e] bg-[#e0eff5]',
-  lavender: 'text-[#7963a2] bg-[#ece5f7]',
-}
-
-function minVariantPrice(product: Product): number {
-  if (!product.variants.length) return 0
-  return Math.min(...product.variants.map((v) => v.salePrice))
-}
 
 export function CatalogPage({
   products,
@@ -26,10 +13,15 @@ export function CatalogPage({
   currency: string
   settings: BusinessSettings
 }) {
+  const [selectedVariants, setSelectedVariants] = useState<
+    Record<string, string>
+  >({})
+
   const url =
     settings.publicCatalogEnabled && settings.publicSlug
       ? `${window.location.origin}/tienda/${settings.publicSlug}`
       : ''
+
   return (
     <section className="animate-[page-in_0.25s_ease_both]">
       <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
@@ -42,7 +34,6 @@ export function CatalogPage({
         </div>
         {url && (
           <div className="flex items-center gap-[9px]">
-            <Badge variant="success">Catálogo público listo</Badge>
             <Button
               variant="secondary"
               onClick={() => void navigator.clipboard?.writeText(url)}
@@ -70,44 +61,21 @@ export function CatalogPage({
         ) : (
           products
             .filter((product) => product.published)
-            .map((product) => {
-              const imageUrl = safeImageUrl(product.imageUrl)
-              const price = minVariantPrice(product)
-              return (
-                <article
-                  className="overflow-hidden border border-[#ebe8e4] rounded-[14px] bg-[#fffefa]"
-                  key={product.id}
-                >
-                  {imageUrl ? (
-                    <img
-                      className="grid place-items-center h-[190px] catalog-photo w-full object-cover"
-                      src={imageUrl}
-                      alt={`${product.name} — ${product.category}`}
-                    />
-                  ) : (
-                    <div
-                      className={`grid place-items-center h-[190px] ${catalogColors[product.color] ?? ''}`}
-                    >
-                      <Boxes size={58} strokeWidth={1.2} aria-hidden="true" />
-                    </div>
-                  )}
-                  <div className="p-4 px-[17px] pb-[18px]">
-                    <span className="text-[#aaa5a8] text-[10px]">
-                      {product.category}
-                    </span>
-                    <h3 className="mt-[6px] mb-3 text-ink text-[14px]">
-                      {product.name}
-                    </h3>
-                    <p className="min-h-[32px] -mt-[5px] mb-3 text-muted-foreground text-[11px] leading-[1.45]">
-                      {product.publicDescription}
-                    </p>
-                    <strong className="text-[#6d3c72] text-[17px]">
-                      {formatMoney(price, currency)}
-                    </strong>
-                  </div>
-                </article>
-              )
-            })
+            .map((product) => (
+              <CatalogCard
+                key={product.id}
+                product={product}
+                currency={currency}
+                selectedVariantId={selectedVariants[product.id]}
+                onSelectVariant={(variantId) =>
+                  setSelectedVariants((prev) => ({
+                    ...prev,
+                    [product.id]: variantId,
+                  }))
+                }
+                lowStockThreshold={settings.lowStockThreshold}
+              />
+            ))
         )}
       </div>
     </section>

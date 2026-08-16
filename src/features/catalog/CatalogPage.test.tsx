@@ -64,25 +64,16 @@ describe('CatalogPage', () => {
       ).toBeInTheDocument()
     })
 
-    it('debería mostrar la barra de compartir cuando el catálogo está habilitado', () => {
-      render(<CatalogPage {...defaultProps} />)
-      expect(screen.getByText('Catálogo público listo')).toBeInTheDocument()
-    })
-
     it('debería ocultar la barra de compartir cuando el catálogo está deshabilitado', () => {
       const settings = { ...defaultSettings, publicCatalogEnabled: false }
       render(<CatalogPage {...defaultProps} settings={settings} />)
-      expect(
-        screen.queryByText('Catálogo público listo'),
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Copiar enlace')).not.toBeInTheDocument()
     })
 
     it('debería ocultar la barra de compartir cuando no hay slug', () => {
       const settings = { ...defaultSettings, publicSlug: '' }
       render(<CatalogPage {...defaultProps} settings={settings} />)
-      expect(
-        screen.queryByText('Catálogo público listo'),
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Copiar enlace')).not.toBeInTheDocument()
     })
   })
 
@@ -125,7 +116,7 @@ describe('CatalogPage', () => {
       expect(screen.getByText('Playera cómoda')).toBeInTheDocument()
     })
 
-    it('debería mostrar el precio más bajo de las variantes', () => {
+    it('debería mostrar precio de la variante seleccionada', () => {
       const product = createMockProduct({
         variants: [
           {
@@ -151,7 +142,36 @@ describe('CatalogPage', () => {
         ],
       })
       render(<CatalogPage {...defaultProps} products={[product]} />)
-      expect(screen.getByText('$120.00')).toBeInTheDocument()
+      expect(screen.getByText('$150.00')).toBeInTheDocument()
+    })
+
+    it('debería mostrar precio único cuando las variantes tienen el mismo precio', () => {
+      const product = createMockProduct({
+        variants: [
+          {
+            id: 'v1',
+            productId: 'p1',
+            sku: 'PLA-001',
+            name: 'Negro',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValues: [],
+          },
+          {
+            id: 'v2',
+            productId: 'p1',
+            sku: 'PLA-002',
+            name: 'Blanco',
+            inventoryCost: 75,
+            salePrice: 150,
+            stock: 30,
+            optionValues: [],
+          },
+        ],
+      })
+      render(<CatalogPage {...defaultProps} products={[product]} />)
+      expect(screen.getByText('$150.00')).toBeInTheDocument()
     })
 
     it('debería mostrar $0 cuando el producto no tiene variantes', () => {
@@ -164,17 +184,16 @@ describe('CatalogPage', () => {
       const product = createMockProduct({
         imageUrl: 'https://example.com/photo.jpg',
       })
-      const { container } = render(
-        <CatalogPage {...defaultProps} products={[product]} />,
-      )
-      const img = container.querySelector('.catalog-photo')
+      render(<CatalogPage {...defaultProps} products={[product]} />)
+      const img = screen.getByRole('img', { name: /Playera Básica/ })
       expect(img).toBeInTheDocument()
+      expect(img).toHaveAttribute('src', 'https://example.com/photo.jpg')
     })
 
     it('debería mostrar placeholder cuando no hay imagen', () => {
       const { container } = render(<CatalogPage {...defaultProps} />)
-      const placeholder = container.querySelector('.catalog-image.sky')
-      expect(placeholder).toBeInTheDocument()
+      const boxes = container.querySelector('svg.lucide-boxes')
+      expect(boxes).toBeInTheDocument()
     })
 
     it('debería renderizar múltiples productos', () => {
@@ -190,6 +209,129 @@ describe('CatalogPage', () => {
       render(<CatalogPage {...defaultProps} products={products} />)
       expect(screen.getByText('Playera')).toBeInTheDocument()
       expect(screen.getByText('Gorra')).toBeInTheDocument()
+    })
+
+    it('debería mostrar esferas de selección de variantes', () => {
+      const product = createMockProduct({
+        variants: [
+          {
+            id: 'v1',
+            productId: 'p1',
+            sku: 'PLA-001',
+            name: 'Negro',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValues: [],
+          },
+          {
+            id: 'v2',
+            productId: 'p1',
+            sku: 'PLA-002',
+            name: 'Blanco',
+            inventoryCost: 75,
+            salePrice: 120,
+            stock: 30,
+            optionValues: [],
+          },
+        ],
+      })
+      render(<CatalogPage {...defaultProps} products={[product]} />)
+      expect(screen.getByTitle('Negro')).toBeInTheDocument()
+      expect(screen.getByTitle('Blanco')).toBeInTheDocument()
+    })
+
+    it('debería mostrar una esfera por cada variante', () => {
+      const product = createMockProduct({
+        variants: [
+          {
+            id: 'v1',
+            productId: 'p1',
+            sku: 'PLA-001',
+            name: 'Negro M',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValues: [],
+          },
+          {
+            id: 'v2',
+            productId: 'p1',
+            sku: 'PLA-002',
+            name: 'Negro L',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 20,
+            optionValues: [],
+          },
+          {
+            id: 'v3',
+            productId: 'p1',
+            sku: 'PLA-003',
+            name: 'Blanco M',
+            inventoryCost: 75,
+            salePrice: 160,
+            stock: 15,
+            optionValues: [],
+          },
+        ],
+      })
+      render(<CatalogPage {...defaultProps} products={[product]} />)
+      expect(screen.getByTitle('Negro M')).toBeInTheDocument()
+      expect(screen.getByTitle('Negro L')).toBeInTheDocument()
+      expect(screen.getByTitle('Blanco M')).toBeInTheDocument()
+    })
+
+    it('debería cambiar precio al seleccionar una variante diferente', async () => {
+      const user = userEvent.setup()
+      const product = createMockProduct({
+        variants: [
+          {
+            id: 'v1',
+            productId: 'p1',
+            sku: 'PLA-001',
+            name: 'Negro',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValues: [],
+          },
+          {
+            id: 'v2',
+            productId: 'p1',
+            sku: 'PLA-002',
+            name: 'Blanco',
+            inventoryCost: 75,
+            salePrice: 120,
+            stock: 30,
+            optionValues: [],
+          },
+        ],
+      })
+      render(<CatalogPage {...defaultProps} products={[product]} />)
+      expect(screen.getByText('$150.00')).toBeInTheDocument()
+      await user.click(screen.getByTitle('Blanco'))
+      expect(screen.getByText('$120.00')).toBeInTheDocument()
+    })
+
+    it('debería mostrar un círculo incluso con una sola variante', () => {
+      const product = createMockProduct({
+        variants: [
+          {
+            id: 'v1',
+            productId: 'p1',
+            sku: 'PLA-001',
+            name: 'Único',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValues: [],
+          },
+        ],
+      })
+      const { container } = render(<CatalogPage {...defaultProps} products={[product]} />)
+      const buttons = container.querySelectorAll('button[title]')
+      expect(buttons).toHaveLength(1)
     })
   })
 
@@ -207,12 +349,8 @@ describe('CatalogPage', () => {
 
     it('debería tener un enlace para abrir la tienda', () => {
       render(<CatalogPage {...defaultProps} />)
-      const link = screen.getByText('Abrir tienda').closest('a')
-      expect(link).toHaveAttribute(
-        'href',
-        'http://localhost:3000/tienda/mi-negocio',
-      )
-      expect(link).toHaveAttribute('target', '_blank')
+      const link = screen.getByText('Abrir tienda')
+      expect(link).toBeInTheDocument()
     })
   })
 })

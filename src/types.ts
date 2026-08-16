@@ -88,6 +88,13 @@ export type BusinessSettings = {
   publicIntro: string
 }
 
+export type PublicCatalogVariant = {
+  name: string
+  optionValues: Array<{ optionType: string; value: string }>
+  salePrice: number
+  stock: number
+}
+
 export type PublicCatalog = {
   businessName: string
   currency: string
@@ -97,7 +104,7 @@ export type PublicCatalog = {
     Pick<
       Product,
       'id' | 'name' | 'category' | 'publicDescription' | 'imageUrl' | 'color'
-    > & { price: number }
+    > & { price: number; variants: PublicCatalogVariant[] }
   >
 }
 

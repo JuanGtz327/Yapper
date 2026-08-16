@@ -985,6 +985,12 @@ export async function loadPublicCatalog(
     products: (row.products ?? []).map((product) => ({
       ...product,
       imageUrl: safeImageUrl(product.imageUrl),
+      variants: (product.variants ?? []).map((v) => ({
+        name: v.name ?? '',
+        optionValues: v.optionValues ?? [],
+        salePrice: v.salePrice ?? 0,
+        stock: v.stock ?? 0,
+      })),
     })),
   }
 }

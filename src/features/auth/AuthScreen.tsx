@@ -35,7 +35,9 @@ export function AuthScreen() {
     <main className="grid grid-cols-[minmax(390px,480px)_1fr] min-h-screen bg-[#f8f7f5] max-[750px]:block">
       <section className="flex flex-col justify-center py-[60px] px-[clamp(30px,7vw,92px)] bg-[#fffefa] max-[750px]:min-h-screen max-[750px]:px-7 max-[750px]:py-[35px]">
         <div className="flex items-center gap-[11px] mb-[76px] max-[750px]:mb-[65px]">
-          <div className="brand-mark">Y</div>
+          <div className="grid place-items-center w-[38px] h-[38px] rounded-xl text-white bg-primary text-[23px] font-bold -rotate-7 shrink-0">
+            Y
+          </div>
           <div>
             <strong>Yapper</strong>
             <span> - </span>
@@ -126,9 +128,9 @@ export function AuthScreen() {
         </button>
       </section>
       <div className="relative flex flex-col justify-end overflow-hidden pt-[70px] px-[9%] pb-[70px] text-white bg-[#6d3c72] max-[650px]:hidden before:content-[''] before:absolute before:w-[520px] before:h-[520px] before:top-[10%] before:right-[-10%] before:border before:border-white/20 before:rounded-full before:shadow-[0_0_0_35px_rgba(255,255,255,0.04),0_0_0_70px_rgba(255,255,255,0.02)]">
-        <span className="absolute top-[14%] right-[24%] text-[#dec6dc] text-[42px]">
+        <div className="absolute top-[32%] right-[8%] grid place-items-center w-[100px] h-[100px] rounded-[22px] text-white bg-white/15 text-[56px] font-bold -rotate-7 backdrop-blur-sm">
           Y
-        </span>
+        </div>
         <h2 className="relative text-white text-[clamp(28px,4vw,46px)] leading-[1.1] tracking-[-1.5px]">
           Más tiempo para
           <br />
