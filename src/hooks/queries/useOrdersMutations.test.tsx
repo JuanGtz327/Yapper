@@ -8,6 +8,7 @@ import { qk } from '../../lib/queryKeys.ts'
 
 vi.mock('../../lib/repository.ts', () => ({
   createOrder: vi.fn(),
+  updateOrder: vi.fn(),
   cancelOrder: vi.fn(),
   updateOrderStatus: vi.fn(),
   updateOrderPayment: vi.fn(),
@@ -872,6 +873,280 @@ describe('useOrdersMutations', () => {
         const orders = queryClient.getQueryData<Order[]>(qk.orders(mockUser))
         expect(orders![0].payment).toBe('Pagado')
       })
+    })
+  })
+
+  describe('update', () => {
+    it('debería ajustar stock para pedido demo (old restored, new deducted)', async () => {
+      const demoOrder: Order = {
+        id: '#DEMO-001',
+        clientId: 'c1',
+        client: 'Juan Pérez',
+        date: 'Ahora',
+        items: 2,
+        total: 300,
+        paidAmount: 300,
+        status: 'Pendiente',
+        payment: 'Pagado',
+        itemLines: [{ variantId: 'v1', quantity: 2 }],
+      }
+
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false },
+        },
+      })
+      queryClient.setQueryData(qk.clients(mockUser), mockClients)
+      queryClient.setQueryData(qk.products(mockUser), mockProducts)
+      queryClient.setQueryData(qk.orders(mockUser), [demoOrder])
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      })
+
+      await act(async () => {
+        await result.current.update.mutateAsync({
+          order: demoOrder,
+          clientId: 'c1',
+          items: [{ variantId: 'v1', quantity: 3 }],
+          payment: 'paid',
+        })
+      })
+
+      const products = queryClient.getQueryData<Product[]>(qk.products(mockUser))
+      expect(products![0].variants[0].stock).toBe(24) // 25 - 3 + 2(old) = 24
+    })
+
+    it('debería transferir conteo de pedidos del cliente al cambiar clientId', async () => {
+      const demoOrder: Order = {
+        id: '#DEMO-001',
+        clientId: 'c1',
+        client: 'Juan Pérez',
+        date: 'Ahora',
+        items: 1,
+        total: 150,
+        paidAmount: 150,
+        status: 'Pendiente',
+        payment: 'Pagado',
+        itemLines: [{ variantId: 'v1', quantity: 1 }],
+      }
+
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false },
+        },
+      })
+      queryClient.setQueryData(qk.clients(mockUser), [
+        { ...mockClients[0], orders: 5 },
+        { id: 'c2', name: 'María', phone: '5598765432', zone: 'Norte', orders: 3, initials: 'MG' },
+      ])
+      queryClient.setQueryData(qk.products(mockUser), mockProducts)
+      queryClient.setQueryData(qk.orders(mockUser), [demoOrder])
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      })
+
+      await act(async () => {
+        await result.current.update.mutateAsync({
+          order: demoOrder,
+          clientId: 'c2',
+          items: [{ variantId: 'v1', quantity: 1 }],
+          payment: 'paid',
+        })
+      })
+
+      const clients = queryClient.getQueryData<Client[]>(qk.clients(mockUser))
+      expect(clients!.find((c) => c.id === 'c1')!.orders).toBe(4) // 5 - 1
+      expect(clients!.find((c) => c.id === 'c2')!.orders).toBe(4) // 3 + 1
+    })
+
+    it('debería actualizar datos del pedido en caché para demo', async () => {
+      const demoOrder: Order = {
+        id: '#DEMO-001',
+        clientId: 'c1',
+        client: 'Juan Pérez',
+        date: 'Ahora',
+        items: 1,
+        total: 150,
+        paidAmount: 150,
+        status: 'Pendiente',
+        payment: 'Pagado',
+        itemLines: [{ variantId: 'v1', quantity: 1 }],
+      }
+
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false },
+        },
+      })
+      queryClient.setQueryData(qk.clients(mockUser), mockClients)
+      queryClient.setQueryData(qk.products(mockUser), mockProducts)
+      queryClient.setQueryData(qk.orders(mockUser), [demoOrder])
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      })
+
+      await act(async () => {
+        await result.current.update.mutateAsync({
+          order: demoOrder,
+          clientId: 'c1',
+          items: [{ variantId: 'v1', quantity: 5 }],
+          payment: 'pending',
+        })
+      })
+
+      const orders = queryClient.getQueryData<Order[]>(qk.orders(mockUser))
+      expect(orders![0].items).toBe(5)
+      expect(orders![0].total).toBe(750) // 150 * 5
+      expect(orders![0].payment).toBe('Pendiente')
+    })
+
+    it('debería llamar a updateOrder para pedidos con databaseId', async () => {
+      const { updateOrder } = await import('../../lib/repository.ts')
+      vi.mocked(updateOrder).mockResolvedValue(undefined)
+
+      const dbOrder: Order = {
+        id: '#DB-001',
+        databaseId: 'db-1',
+        clientId: 'c1',
+        client: 'Juan Pérez',
+        date: '15 ene 2026',
+        items: 2,
+        total: 300,
+        paidAmount: 300,
+        status: 'Pendiente',
+        payment: 'Pagado',
+        itemLines: [{ variantId: 'v1', quantity: 2 }],
+      }
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        await result.current.update.mutateAsync({
+          order: dbOrder,
+          clientId: 'c1',
+          items: [{ variantId: 'v1', quantity: 3 }],
+          payment: 'pending',
+        })
+      })
+
+      expect(updateOrder).toHaveBeenCalledWith(
+        'db-1',
+        'c1',
+        [{ variantId: 'v1', quantity: 3 }],
+        'pending',
+        'Juan Pérez',
+      )
+    })
+
+    it('debería invalidar queries después de actualizar pedidos DB', async () => {
+      const { updateOrder } = await import('../../lib/repository.ts')
+      vi.mocked(updateOrder).mockResolvedValue(undefined)
+
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false },
+        },
+      })
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+      queryClient.setQueryData(qk.clients(mockUser), mockClients)
+      queryClient.setQueryData(qk.products(mockUser), mockProducts)
+      queryClient.setQueryData(qk.orders(mockUser), [])
+
+      const dbOrder: Order = {
+        id: '#DB-001',
+        databaseId: 'db-1',
+        clientId: 'c1',
+        client: 'Juan Pérez',
+        date: '15 ene 2026',
+        items: 2,
+        total: 300,
+        paidAmount: 300,
+        status: 'Pendiente',
+        payment: 'Pagado',
+        itemLines: [{ variantId: 'v1', quantity: 2 }],
+      }
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      })
+
+      await act(async () => {
+        await result.current.update.mutateAsync({
+          order: dbOrder,
+          clientId: 'c1',
+          items: [{ variantId: 'v1', quantity: 3 }],
+          payment: 'paid',
+        })
+      })
+
+      await waitFor(() => {
+        expect(invalidateSpy).toHaveBeenCalledWith({
+          queryKey: qk.orders(mockUser),
+        })
+      })
+    })
+
+    it('debería propagar errores de updateOrder', async () => {
+      const { updateOrder } = await import('../../lib/repository.ts')
+      vi.mocked(updateOrder).mockRejectedValue(new Error('RPC failed'))
+
+      const dbOrder: Order = {
+        id: '#DB-001',
+        databaseId: 'db-1',
+        clientId: 'c1',
+        client: 'Juan Pérez',
+        date: '15 ene 2026',
+        items: 2,
+        total: 300,
+        paidAmount: 300,
+        status: 'Pendiente',
+        payment: 'Pagado',
+        itemLines: [{ variantId: 'v1', quantity: 2 }],
+      }
+
+      const { result } = renderHook(() => useOrdersMutations(mockUser), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        try {
+          await result.current.update.mutateAsync({
+            order: dbOrder,
+            clientId: 'c1',
+            items: [{ variantId: 'v1', quantity: 3 }],
+            payment: 'paid',
+          })
+        } catch {
+          // Expected
+        }
+      })
+
+      expect(updateOrder).toHaveBeenCalled()
     })
   })
 })

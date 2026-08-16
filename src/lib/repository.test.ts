@@ -1473,11 +1473,226 @@ describe('Repositorio de pedidos', () => {
       expect(result).toEqual([])
     })
   })
+
+  describe('loadOrdersPage', () => {
+    function makeOrderQueryChain(data: unknown[], count: number, error: unknown = null) {
+      const rangeMock = vi.fn().mockResolvedValue({ data, count, error })
+      const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
+      const eqUserMock = vi.fn().mockReturnValue({ order: orderMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
+      return { select: selectMock, _range: rangeMock }
+    }
+
+    function makeItemsChain(data: unknown[] = [], error: unknown = null) {
+      const inMock = vi.fn().mockResolvedValue({ data, error })
+      const selectMock = vi.fn().mockReturnValue({ in: inMock })
+      return { select: selectMock }
+    }
+
+    it('debería paginar resultados correctamente', async () => {
+      const mockOrders = [
+        {
+          id: 'ord-1',
+          client_id: 'c1',
+          status: 'pending',
+          payment_status: 'paid',
+          total: 300,
+          paid_amount: 300,
+          created_at: '2026-01-15T10:30:00Z',
+          order_number: 'PED-001',
+          client_name_snapshot: 'Juan',
+        },
+      ]
+      const mainQuery = makeOrderQueryChain(mockOrders, 1)
+      const itemsQuery = makeItemsChain([])
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock
+        .mockReturnValueOnce({ select: mainQuery.select })
+        .mockReturnValueOnce({ select: itemsQuery.select })
+
+      const { loadOrdersPage } = await import('./repository.ts')
+      const result = await loadOrdersPage(mockUser, { page: 1, pageSize: 10 })
+
+      expect(result.data).toHaveLength(1)
+      expect(result.total).toBe(1)
+      expect(result.page).toBe(1)
+      expect(result.pageSize).toBe(10)
+      expect(result.totalPages).toBe(1)
+    })
+
+    it('debería filtrar por status', async () => {
+      const rangeMock = vi.fn().mockResolvedValue({ data: [], count: 0, error: null })
+      const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
+      const eqStatusMock = vi.fn().mockReturnValue({ order: orderMock })
+      const eqUserMock = vi.fn().mockReturnValue({ eq: eqStatusMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
+      const itemsQuery = makeItemsChain([])
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock
+        .mockReturnValueOnce({ select: selectMock })
+        .mockReturnValueOnce({ select: itemsQuery.select })
+
+      const { loadOrdersPage } = await import('./repository.ts')
+      await loadOrdersPage(mockUser, { page: 1, pageSize: 25 }, { status: 'delivered' })
+
+      expect(supabaseFromMock).toHaveBeenCalledWith('orders')
+    })
+
+    it('debería filtrar por paymentStatus paidOrPartial', async () => {
+      const rangeMock = vi.fn().mockResolvedValue({ data: [], count: 0, error: null })
+      const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
+      const inPaymentMock = vi.fn().mockReturnValue({ order: orderMock })
+      const eqUserMock = vi.fn().mockReturnValue({ in: inPaymentMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
+      const itemsQuery = makeItemsChain([])
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock
+        .mockReturnValueOnce({ select: selectMock })
+        .mockReturnValueOnce({ select: itemsQuery.select })
+
+      const { loadOrdersPage } = await import('./repository.ts')
+      await loadOrdersPage(mockUser, { page: 1, pageSize: 25 }, { paymentStatus: 'paidOrPartial' })
+
+      expect(supabaseFromMock).toHaveBeenCalledWith('orders')
+    })
+
+    it('debería propagar errores de la consulta principal', async () => {
+      const mainQuery = makeOrderQueryChain([], 0, { message: 'DB error' })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockReturnValue({ select: mainQuery.select })
+
+      const { loadOrdersPage } = await import('./repository.ts')
+      await expect(
+        loadOrdersPage(mockUser, { page: 1, pageSize: 25 }),
+      ).rejects.toThrow('DB error')
+    })
+
+    it('debería devolver paginated vacío cuando no hay pedidos', async () => {
+      const mainQuery = makeOrderQueryChain([], 0)
+      const itemsQuery = makeItemsChain([])
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock
+        .mockReturnValueOnce({ select: mainQuery.select })
+        .mockReturnValueOnce({ select: itemsQuery.select })
+
+      const { loadOrdersPage } = await import('./repository.ts')
+      const result = await loadOrdersPage(mockUser, { page: 1, pageSize: 25 })
+
+      expect(result.data).toEqual([])
+      expect(result.total).toBe(0)
+      expect(result.totalPages).toBe(0)
+    })
+  })
+
+  describe('updateOrderStatus', () => {
+    it('debería llamar a update_order_status RPC con pending', async () => {
+      mockRpc.mockResolvedValue({ data: null, error: null })
+
+      const { updateOrderStatus } = await import('./repository.ts')
+      await updateOrderStatus('ord-1', 'pending')
+
+      expect(mockRpc).toHaveBeenCalledWith('update_order_status', {
+        p_order_id: 'ord-1',
+        p_status: 'pending',
+      })
+    })
+
+    it('debería llamar a update_order_status RPC con delivered', async () => {
+      mockRpc.mockResolvedValue({ data: null, error: null })
+
+      const { updateOrderStatus } = await import('./repository.ts')
+      await updateOrderStatus('ord-1', 'delivered')
+
+      expect(mockRpc).toHaveBeenCalledWith('update_order_status', {
+        p_order_id: 'ord-1',
+        p_status: 'delivered',
+      })
+    })
+
+    it('debería propagar errores del RPC', async () => {
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: 'order not found' },
+      })
+
+      const { updateOrderStatus } = await import('./repository.ts')
+      await expect(updateOrderStatus('ord-1', 'delivered')).rejects.toThrow(
+        'order not found',
+      )
+    })
+  })
+
+  describe('cancelOrder', () => {
+    it('debería llamar a cancel_order RPC', async () => {
+      mockRpc.mockResolvedValue({ data: null, error: null })
+
+      const { cancelOrder } = await import('./repository.ts')
+      await cancelOrder('ord-1')
+
+      expect(mockRpc).toHaveBeenCalledWith('cancel_order', {
+        p_order_id: 'ord-1',
+      })
+    })
+
+    it('debería propagar errores del RPC', async () => {
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: 'already cancelled' },
+      })
+
+      const { cancelOrder } = await import('./repository.ts')
+      await expect(cancelOrder('ord-1')).rejects.toThrow('already cancelled')
+    })
+  })
+
+  describe('updateOrderPayment', () => {
+    it('debería llamar a update_order_payment RPC con paid', async () => {
+      mockRpc.mockResolvedValue({ data: null, error: null })
+
+      const { updateOrderPayment } = await import('./repository.ts')
+      await updateOrderPayment('ord-1', 'paid')
+
+      expect(mockRpc).toHaveBeenCalledWith('update_order_payment', {
+        p_order_id: 'ord-1',
+        p_payment_status: 'paid',
+      })
+    })
+
+    it('debería llamar a update_order_payment RPC con pending', async () => {
+      mockRpc.mockResolvedValue({ data: null, error: null })
+
+      const { updateOrderPayment } = await import('./repository.ts')
+      await updateOrderPayment('ord-1', 'pending')
+
+      expect(mockRpc).toHaveBeenCalledWith('update_order_payment', {
+        p_order_id: 'ord-1',
+        p_payment_status: 'pending',
+      })
+    })
+
+    it('debería propagar errores del RPC', async () => {
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: 'order not found' },
+      })
+
+      const { updateOrderPayment } = await import('./repository.ts')
+      await expect(updateOrderPayment('ord-1', 'paid')).rejects.toThrow(
+        'order not found',
+      )
+    })
+  })
 })
 
 describe('Repositorio de pagos parciales', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    supabaseFromMock.mockReset()
     mockRpc.mockResolvedValue({ data: null, error: null })
   })
 

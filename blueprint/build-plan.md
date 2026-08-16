@@ -43,7 +43,7 @@
   - [x] 19a. **Test audit and cleanup** - eliminar tests que solo validan renderizado, clases o textos sin comportamiento relevante
   - [ ] 19b. **Unit tests for business actions** - probar cada acción importante de productos, variantes, inventario, pedidos, pagos, clientes y configuración
     - [x] 19b1. **Product & variant repository tests** - createProduct, createProductWithVariants, createVariant, updateVariantPrice, deleteVariant, loadProductsPage, loadProductById, loadInventoryAggregates
-    - [ ] 19b2. **Order & payment repository + hook tests** - updateOrderStatus, cancelOrder, updateOrderPayment, loadOrdersPage, useOrdersMutations.update, handleRegisterPayment, updateExistingOrder
+    - [x] 19b2. **Order & payment repository + hook tests** - updateOrderStatus, cancelOrder, updateOrderPayment, loadOrdersPage, useOrdersMutations.update, handleRegisterPayment, updateExistingOrder
     - [ ] 19b3. **Client, settings & remaining hook tests** - loadClients, loadClientsPage, loadSettings, saveSettings, useSettingsMutation, useOrderPaymentsQuery, useProductEditor full paths
   - [ ] 19c. **E2E foundation** - configurar Playwright, entorno aislado, autenticación reutilizable, fixtures, seed y comandos
   - [ ] 19d. **Order lifecycle E2E** - crear pedido completo, calcular total, guardar, registrar pago, cambiar estado y verificar inventario
