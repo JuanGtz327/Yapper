@@ -10,7 +10,7 @@ export async function login(
   await page.getByPlaceholder('tu@correo.com').press('Tab')
   await page.getByRole('textbox', { name: /contraseña/i }).fill(password)
   await page.getByRole('button', { name: /entrar/i }).click()
-  await page.waitForURL('**/')
+  await page.waitForSelector('text=Todo bajo control', { timeout: 15000 })
 }
 
 export async function waitForDashboard(page: Page) {
