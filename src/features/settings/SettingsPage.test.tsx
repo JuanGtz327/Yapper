@@ -53,13 +53,11 @@ describe('SettingsPage', () => {
     it('debería actualizar la moneda al cambiar', async () => {
       const user = userEvent.setup()
       render(<SettingsPage {...defaultProps} />)
-      const trigger = screen.getByRole('button', {
+      const trigger = screen.getByRole('combobox', {
         name: /moneda predeterminada/i,
       })
       await user.click(trigger)
-      await user.click(
-        screen.getByRole('option', { name: 'Dólar estadounidense (USD)' }),
-      )
+      await user.click(screen.getByText('Dólar estadounidense (USD)'))
       expect(trigger).toHaveTextContent('Dólar estadounidense (USD)')
     })
 

@@ -143,11 +143,7 @@ describe('ProductCreatePage', () => {
       const user = userEvent.setup()
       render(<ProductCreatePage {...defaultProps} />)
       await user.click(screen.getByRole('button', { name: 'Añadir variante' }))
-      const modal = screen.getByRole('dialog')
-      const cancelBtn = Array.from(modal.querySelectorAll('button')).find((b) =>
-        b.textContent?.includes('Cancelar'),
-      )!
-      await user.click(cancelBtn)
+      await user.click(screen.getByLabelText('Cerrar'))
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
   })

@@ -302,6 +302,727 @@ describe('Repositorio de clientes', () => {
 })
 
 describe('Repositorio de productos', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockRpc.mockResolvedValue({ data: null, error: null })
+  })
+
+  describe('createProduct', () => {
+    it('debería crear un producto con defaultVariant y llamar RPC create_variant', async () => {
+      const productRow = {
+        id: 'p-new',
+        name: 'Playera',
+        category_id: 'cat1',
+        published: true,
+        public_description: '',
+        image_url: null,
+      }
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: productRow, error: null })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const insertMock = vi.fn().mockReturnValue({ select: selectMock })
+
+      supabaseFromMock.mockReturnValue({ insert: insertMock })
+      mockRpc.mockResolvedValue({ data: 'v-new', error: null })
+
+      const { createProduct } = await import('./repository.ts')
+      const result = await createProduct(
+        mockUser,
+        {
+          name: 'Playera',
+          category: 'Ropa',
+          categoryId: 'cat1',
+          published: true,
+          publicDescription: '',
+          imageUrl: null,
+          color: 'sky',
+          variants: [],
+        },
+        {
+          sku: 'PLA-001',
+          inventoryCost: 80,
+          salePrice: 150,
+          stock: 25,
+          optionValueIds: [],
+        },
+      )
+
+      expect(insertMock).toHaveBeenCalledWith({
+        user_id: 'user-123',
+        name: 'Playera',
+        category_id: 'cat1',
+        published: true,
+        public_description: '',
+        image_url: null,
+      })
+      expect(mockRpc).toHaveBeenCalledWith('create_variant', {
+        p_product_id: 'p-new',
+        p_sku: 'PLA-001',
+        p_variant_name: '',
+        p_inventory_cost: 80,
+        p_sale_price: 150,
+        p_stock: 25,
+        p_option_value_ids: [],
+      })
+      expect(result.id).toBe('p-new')
+      expect(result.variants).toHaveLength(1)
+      expect(result.variants[0].sku).toBe('PLA-001')
+    })
+
+    it('debería crear un producto sin defaultVariant', async () => {
+      const productRow = {
+        id: 'p-new',
+        name: 'Gorra',
+        category_id: null,
+        published: false,
+        public_description: 'Desc',
+        image_url: null,
+      }
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: productRow, error: null })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const insertMock = vi.fn().mockReturnValue({ select: selectMock })
+
+      supabaseFromMock.mockReturnValue({ insert: insertMock })
+
+      const { createProduct } = await import('./repository.ts')
+      const result = await createProduct(mockUser, {
+        name: 'Gorra',
+        category: 'General',
+        categoryId: null,
+        published: false,
+        publicDescription: 'Desc',
+        imageUrl: null,
+        color: 'coral',
+        variants: [],
+      })
+
+      expect(result.id).toBe('p-new')
+      expect(result.variants).toEqual([])
+      expect(mockRpc).not.toHaveBeenCalled()
+    })
+
+    it('debería propagar errores del insert', async () => {
+      const singleMock = vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: 'insert failed' },
+      })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const insertMock = vi.fn().mockReturnValue({ select: selectMock })
+
+      supabaseFromMock.mockReturnValue({ insert: insertMock })
+
+      const { createProduct } = await import('./repository.ts')
+      await expect(
+        createProduct(mockUser, {
+          name: 'Playera',
+          category: 'Ropa',
+          categoryId: 'cat1',
+          published: true,
+          publicDescription: '',
+          imageUrl: null,
+          color: 'sky',
+          variants: [],
+        }),
+      ).rejects.toThrow('insert failed')
+    })
+
+    it('debería propagar errores del RPC create_variant', async () => {
+      const productRow = {
+        id: 'p-new',
+        name: 'Playera',
+        category_id: 'cat1',
+        published: true,
+        public_description: '',
+        image_url: null,
+      }
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: productRow, error: null })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const insertMock = vi.fn().mockReturnValue({ select: selectMock })
+
+      supabaseFromMock.mockReturnValue({ insert: insertMock })
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: 'variant creation failed' },
+      })
+
+      const { createProduct } = await import('./repository.ts')
+      await expect(
+        createProduct(
+          mockUser,
+          {
+            name: 'Playera',
+            category: 'Ropa',
+            categoryId: 'cat1',
+            published: true,
+            publicDescription: '',
+            imageUrl: null,
+            color: 'sky',
+            variants: [],
+          },
+          {
+            sku: 'PLA-001',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValueIds: [],
+          },
+        ),
+      ).rejects.toThrow('variant creation failed')
+    })
+  })
+
+  describe('createProductWithVariants', () => {
+    it('debería crear producto y todas las variantes', async () => {
+      const productRow = {
+        id: 'p-new',
+        name: 'Playera',
+        category_id: 'cat1',
+        published: true,
+        public_description: '',
+        image_url: null,
+      }
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: productRow, error: null })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const insertMock = vi.fn().mockReturnValue({ select: selectMock })
+
+      const categoryRow = { name: 'Ropa' }
+      const maybeSingleMock = vi
+        .fn()
+        .mockResolvedValue({ data: categoryRow, error: null })
+      const eqCatMock = vi
+        .fn()
+        .mockReturnValue({ maybeSingle: maybeSingleMock })
+      const selectCatMock = vi.fn().mockReturnValue({ eq: eqCatMock })
+
+      supabaseFromMock
+        .mockReturnValueOnce({ insert: insertMock })
+        .mockReturnValueOnce({ select: selectCatMock })
+
+      mockRpc
+        .mockResolvedValueOnce({ data: 'v1', error: null })
+        .mockResolvedValueOnce({ data: 'v2', error: null })
+
+      const { createProductWithVariants } = await import('./repository.ts')
+      const result = await createProductWithVariants(
+        mockUser,
+        {
+          name: 'Playera',
+          categoryId: 'cat1',
+          published: true,
+          publicDescription: '',
+          imageUrl: null,
+        },
+        [
+          {
+            sku: 'PLA-001',
+            name: 'Negro',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValueIds: [],
+          },
+          {
+            sku: 'PLA-002',
+            name: 'Blanco',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 10,
+            optionValueIds: [],
+          },
+        ],
+      )
+
+      expect(result.id).toBe('p-new')
+      expect(result.variants).toHaveLength(2)
+      expect(result.variants[0].id).toBe('v1')
+      expect(result.variants[1].id).toBe('v2')
+      expect(result.category).toBe('Ropa')
+      expect(mockRpc).toHaveBeenCalledTimes(2)
+    })
+
+    it('debería eliminar el producto si createVariant falla (rollback)', async () => {
+      const productRow = {
+        id: 'p-new',
+        name: 'Playera',
+        category_id: 'cat1',
+        published: true,
+        public_description: '',
+        image_url: null,
+      }
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: productRow, error: null })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const insertMock = vi.fn().mockReturnValue({ select: selectMock })
+      const eqMock = vi.fn().mockResolvedValue({ data: null, error: null })
+      const deleteMock = vi.fn().mockReturnValue({ eq: eqMock })
+
+      supabaseFromMock
+        .mockReturnValueOnce({ insert: insertMock })
+        .mockReturnValueOnce({ delete: deleteMock })
+
+      mockRpc
+        .mockResolvedValueOnce({ data: 'v1', error: null })
+        .mockResolvedValueOnce({
+          data: null,
+          error: { message: 'duplicate sku' },
+        })
+
+      const { createProductWithVariants } = await import('./repository.ts')
+      await expect(
+        createProductWithVariants(
+          mockUser,
+          {
+            name: 'Playera',
+            categoryId: 'cat1',
+            published: true,
+            publicDescription: '',
+            imageUrl: null,
+          },
+          [
+            {
+              sku: 'PLA-001',
+              name: 'Negro',
+              inventoryCost: 80,
+              salePrice: 150,
+              stock: 25,
+              optionValueIds: [],
+            },
+            {
+              sku: 'PLA-001',
+              name: 'Dup',
+              inventoryCost: 80,
+              salePrice: 150,
+              stock: 10,
+              optionValueIds: [],
+            },
+          ],
+        ),
+      ).rejects.toThrow('duplicate sku')
+
+      expect(deleteMock).toHaveBeenCalled()
+      expect(eqMock).toHaveBeenCalledWith('id', 'p-new')
+    })
+
+    it('debería resolver el nombre de la categoría desde categories', async () => {
+      const productRow = {
+        id: 'p-new',
+        name: 'Gorra',
+        category_id: 'cat2',
+        published: true,
+        public_description: '',
+        image_url: null,
+      }
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: productRow, error: null })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const insertMock = vi.fn().mockReturnValue({ select: selectMock })
+
+      const categoryRow = { name: 'Accesorios' }
+      const maybeSingleMock = vi
+        .fn()
+        .mockResolvedValue({ data: categoryRow, error: null })
+      const eqCatMock = vi
+        .fn()
+        .mockReturnValue({ maybeSingle: maybeSingleMock })
+      const selectCatMock = vi.fn().mockReturnValue({ eq: eqCatMock })
+
+      supabaseFromMock
+        .mockReturnValueOnce({ insert: insertMock })
+        .mockReturnValueOnce({ select: selectCatMock })
+
+      mockRpc.mockResolvedValue({ data: 'v1', error: null })
+
+      const { createProductWithVariants } = await import('./repository.ts')
+      const result = await createProductWithVariants(
+        mockUser,
+        {
+          name: 'Gorra',
+          categoryId: 'cat2',
+          published: true,
+          publicDescription: '',
+          imageUrl: null,
+        },
+        [
+          {
+            sku: 'GOR-001',
+            name: 'Única',
+            inventoryCost: 40,
+            salePrice: 80,
+            stock: 50,
+            optionValueIds: [],
+          },
+        ],
+      )
+
+      expect(result.category).toBe('Accesorios')
+    })
+
+    it('debería usar "General" cuando categoryId es null', async () => {
+      const productRow = {
+        id: 'p-new',
+        name: 'Playera',
+        category_id: null,
+        published: true,
+        public_description: '',
+        image_url: null,
+      }
+      const singleMock = vi
+        .fn()
+        .mockResolvedValue({ data: productRow, error: null })
+      const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+      const insertMock = vi.fn().mockReturnValue({ select: selectMock })
+
+      supabaseFromMock.mockReturnValue({ insert: insertMock })
+      mockRpc.mockResolvedValue({ data: 'v1', error: null })
+
+      const { createProductWithVariants } = await import('./repository.ts')
+      const result = await createProductWithVariants(
+        mockUser,
+        {
+          name: 'Playera',
+          categoryId: null,
+          published: true,
+          publicDescription: '',
+          imageUrl: null,
+        },
+        [
+          {
+            sku: 'PLA-001',
+            name: 'Negro',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValueIds: [],
+          },
+        ],
+      )
+
+      expect(result.category).toBe('General')
+    })
+  })
+
+  describe('Variant mutations', () => {
+    describe('createVariant', () => {
+      it('debería llamar a create_variant RPC con los datos correctos', async () => {
+        mockRpc.mockResolvedValue({ data: 'v-new', error: null })
+
+        const { createVariant } = await import('./repository.ts')
+        const result = await createVariant('p1', {
+          sku: 'PLA-001',
+          name: 'Negro',
+          inventoryCost: 80,
+          salePrice: 150,
+          stock: 25,
+          optionValueIds: ['ov1', 'ov2'],
+        })
+
+        expect(mockRpc).toHaveBeenCalledWith('create_variant', {
+          p_product_id: 'p1',
+          p_sku: 'PLA-001',
+          p_variant_name: 'Negro',
+          p_inventory_cost: 80,
+          p_sale_price: 150,
+          p_stock: 25,
+          p_option_value_ids: ['ov1', 'ov2'],
+        })
+        expect(result).toBe('v-new')
+      })
+
+      it('debería propagar errores del RPC', async () => {
+        mockRpc.mockResolvedValue({
+          data: null,
+          error: { message: 'duplicate sku' },
+        })
+
+        const { createVariant } = await import('./repository.ts')
+        await expect(
+          createVariant('p1', {
+            sku: 'PLA-001',
+            name: 'Negro',
+            inventoryCost: 80,
+            salePrice: 150,
+            stock: 25,
+            optionValueIds: [],
+          }),
+        ).rejects.toThrow('duplicate sku')
+      })
+    })
+
+    describe('updateVariantPrice', () => {
+      it('debería llamar a update_variant_price RPC', async () => {
+        mockRpc.mockResolvedValue({ data: null, error: null })
+
+        const { updateVariantPrice } = await import('./repository.ts')
+        await updateVariantPrice('v1', 200)
+
+        expect(mockRpc).toHaveBeenCalledWith('update_variant_price', {
+          p_variant_id: 'v1',
+          p_sale_price: 200,
+        })
+      })
+
+      it('debería propagar errores del RPC', async () => {
+        mockRpc.mockResolvedValue({
+          data: null,
+          error: { message: 'variant not found' },
+        })
+
+        const { updateVariantPrice } = await import('./repository.ts')
+        await expect(updateVariantPrice('v1', 200)).rejects.toThrow(
+          'variant not found',
+        )
+      })
+    })
+
+    describe('deleteVariant', () => {
+      it('debería llamar a delete_variant RPC', async () => {
+        mockRpc.mockResolvedValue({ data: null, error: null })
+
+        const { deleteVariant } = await import('./repository.ts')
+        await deleteVariant('v1')
+
+        expect(mockRpc).toHaveBeenCalledWith('delete_variant', {
+          p_variant_id: 'v1',
+        })
+      })
+
+      it('debería propagar errores del RPC', async () => {
+        mockRpc.mockResolvedValue({
+          data: null,
+          error: { message: 'foreign key violation' },
+        })
+
+        const { deleteVariant } = await import('./repository.ts')
+        await expect(deleteVariant('v1')).rejects.toThrow(
+          'foreign key violation',
+        )
+      })
+    })
+  })
+
+  describe('loadProductsPage', () => {
+    function makeQueryChain(
+      data: unknown[],
+      count: number,
+      error: unknown = null,
+    ) {
+      const rangeMock = vi.fn().mockResolvedValue({ data, count, error })
+      const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
+      const eqUserMock = vi.fn().mockReturnValue({ order: orderMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
+      return {
+        select: selectMock,
+        _range: rangeMock,
+        _order: orderMock,
+        _eqUser: eqUserMock,
+      }
+    }
+
+    function makeHydrationChain() {
+      const order2 = vi.fn().mockResolvedValue({ data: [], error: null })
+      const eq2 = vi.fn().mockReturnValue({ order: order2 })
+      const in2 = vi.fn().mockReturnValue({ eq: eq2 })
+      const sel2 = vi.fn().mockReturnValue({ in: in2 })
+
+      const eq3 = vi.fn().mockResolvedValue({ data: [], error: null })
+      const sel3 = vi.fn().mockReturnValue({ eq: eq3 })
+
+      return [sel2, sel3] as const
+    }
+
+    it('debería paginar resultados correctamente', async () => {
+      const mockProducts = [
+        {
+          id: 'p1',
+          name: 'Playera',
+          category_id: null,
+          published: true,
+          public_description: '',
+          image_url: null,
+        },
+      ]
+      const mainQuery = makeQueryChain(mockProducts, 1)
+      const [sel2, sel3] = makeHydrationChain()
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock
+        .mockReturnValueOnce({ select: mainQuery.select })
+        .mockReturnValueOnce({ select: sel2 })
+        .mockReturnValueOnce({ select: sel3 })
+
+      const { loadProductsPage } = await import('./repository.ts')
+      const result = await loadProductsPage(mockUser, { page: 1, pageSize: 10 })
+
+      expect(result.data).toHaveLength(1)
+      expect(result.total).toBe(1)
+      expect(result.page).toBe(1)
+      expect(result.pageSize).toBe(10)
+      expect(result.totalPages).toBe(1)
+    })
+
+    it('debería devolver array vacío cuando stock filter no encuentra variantes', async () => {
+      const gtMock = vi.fn().mockResolvedValue({ data: [], error: null })
+      const eqStockMock = vi.fn().mockReturnValue({ gt: gtMock })
+      const selStockMock = vi.fn().mockReturnValue({ eq: eqStockMock })
+      const mainQuery = makeQueryChain([], 0)
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock
+        .mockReturnValueOnce({ select: mainQuery.select })
+        .mockReturnValueOnce({ select: selStockMock })
+
+      const { loadProductsPage } = await import('./repository.ts')
+      const result = await loadProductsPage(
+        mockUser,
+        { page: 1, pageSize: 25 },
+        { stock: 'available' },
+      )
+
+      expect(result.data).toEqual([])
+      expect(result.total).toBe(0)
+    })
+
+    it('debería propagar errores de la consulta principal', async () => {
+      const mainQuery = makeQueryChain([], 0, { message: 'DB error' })
+
+      supabaseFromMock.mockReset()
+      supabaseFromMock.mockReturnValue({ select: mainQuery.select })
+
+      const { loadProductsPage } = await import('./repository.ts')
+      await expect(
+        loadProductsPage(mockUser, { page: 1, pageSize: 25 }),
+      ).rejects.toThrow('DB error')
+    })
+  })
+
+  describe('loadProductById', () => {
+    it('debería devolver el producto hidratado cuando existe', async () => {
+      const productRow = {
+        id: 'p1',
+        name: 'Playera',
+        category_id: 'cat1',
+        published: true,
+        public_description: '',
+        image_url: null,
+      }
+      const maybeSingleMock = vi
+        .fn()
+        .mockResolvedValue({ data: productRow, error: null })
+      const eqIdMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+      const eqUserMock = vi.fn().mockReturnValue({ eq: eqIdMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
+
+      const variants = vi.fn().mockReturnValue({
+        in: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+        }),
+      })
+      const categories = vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({
+          data: [{ id: 'cat1', name: 'Ropa' }],
+          error: null,
+        }),
+      })
+
+      supabaseFromMock
+        .mockReturnValueOnce({ select: selectMock })
+        .mockReturnValueOnce({ select: variants })
+        .mockReturnValueOnce({ select: categories })
+
+      const { loadProductById } = await import('./repository.ts')
+      const result = await loadProductById(mockUser, 'p1')
+
+      expect(result).not.toBeNull()
+      expect(result!.id).toBe('p1')
+      expect(result!.name).toBe('Playera')
+      expect(result!.category).toBe('Ropa')
+    })
+
+    it('debería devolver null cuando el producto no existe', async () => {
+      const maybeSingleMock = vi
+        .fn()
+        .mockResolvedValue({ data: null, error: null })
+      const eqIdMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+      const eqUserMock = vi.fn().mockReturnValue({ eq: eqIdMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
+
+      supabaseFromMock.mockReturnValue({ select: selectMock })
+
+      const { loadProductById } = await import('./repository.ts')
+      const result = await loadProductById(mockUser, 'no-existe')
+
+      expect(result).toBeNull()
+    })
+
+    it('debería propagar errores de la consulta', async () => {
+      const maybeSingleMock = vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: 'DB error' },
+      })
+      const eqIdMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+      const eqUserMock = vi.fn().mockReturnValue({ eq: eqIdMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })
+
+      supabaseFromMock.mockReturnValue({ select: selectMock })
+
+      const { loadProductById } = await import('./repository.ts')
+      await expect(loadProductById(mockUser, 'p1')).rejects.toThrow('DB error')
+    })
+  })
+
+  describe('loadInventoryAggregates', () => {
+    it('debería devolver costTotal, saleTotal y profitTotal', async () => {
+      mockRpc.mockResolvedValue({
+        data: [{ cost_total: 1000, sale_total: 2500, profit_total: 1500 }],
+        error: null,
+      })
+
+      const { loadInventoryAggregates } = await import('./repository.ts')
+      const result = await loadInventoryAggregates()
+
+      expect(mockRpc).toHaveBeenCalledWith('inventory_aggregates')
+      expect(result).toEqual({
+        costTotal: 1000,
+        saleTotal: 2500,
+        profitTotal: 1500,
+      })
+    })
+
+    it('debería devolver ceros cuando no hay datos', async () => {
+      mockRpc.mockResolvedValue({ data: [], error: null })
+
+      const { loadInventoryAggregates } = await import('./repository.ts')
+      const result = await loadInventoryAggregates()
+
+      expect(result).toEqual({
+        costTotal: 0,
+        saleTotal: 0,
+        profitTotal: 0,
+      })
+    })
+
+    it('debería propagar errores del RPC', async () => {
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: 'RPC failed' },
+      })
+
+      const { loadInventoryAggregates } = await import('./repository.ts')
+      await expect(loadInventoryAggregates()).rejects.toThrow('RPC failed')
+    })
+  })
+
   describe('loadProducts', () => {
     it('debería cargar productos con variantes y option values', async () => {
       const mockProducts = [

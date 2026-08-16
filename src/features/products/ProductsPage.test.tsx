@@ -95,16 +95,17 @@ describe('ProductsPage', () => {
       render(<ProductsPage {...defaultProps} products={products} />)
 
       await user.click(
-        screen.getByRole('button', { name: 'Filtrar por categoría' }),
+        screen.getByRole('combobox', { name: 'Filtrar por categoría' }),
       )
-      await user.click(screen.getByRole('option', { name: 'Hogar' }))
+      const hogarOptions = screen.getAllByText('Hogar')
+      await user.click(hogarOptions[hogarOptions.length - 1])
 
       expect(screen.getByText('Taza')).toBeInTheDocument()
       expect(screen.queryByText('Playera')).not.toBeInTheDocument()
     })
 
     it('debería filtrar productos agotados', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup({ delay: null })
       const products = [
         createMockProduct({ id: 'p1', name: 'Disponible' }),
         createMockProduct({
@@ -119,9 +120,11 @@ describe('ProductsPage', () => {
       render(<ProductsPage {...defaultProps} products={products} />)
 
       await user.click(
-        screen.getByRole('button', { name: 'Filtrar por existencias' }),
+        screen.getByRole('combobox', { name: 'Filtrar por existencias' }),
       )
-      await user.click(screen.getByRole('option', { name: 'Agotados' }))
+      await screen.findByText('Agotados')
+      const agotadosOptions = screen.getAllByText('Agotados')
+      await user.click(agotadosOptions[agotadosOptions.length - 1])
 
       expect(screen.getByText('Agotado')).toBeInTheDocument()
       expect(screen.queryByText('Disponible')).not.toBeInTheDocument()

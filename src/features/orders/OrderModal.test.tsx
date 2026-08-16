@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, within } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { OrderModal } from './OrderModal'
@@ -103,35 +103,27 @@ describe('OrderModal', () => {
     it('debería permitir cambiar el cliente seleccionado', async () => {
       const user = userEvent.setup()
       render(<OrderModal {...defaultProps} />)
-      const dialog = screen.getByRole('dialog')
-      const clientLabel = within(dialog).getByText('Cliente').closest('label')!
-      const trigger = clientLabel.querySelector('.custom-select-trigger')!
+      const trigger = screen.getByRole('combobox', { name: 'Cliente' })
       await user.click(trigger)
-      await user.click(screen.getByRole('option', { name: 'María García' }))
+      await user.click(screen.getByText('María García'))
       expect(trigger).toHaveTextContent('María García')
     })
   })
 
   describe('Selección de pago', () => {
-    it('debería tener "Pagado" como valor por defecto', () => {
+    it('debería tener "Pendiente de pago" como valor por defecto', () => {
       render(<OrderModal {...defaultProps} />)
-      const trigger = screen.getByRole('button', { name: /estado del pago/i })
-      expect(trigger).toHaveTextContent('Pagado')
+      const trigger = screen.getByRole('combobox', { name: /estado del pago/i })
+      expect(trigger).toHaveTextContent('Pendiente de pago')
     })
 
-    it('debería permitir cambiar a Pendiente de pago', async () => {
+    it('debería permitir cambiar a Pagado', async () => {
       const user = userEvent.setup()
       render(<OrderModal {...defaultProps} />)
-      const dialog = screen.getByRole('dialog')
-      const paymentLabel = within(dialog)
-        .getByText('Estado del pago')
-        .closest('label')!
-      const trigger = paymentLabel.querySelector('.custom-select-trigger')!
+      const trigger = screen.getByRole('combobox', { name: 'Estado del pago' })
       await user.click(trigger)
-      await user.click(
-        screen.getByRole('option', { name: 'Pendiente de pago' }),
-      )
-      expect(trigger).toHaveTextContent('Pendiente de pago')
+      await user.click(screen.getByText('Pagado'))
+      expect(trigger).toHaveTextContent('Pagado')
     })
   })
 

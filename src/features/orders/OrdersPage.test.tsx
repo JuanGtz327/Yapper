@@ -185,9 +185,9 @@ describe('OrdersPage', () => {
       render(<OrdersPage {...defaultProps} orders={orders} />)
 
       await user.click(
-        screen.getByRole('button', { name: 'Filtrar por entrega' }),
+        screen.getByRole('combobox', { name: 'Filtrar por entrega' }),
       )
-      await user.click(screen.getByRole('option', { name: 'Entregados' }))
+      await user.click(screen.getByText('Entregados'))
 
       expect(screen.getAllByText('#PED-002').length).toBeGreaterThan(0)
       expect(screen.queryByText('#PED-001')).not.toBeInTheDocument()
@@ -209,8 +209,10 @@ describe('OrdersPage', () => {
       ]
       render(<OrdersPage {...defaultProps} orders={orders} />)
 
-      await user.click(screen.getByRole('button', { name: 'Filtrar por pago' }))
-      await user.click(screen.getByRole('option', { name: 'Pagados' }))
+      await user.click(
+        screen.getByRole('combobox', { name: 'Filtrar por pago' }),
+      )
+      await user.click(screen.getByText('Pagados'))
 
       expect(screen.getAllByText('#PED-002').length).toBeGreaterThan(0)
       expect(screen.queryByText('#PED-001')).not.toBeInTheDocument()
