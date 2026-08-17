@@ -63,6 +63,7 @@ type PageRouterProps = {
     clientId: string,
     items: Array<{ variantId: string; quantity: number }>,
     payment: 'pending' | 'paid',
+    routeOrder?: Order | null,
   ) => Promise<boolean>
   handleStatusChange: (
     order: Order,
@@ -313,7 +314,9 @@ export function PageRouter({
                     ? () => onNavigate('Pedidos')
                     : undefined
                 }
-                onSubmit={handleOrderSubmit}
+                onSubmit={(clientId, items, payment) =>
+                  handleOrderSubmit(clientId, items, payment, editingOrder)
+                }
               />
             )
           }

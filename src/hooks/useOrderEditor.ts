@@ -71,11 +71,13 @@ export function useOrderEditor(
       clientId: string,
       items: OrderItemInput[],
       payment: 'pending' | 'paid',
+      routeOrder?: Order | null,
     ): Promise<boolean> => {
-      if (!orderEditor) {
+      const orderToUpdate = routeOrder ?? orderEditor
+      if (!orderToUpdate) {
         return addOrder(clientId, items, payment)
       }
-      return updateExistingOrder(orderEditor, clientId, items, payment)
+      return updateExistingOrder(orderToUpdate, clientId, items, payment)
     },
     [orderEditor, addOrder, updateExistingOrder],
   )

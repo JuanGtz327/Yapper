@@ -188,6 +188,58 @@ test.describe('Order lifecycle', () => {
     expect(await readInventoryStock(page)).toBe(stockBefore)
   })
 
+  test('should edit an existing order and release reduced stock', async ({
+    page,
+  }, testInfo) => {
+    const name = clientName(testInfo)
+    await openClientsPage(page)
+    await createClient(page, name)
+    const stockBefore = await readInventoryStock(page)
+
+    await page.goto('/pedidos/nuevo')
+    await selectOrderData(page, name)
+    await page.getByRole('spinbutton', { name: 'Cantidad 1' }).fill('9')
+    await page.getByRole('button', { name: 'Guardar pedido' }).click()
+    await expect(page.getByText('Pedido creado exitosamente.')).toBeVisible()
+    expect(await readInventoryStock(page)).toBe(stockBefore - 9)
+
+    await page.goto('/pedidos')
+    const orderRow = page.getByRole('row').filter({ hasText: name })
+    await expect(orderRow).toBeVisible()
+    await orderRow.click()
+    await page.getByRole('button', { name: 'Editar pedido' }).click()
+    await expect(
+      page.getByRole('heading', { name: 'Editar pedido' }),
+    ).toBeVisible()
+    await expect(
+      page.locator('small').filter({
+        hasText: /en almacén · hasta .* en este pedido/,
+      }),
+    ).toBeVisible()
+
+    await page.getByRole('spinbutton', { name: 'Cantidad 1' }).fill('7')
+    const editRpcCalls: string[] = []
+    page.on('request', (request) => {
+      if (request.url().includes('/rest/v1/rpc/'))
+        editRpcCalls.push(request.url())
+    })
+    await page.getByRole('button', { name: 'Guardar cambios' }).click()
+    await expect(
+      page.getByText('Pedido actualizado correctamente.'),
+    ).toBeVisible({ timeout: 30000 })
+    expect(editRpcCalls.some((url) => url.endsWith('/update_order'))).toBe(true)
+    expect(editRpcCalls.some((url) => url.endsWith('/create_order'))).toBe(
+      false,
+    )
+    expect(await readInventoryStock(page)).toBe(stockBefore - 7)
+
+    await page.goto('/pedidos')
+    await page.getByRole('row').filter({ hasText: name }).click()
+    await expect(
+      page.getByRole('listitem').filter({ hasText: 'Playera Básica' }).first(),
+    ).toContainText('7')
+  })
+
   test('should reject an order quantity above available stock', async ({
     page,
   }, testInfo) => {

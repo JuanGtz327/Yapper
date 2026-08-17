@@ -70,9 +70,10 @@ export function OrderCreatePage({
 
   const findVariant = (variantId: string) =>
     variantOptions.find((option) => option.variant.id === variantId)
+  const currentStock = (variantId: string) =>
+    findVariant(variantId)?.variant.stock ?? 0
   const availableStock = (variantId: string) =>
-    (findVariant(variantId)?.variant.stock ?? 0) +
-    (originalQuantities.get(variantId) ?? 0)
+    currentStock(variantId) + (originalQuantities.get(variantId) ?? 0)
   const priceFor = (line: OrderDraftLine) =>
     line.unitPrice ?? findVariant(line.variantId)?.variant.salePrice ?? 0
   const total = lines.reduce(
@@ -130,7 +131,13 @@ export function OrderCreatePage({
       .map((value) => value.value)
       .join(', ')
     if (options) labels.push(`— ${options}`)
-    labels.push(`— ${availableStock(option.variant.id)} disponibles`)
+    const stock = currentStock(option.variant.id)
+    const editableStock = availableStock(option.variant.id)
+    labels.push(
+      initial
+        ? `— ${stock} en almacén · hasta ${editableStock} en este pedido`
+        : `— ${stock} disponibles`,
+    )
     return labels.join(' ')
   }
 
@@ -273,7 +280,9 @@ export function OrderCreatePage({
                     />
                     <small className="col-start-1 col-end-2 text-[#716b72] text-[10px]">
                       {selected
-                        ? `${availableStock(line.variantId)} disponibles`
+                        ? initial
+                          ? `${currentStock(line.variantId)} en almacén · hasta ${availableStock(line.variantId)} en este pedido`
+                          : `${currentStock(line.variantId)} disponibles`
                         : 'Producto no disponible'}
                     </small>
                   </div>
