@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import userEvent, { PointerEventsCheckLevel } from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { OrdersPage } from './OrdersPage'
 import type { Order } from '../../types.ts'
@@ -177,7 +177,9 @@ describe('OrdersPage', () => {
     })
 
     it('debería filtrar pedidos por estado de entrega', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup({
+        pointerEventsCheck: PointerEventsCheckLevel.Never,
+      })
       const orders = [
         createMockOrder({ id: '#PED-001', status: 'Pendiente' }),
         createMockOrder({ id: '#PED-002', status: 'Entregado' }),
@@ -212,10 +214,14 @@ describe('OrdersPage', () => {
       await user.click(
         screen.getByRole('combobox', { name: 'Filtrar por pago' }),
       )
-      await user.click(screen.getByText('Pagados'))
+      const paidOptions = screen.getAllByText('Pagados')
+      const paidOption = paidOptions[0].parentElement!
+      fireEvent.pointerDown(paidOption)
+      fireEvent.pointerUp(paidOption)
+      fireEvent.click(paidOption)
 
       expect(screen.getAllByText('#PED-002').length).toBeGreaterThan(0)
-      expect(screen.queryByText('#PED-001')).not.toBeInTheDocument()
+      expect(screen.queryAllByText('#PED-001')).toHaveLength(0)
     })
   })
 

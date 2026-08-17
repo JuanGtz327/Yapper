@@ -6,17 +6,20 @@ export function ModalFrame({
   title,
   children,
   onClose,
+  open: controlledOpen,
   className,
 }: {
   title: string
   children: ReactNode
   onClose: () => void
+  open?: boolean
   className?: string
 }) {
-  const [open, setOpen] = useState(true)
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(true)
+  const open = controlledOpen ?? uncontrolledOpen
 
   const handleOpenChange = (nextOpen: boolean) => {
-    setOpen(nextOpen)
+    if (controlledOpen === undefined) setUncontrolledOpen(nextOpen)
     if (!nextOpen) onClose()
   }
 

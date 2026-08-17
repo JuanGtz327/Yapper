@@ -368,6 +368,7 @@ export function ProductsPage({
                   </td>
                   <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
                     <span
+                      data-testid={`inventory-stock-${row.variant?.sku ?? row.product.id}`}
                       className={
                         stock <= threshold
                           ? 'font-bold text-[#c5804a]'

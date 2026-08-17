@@ -6,6 +6,9 @@ import type {
   Order,
   OrderItemInput,
   Product,
+  Category,
+  OptionTypeWithValues,
+  SalesAggregate,
 } from '../types.ts'
 import { isSafeImageUrl } from '../lib/security.ts'
 import { normalizeMexicanWhatsApp } from '../lib/whatsapp.ts'
@@ -22,6 +25,13 @@ import { useOrdersMutations } from './queries/useOrdersMutations.ts'
 import { useSettingsMutation } from './queries/useSettingsMutation.ts'
 import { useToast, toastMessages } from './useToast.ts'
 
+const EMPTY_PRODUCTS: Product[] = []
+const EMPTY_CLIENTS: Client[] = []
+const EMPTY_ORDERS: Order[] = []
+const EMPTY_CATEGORIES: Category[] = []
+const EMPTY_OPTION_TYPES: OptionTypeWithValues[] = []
+const EMPTY_SALES: SalesAggregate[] = []
+
 export function useDashboardData(user: User | null) {
   const productsQuery = useProductsQuery(user)
   const clientsQuery = useClientsQuery(user)
@@ -31,11 +41,11 @@ export function useDashboardData(user: User | null) {
   const categoriesQuery = useCategoriesQuery(user)
   const optionTypesQuery = useOptionTypesQuery(user)
 
-  const products = productsQuery.data ?? []
-  const clients = clientsQuery.data ?? []
-  const rawOrders = ordersQuery.data ?? []
-  const categories = categoriesQuery.data ?? []
-  const optionTypes = optionTypesQuery.data ?? []
+  const products = productsQuery.data ?? EMPTY_PRODUCTS
+  const clients = clientsQuery.data ?? EMPTY_CLIENTS
+  const rawOrders = ordersQuery.data ?? EMPTY_ORDERS
+  const categories = categoriesQuery.data ?? EMPTY_CATEGORIES
+  const optionTypes = optionTypesQuery.data ?? EMPTY_OPTION_TYPES
   const settings = settingsQuery.data ?? {
     businessName: 'Mi negocio',
     currency: 'MXN',
@@ -45,7 +55,7 @@ export function useDashboardData(user: User | null) {
     whatsappNumber: '',
     publicIntro: '',
   }
-  const sales = salesQuery.data ?? []
+  const sales = salesQuery.data ?? EMPTY_SALES
 
   const orders = useMemo(() => {
     return rawOrders.map((order) => ({

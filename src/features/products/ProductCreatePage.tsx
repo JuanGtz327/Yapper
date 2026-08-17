@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { ArrowLeft, Check, Image, Pencil, Plus, Trash2 } from 'lucide-react'
 import type { Product, OptionTypeWithValues } from '../../types.ts'
 import { CategoryManagerModal } from './CategoryManagerModal.tsx'
@@ -103,12 +103,11 @@ export function ProductCreatePage({
     null,
   )
   const [confirmDeleteIdx, setConfirmDeleteIdx] = useState<number | null>(null)
-  const shouldAutoSubmit = useRef(false)
   const toast = useToast()
 
   useEffect(() => {
     if (initial) setDraft(draftFromProduct(initial, optionTypes))
-  }, [initial])
+  }, [initial, optionTypes])
 
   const selectedCategoryName =
     categories.find((c) => c.id === draft.categoryId)?.name ?? 'Sin categoría'
@@ -145,7 +144,6 @@ export function ProductCreatePage({
         variants: [...prev.variants, data],
       }))
     }
-    shouldAutoSubmit.current = true
     setVariantModalOpen(false)
     setEditingVariantIdx(null)
   }
@@ -176,6 +174,7 @@ export function ProductCreatePage({
       const ok = await onSubmit(draftToSave)
       if (!ok) return false
       onVariantsChanged()
+      onClose()
       return true
     } finally {
       setSaving(false)
@@ -193,12 +192,6 @@ export function ProductCreatePage({
     setDraft(trimmed)
     await saveProduct(trimmed)
   }
-
-  useEffect(() => {
-    if (!shouldAutoSubmit.current) return
-    shouldAutoSubmit.current = false
-    void saveProduct(draft)
-  }, [draft])
 
   return (
     <section className="animate-[page-in_0.25s_ease_both]">

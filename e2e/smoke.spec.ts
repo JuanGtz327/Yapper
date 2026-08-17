@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Smoke test', () => {
   test('should load the app and show login page', async ({ page }) => {
     await page.goto('/')
+    await expect(page).toHaveURL(/\/$/)
     await expect(page.getByText('Yapper')).toBeVisible()
     await expect(page.getByText('Correo electrónico')).toBeVisible()
     await expect(page.getByText('Contraseña')).toBeVisible()
@@ -14,6 +15,7 @@ test.describe('Smoke test', () => {
     await page.getByPlaceholder('tu@correo.com').fill('test@yapper.com')
     await page.getByRole('textbox', { name: /contraseña/i }).fill('Test1234!')
     await page.getByRole('button', { name: /entrar/i }).click()
+    await expect(page).toHaveURL(/\/$/)
     await expect(page.getByText('Todo bajo control')).toBeVisible({
       timeout: 15000,
     })
@@ -25,5 +27,6 @@ test.describe('Smoke test', () => {
     await page.getByRole('textbox', { name: /contraseña/i }).fill('WrongPass!')
     await page.getByRole('button', { name: /entrar/i }).click()
     await expect(page.getByRole('alert')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Todo bajo control')).toHaveCount(0)
   })
 })

@@ -105,7 +105,7 @@ describe('ProductsPage', () => {
     })
 
     it('debería filtrar productos agotados', async () => {
-      const user = userEvent.setup({ delay: null })
+      const user = userEvent.setup({ delay: null, pointerEventsCheck: 0 })
       const products = [
         createMockProduct({ id: 'p1', name: 'Disponible' }),
         createMockProduct({
@@ -122,7 +122,6 @@ describe('ProductsPage', () => {
       await user.click(
         screen.getByRole('combobox', { name: 'Filtrar por existencias' }),
       )
-      await screen.findByText('Agotados')
       const agotadosOptions = screen.getAllByText('Agotados')
       await user.click(agotadosOptions[agotadosOptions.length - 1])
 

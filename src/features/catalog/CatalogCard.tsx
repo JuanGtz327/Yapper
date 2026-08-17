@@ -2,14 +2,14 @@ import { Boxes, MessageCircle } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import { safeImageUrl } from '../../lib/security.ts'
 
-export const catalogColors: Record<string, string> = {
+const catalogColors: Record<string, string> = {
   coral: 'text-[#b06b57] bg-[#f9e5dc]',
   mint: 'text-[#579078] bg-[#dff1e6]',
   sky: 'text-[#52829e] bg-[#e0eff5]',
   lavender: 'text-[#7963a2] bg-[#ece5f7]',
 }
 
-export const sphereColors = [
+const sphereColors = [
   '#52829e',
   '#b06b57',
   '#579078',

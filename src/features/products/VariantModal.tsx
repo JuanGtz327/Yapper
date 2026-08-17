@@ -68,6 +68,7 @@ export function VariantModal({
     variant?.inventoryCost ?? 0,
   )
   const [stock, setStock] = useState(variant?.stock ?? 0)
+  const [open, setOpen] = useState(true)
   const [selections, setSelections] = useState<OptionSelection[]>(() => {
     if (!variant) return []
     if (initialOptionValues && initialOptionValues.length > 0) {
@@ -79,6 +80,10 @@ export function VariantModal({
     return []
   })
   const toast = useToast()
+  const close = () => {
+    setOpen(false)
+    onClose()
+  }
 
   const updateSelection = (index: number, patch: Partial<OptionSelection>) => {
     setSelections((prev) =>
@@ -132,12 +137,14 @@ export function VariantModal({
       optionValueIds,
     })
     toast.success(variant ? 'Variante actualizada.' : 'Variante añadida.')
+    close()
   }
 
   return (
     <ModalFrame
       title={variant ? 'Editar variante' : 'Añadir variante'}
-      onClose={onClose}
+      open={open}
+      onClose={close}
     >
       <form className="grid gap-6" onSubmit={submit}>
         {/* ── INFORMACIÓN BÁSICA ─────────────────────────── */}

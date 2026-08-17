@@ -1,152 +1,272 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page, type TestInfo } from '@playwright/test'
 import { login } from './helpers'
 
-const TEST_PRODUCT_NAME = `Test Product ${Date.now()}`
-const TEST_VARIANT_SKU = `TEST-SKU-${Date.now()}`
+const TEST_PRODUCT_PRICE = '150'
+const TEST_PRODUCT_COST = '80'
+const TEST_PRODUCT_STOCK = '25'
+
+function productName(testInfo: TestInfo) {
+  return `E2E Product ${testInfo.testId}-${Date.now()}`
+}
+
+function variantSku(testInfo: TestInfo, suffix = '') {
+  return `E2E-${testInfo.workerIndex}-${Date.now()}${suffix}`
+}
+
+async function openProductsPage(page: Page) {
+  await page.goto('/almacen')
+  await expect(
+    page.getByRole('heading', { name: 'Tus productos' }),
+  ).toBeVisible()
+}
+
+async function openNewProduct(page: Page) {
+  await openProductsPage(page)
+  await page.getByRole('button', { name: 'Añadir producto' }).click()
+  await expect(
+    page.getByRole('heading', { name: 'Nuevo producto' }),
+  ).toBeVisible()
+}
+
+async function addVariant(
+  page: Page,
+  sku: string,
+  price = TEST_PRODUCT_PRICE,
+  stock = TEST_PRODUCT_STOCK,
+) {
+  await page.getByRole('button', { name: 'Añadir variante' }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toBeVisible()
+  await expect(
+    dialog.getByRole('heading', { name: 'Añadir variante' }),
+  ).toBeVisible()
+  await dialog.getByPlaceholder('Ej. TUP-REC-1L-NEG').fill(sku)
+  await dialog.getByRole('spinbutton', { name: 'Precio de venta' }).fill(price)
+  await dialog
+    .getByRole('spinbutton', { name: 'Costo de inventario' })
+    .fill(TEST_PRODUCT_COST)
+  await dialog.getByRole('spinbutton', { name: 'Existencias' }).fill(stock)
+  const submitButton = dialog.getByRole('button', { name: 'Añadir variante' })
+  await submitButton.click()
+  await expect(dialog).toBeHidden()
+  await expect(
+    page.getByRole('alert').filter({ hasText: 'Variante añadida.' }).last(),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('listitem').filter({ hasText: sku }).first(),
+  ).toBeVisible()
+}
+
+async function createProduct(page: Page, name: string, sku: string) {
+  await openNewProduct(page)
+  await page.getByLabel('Nombre del producto').fill(name)
+  await addVariant(page, sku)
+  await expect(
+    page.getByRole('heading', { name: 'Nuevo producto' }),
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'Crear producto' }).click()
+  await expect(page.getByText('Producto guardado exitosamente.')).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Tus productos' }),
+  ).toBeVisible()
+  await expect(page.getByRole('row', { name: new RegExp(name) })).toContainText(
+    sku,
+  )
+}
+
+async function openProductDetail(page: Page, name: string) {
+  const row = page.getByRole('row', { name: new RegExp(name) }).first()
+  await expect(row).toBeVisible()
+  await row.click()
+  await expect(page.getByRole('heading', { name })).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Editar producto' }),
+  ).toBeVisible()
+}
+
+async function openProductEditor(page: Page, name: string) {
+  await openProductDetail(page, name)
+  await page.getByRole('button', { name: 'Editar producto' }).click()
+  await expect(
+    page.getByRole('heading', { name: 'Editar producto' }),
+  ).toBeVisible()
+}
 
 test.describe('Inventory and product lifecycle', () => {
+  test.describe.configure({ mode: 'serial' })
+
   test.beforeEach(async ({ page }) => {
     await login(page)
-    await page.waitForURL('**/')
   })
 
-  test('should create a product with variant', async ({ page }) => {
-    await page.goto('/almacen')
-    await page.waitForSelector('text=Tus productos')
+  test('should create a product with a variant', async ({ page }, testInfo) => {
+    const name = productName(testInfo)
+    const sku = variantSku(testInfo)
+    await createProduct(page, name, sku)
 
-    // Click create product
-    await page.getByText('Añadir producto').click()
-
-    // Wait for form to load
-    await expect(page.getByText('Nuevo producto')).toBeVisible()
-
-    // Fill product name
-    await page.getByLabelText('Nombre del producto').fill(TEST_PRODUCT_NAME)
-
-    // Add a variant
-    await page.getByRole('button', { name: 'Añadir variante' }).click()
-    await expect(page.getByRole('dialog', { name: 'Añadir variante' })).toBeVisible()
-
-    // Fill variant details
-    await page.getByLabelText('SKU').fill(TEST_VARIANT_SKU)
-    await page.getByLabelText('Precio de venta').fill('150')
-    await page.getByLabelText('Existencias').fill('25')
-
-    // Submit variant
-    await page.getByRole('button', { name: /añadir variante/i }).last().click()
-    await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 5000 })
-
-    // Submit product
-    await page.getByRole('button', { name: /crear producto/i }).click()
-
-    // Wait for redirect back to products list
-    await page.waitForSelector('text=Tus productos', { timeout: 10000 })
-
-    // Verify product appears in list
-    await expect(page.getByText(TEST_PRODUCT_NAME)).toBeVisible()
-  })
-
-  test('should edit product details', async ({ page }) => {
-    await page.goto('/almacen')
-    await page.waitForSelector('text=Tus productos')
-
-    // Find and click on the test product
-    const productRow = page.getByText(TEST_PRODUCT_NAME).first()
-    if (await productRow.isVisible()) {
-      await productRow.click()
-
-      // Wait for edit form
-      await expect(page.getByText('Editar producto')).toBeVisible()
-
-      // Change the name
-      const nameInput = page.getByLabelText('Nombre del producto')
-      await nameInput.clear()
-      await nameInput.fill(`${TEST_PRODUCT_NAME} Updated`)
-
-      // Save changes
-      await page.getByRole('button', { name: /guardar cambios/i }).click()
-
-      // Wait for redirect
-      await page.waitForSelector('text=Tus productos', { timeout: 10000 })
-
-      // Verify updated name appears
-      await expect(page.getByText(`${TEST_PRODUCT_NAME} Updated`)).toBeVisible()
-    }
-  })
-
-  test('should manage variants', async ({ page }) => {
-    await page.goto('/almacen')
-    await page.waitForSelector('text=Tus productos')
-
-    // Find and click on the test product
-    const productRow = page.getByText(TEST_PRODUCT_NAME).first()
-    if (await productRow.isVisible()) {
-      await productRow.click()
-
-      // Wait for edit form
-      await expect(page.getByText('Editar producto')).toBeVisible()
-
-      // Add a new variant
-      await page.getByRole('button', { name: 'Añadir variante' }).click()
-      await expect(page.getByRole('dialog', { name: 'Añadir variante' })).toBeVisible()
-
-      const newSku = `TEST-NEW-${Date.now()}`
-      await page.getByLabelText('SKU').fill(newSku)
-      await page.getByLabelText('Precio de venta').fill('200')
-      await page.getByLabelText('Existencias').fill('10')
-
-      await page.getByRole('button', { name: /añadir variante/i }).last().click()
-      await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 5000 })
-
-      // Verify new variant appears
-      await expect(page.getByText(newSku)).toBeVisible()
-
-      // Save product
-      await page.getByRole('button', { name: /guardar cambios/i }).click()
-      await page.waitForSelector('text=Tus productos', { timeout: 10000 })
-    }
-  })
-
-  test('should persist product data', async ({ page }) => {
-    await page.goto('/almacen')
-    await page.waitForSelector('text=Tus productos')
-
-    // Verify product still exists after page reload
-    await expect(page.getByText(`${TEST_PRODUCT_NAME} Updated`).first()).toBeVisible()
-
-    // Reload and verify again
     await page.reload()
-    await page.waitForSelector('text=Tus productos')
-    await expect(page.getByText(`${TEST_PRODUCT_NAME} Updated`).first()).toBeVisible()
+    await expect(
+      page.getByRole('row', { name: new RegExp(name) }),
+    ).toContainText(sku)
+    await openProductDetail(page, name)
+    await expect(page.getByText('1 variante', { exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: sku })).toContainText(
+      '25 uds',
+    )
+  })
+
+  test('should edit product details', async ({ page }, testInfo) => {
+    const name = productName(testInfo)
+    const sku = variantSku(testInfo)
+    const updatedName = `${name} Updated`
+    await createProduct(page, name, sku)
+    await openProductEditor(page, name)
+
+    const nameInput = page.getByLabel('Nombre del producto')
+    await expect(nameInput).toHaveValue(name)
+    await nameInput.fill(updatedName)
+    await page.getByRole('button', { name: 'Guardar cambios' }).click()
+
+    await expect(
+      page.getByText('Producto actualizado exitosamente.'),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Tus productos' }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('row', { name: new RegExp(updatedName) }),
+    ).toContainText(sku)
+  })
+
+  test('should manage variants', async ({ page }, testInfo) => {
+    const name = productName(testInfo)
+    const initialSku = variantSku(testInfo)
+    const secondSku = variantSku(testInfo, '-SECOND')
+    await createProduct(page, name, initialSku)
+    await openProductEditor(page, name)
+
+    await addVariant(page, secondSku, '200', '10')
+    await expect(page.getByText(secondSku, { exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Guardar cambios' }).click()
+    await expect(
+      page.getByText('Producto actualizado exitosamente.'),
+    ).toBeVisible()
+
+    await page.goto('/almacen')
+    await openProductDetail(page, name)
+    await expect(page.getByText('2 variantes', { exact: true })).toBeVisible()
+    await expect(
+      page.getByRole('button').filter({ hasText: initialSku }).first(),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('button').filter({ hasText: secondSku }).first(),
+    ).toContainText('10 uds')
+  })
+
+  test('should persist product data', async ({ page }, testInfo) => {
+    const name = productName(testInfo)
+    const sku = variantSku(testInfo)
+    await createProduct(page, name, sku)
+
+    await page.reload()
+    await expect(
+      page.getByRole('row', { name: new RegExp(name) }),
+    ).toContainText(sku)
+    await openProductDetail(page, name)
+    await page.reload()
+    await expect(page.getByRole('heading', { name })).toBeVisible()
+    await expect(page.getByRole('button', { name: sku })).toContainText(
+      '25 uds',
+    )
+  })
+
+  test('should reject a product without a valid name', async ({
+    page,
+  }, testInfo) => {
+    const sku = variantSku(testInfo)
+    await openNewProduct(page)
+    await page.getByLabel('Nombre del producto').fill('A')
+    await addVariant(page, sku)
+    await page.getByRole('button', { name: 'Crear producto' }).click()
+
+    await expect(page.getByText('Revisa los campos marcados.')).toBeVisible()
+    await expect(
+      page.getByText('El nombre debe tener entre 2 y 120 caracteres.'),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Nuevo producto' }),
+    ).toBeVisible()
+    await expect(page.getByText('Producto guardado exitosamente.')).toHaveCount(
+      0,
+    )
+  })
+
+  test('should reject an unsafe public image URL', async ({
+    page,
+  }, testInfo) => {
+    const name = productName(testInfo)
+    const sku = variantSku(testInfo)
+    await openNewProduct(page)
+    await page.getByLabel('Nombre del producto').fill(name)
+    await addVariant(page, sku)
+    await page.getByLabel('Imagen pública (URL)').fill('javascript:alert(1)')
+    await page.getByRole('button', { name: 'Crear producto' }).click()
+
+    await expect(page.getByText('Revisa los campos marcados.')).toBeVisible()
+    await expect(
+      page.getByText('La imagen debe usar una URL HTTPS válida.'),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Nuevo producto' }),
+    ).toBeVisible()
+  })
+
+  test('should reject a duplicate variant SKU', async ({ page }, testInfo) => {
+    const firstName = productName(testInfo)
+    const secondName = `${firstName} Second`
+    const sku = variantSku(testInfo)
+    await createProduct(page, firstName, sku)
+    await openNewProduct(page)
+    await page.getByLabel('Nombre del producto').fill(secondName)
+    await addVariant(page, sku)
+    await page.getByRole('button', { name: 'Crear producto' }).click()
+
+    await expect(
+      page.getByText(
+        'Ya existe otra variante con ese SKU. Usa un SKU diferente.',
+      ),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Nuevo producto' }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('row', { name: new RegExp(secondName) }),
+    ).toHaveCount(0)
   })
 
   test.afterEach(async ({ page }) => {
-    // Cleanup: delete test products
-    await login(page)
-    await page.goto('/almacen')
-    await page.waitForSelector('text=Tus productos')
-
-    // Find test products and delete them
-    const testProducts = page.getByText(/Test Product \d+/)
-    const count = await testProducts.count()
-    for (let i = 0; i < count; i++) {
-      const product = testProducts.first()
-      if (await product.isVisible()) {
-        await product.click()
-        await expect(page.getByText('Editar producto')).toBeVisible({ timeout: 5000 })
-
-        // Look for delete button
-        const deleteBtn = page.getByRole('button', { name: /eliminar/i })
-        if (await deleteBtn.isVisible()) {
-          await deleteBtn.click()
-          // Confirm deletion
-          const confirmBtn = page.getByRole('button', { name: /^Eliminar$/ })
-          if (await confirmBtn.isVisible()) {
-            await confirmBtn.click()
-          }
-        }
-        await page.waitForSelector('text=Tus productos', { timeout: 5000 })
-      }
+    await openProductsPage(page)
+    while (true) {
+      const productRow = page.getByRole('row', { name: /E2E Product/ }).first()
+      if (!(await productRow.count())) break
+      await productRow.click()
+      await expect(
+        page.getByRole('button', { name: 'Editar producto' }),
+      ).toBeVisible()
+      await page.getByRole('button', { name: 'Editar producto' }).click()
+      await expect(
+        page.getByRole('heading', { name: 'Editar producto' }),
+      ).toBeVisible()
+      await page.getByRole('button', { name: 'Eliminar producto' }).click()
+      const dialog = page.getByRole('dialog')
+      await expect(dialog).toBeVisible()
+      await dialog.getByRole('button', { name: 'Confirmar' }).click()
+      await expect(dialog).toBeHidden()
+      await expect(page.getByText('Producto eliminado.')).toBeVisible()
+      await page.reload()
+      await expect(
+        page.getByRole('heading', { name: 'Tus productos' }),
+      ).toBeVisible()
     }
   })
 })

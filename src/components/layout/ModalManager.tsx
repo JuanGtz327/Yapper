@@ -1,7 +1,7 @@
 import type { FormEvent } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { useQueryClient } from '@tanstack/react-query'
-import { useModal } from '../../context/ModalContext.tsx'
+import { useModal } from '../../context/useModal.ts'
 import { ClientModal } from '../../features/clients/ClientModal.tsx'
 import { CategoryManagerModal } from '../../features/products/CategoryManagerModal.tsx'
 import { OptionTypeManagerModal } from '../../features/products/OptionTypeManagerModal.tsx'

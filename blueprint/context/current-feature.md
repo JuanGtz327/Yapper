@@ -1,3 +1,5 @@
-# Feature: (nothing in progress)
+# Nothing in progress
 
-Run `/feature`, `/fix`, or `/rollback` to start something.
+No feature, fix, or rollback is currently being implemented.
+
+Run `/feature`, `/fix`, or `/rollback` to start the next work item.
