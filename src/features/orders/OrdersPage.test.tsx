@@ -28,6 +28,16 @@ const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
 
 const defaultProps = {
   orders: [createMockOrder()],
+  clients: [
+    {
+      id: 'c1',
+      name: 'Juan Pérez',
+      phone: '5512345678',
+      zone: 'Centro',
+      orders: 1,
+      initials: 'JP',
+    },
+  ],
   currency: 'MXN',
   onAdd: vi.fn(),
   onSelectOrder: vi.fn(),
@@ -111,6 +121,36 @@ describe('OrdersPage', () => {
       render(<OrdersPage {...defaultProps} orders={orders} />)
       const summary = screen.getByText('Este mes').parentElement
       expect(summary?.querySelector('strong')).toHaveTextContent('$800.00')
+    })
+
+    it('debería sumar el saldo restante de pedidos pendientes y parciales', () => {
+      const orders = [
+        createMockOrder({
+          id: '#PED-001',
+          total: 500,
+          paidAmount: 0,
+          payment: 'Pendiente',
+        }),
+        createMockOrder({
+          id: '#PED-002',
+          total: 300,
+          paidAmount: 100,
+          payment: 'Parcial',
+        }),
+        createMockOrder({
+          id: '#PED-003',
+          total: 250,
+          paidAmount: 250,
+          payment: 'Pagado',
+        }),
+      ]
+      render(<OrdersPage {...defaultProps} orders={orders} />)
+
+      const receivables = screen.getByText('Por cobrar').parentElement
+      expect(receivables?.querySelector('strong')).toHaveTextContent('$700.00')
+      const partialRow = screen.getByRole('row', { name: /#PED-002/ })
+      expect(partialRow).toHaveTextContent('$100.00')
+      expect(partialRow).toHaveTextContent('$200.00')
     })
   })
 

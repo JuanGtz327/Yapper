@@ -141,10 +141,12 @@ export type ClientFilters = {
 
 export type OrderFilters = {
   search?: string
+  clientId?: string
   status?: 'pending' | 'delivered' | 'cancelled'
   paymentStatus?: 'pending' | 'partial' | 'paid' | 'paidOrPartial'
   dateFrom?: string
   dateTo?: string
+  orderDate?: string
 }
 
 export type OptionTypeWithValues = {

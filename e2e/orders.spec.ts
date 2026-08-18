@@ -77,6 +77,19 @@ async function readInventoryStock(page: Page) {
   return Number(await stock.textContent())
 }
 
+async function readReceivables(page: Page) {
+  const card = page.getByText('Por cobrar').locator('..')
+  const value = await card.locator('strong').textContent()
+  return Number(value?.replace(/[^\d.-]/g, ''))
+}
+
+async function readPeriodRevenue(page: Page) {
+  const card = page.getByText('Ingresos del periodo').locator('../..')
+  await expect(card).toBeVisible()
+  const value = await card.locator('strong').textContent()
+  return Number(value?.replace(/[^\d.-]/g, ''))
+}
+
 test.describe('Order lifecycle', () => {
   test.describe.configure({ mode: 'serial' })
 
@@ -115,6 +128,13 @@ test.describe('Order lifecycle', () => {
     const name = clientName(testInfo)
     await openClientsPage(page)
     await createClient(page, name)
+    await page.goto('/pedidos')
+    const receivablesBefore = await readReceivables(page)
+    await page.goto('/estadisticas')
+    await expect(
+      page.getByRole('heading', { name: 'Estadísticas' }),
+    ).toBeVisible()
+    const revenueBefore = await readPeriodRevenue(page)
     await createOrder(page, name)
 
     await page.getByRole('button', { name: 'Registrar abono' }).click()
@@ -139,6 +159,20 @@ test.describe('Order lifecycle', () => {
     await expect(
       page.getByRole('group', { name: 'Progreso de pago' }),
     ).toContainText('$100.00')
+
+    await page.goto('/pedidos')
+    await expect(
+      page.getByRole('columnheader', { name: 'Total pagado' }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('columnheader', { name: 'Pendiente de pago' }),
+    ).toBeVisible()
+    const partialOrderRow = page.getByRole('row').filter({ hasText: name })
+    await expect(partialOrderRow).toContainText('$50.00')
+    await expect(partialOrderRow).toContainText('$100.00')
+    expect(await readReceivables(page)).toBe(receivablesBefore + 100)
+    await page.goto('/estadisticas')
+    expect(await readPeriodRevenue(page)).toBe(revenueBefore + 50)
   })
 
   test('should change order status', async ({ page }, testInfo) => {
@@ -158,6 +192,17 @@ test.describe('Order lifecycle', () => {
     await expect(page.getByRole('row').filter({ hasText: name })).toContainText(
       'Entregado',
     )
+
+    const clientFilter = page.getByRole('combobox', {
+      name: 'Filtrar por cliente',
+    })
+    await clientFilter.click()
+    await page.getByRole('option', { name, exact: true }).click()
+    const orderDate = new Date().toISOString().slice(0, 10)
+    await page.getByLabel('Filtrar por fecha del pedido').fill(orderDate)
+    await expect(page.getByRole('row').filter({ hasText: name })).toBeVisible()
+    await page.reload()
+    await expect(page.getByRole('row').filter({ hasText: name })).toBeVisible()
   })
 
   test('should verify inventory changes', async ({ page }, testInfo) => {

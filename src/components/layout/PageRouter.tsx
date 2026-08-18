@@ -140,11 +140,13 @@ export function PageRouter({
   }
   const orderFilters: OrderFilters = {
     search: urlFilters.search || undefined,
+    clientId: urlFilters.clientId || undefined,
     status: urlFilters.delivery || undefined,
     paymentStatus:
       urlFilters.payment === 'paid'
         ? 'paidOrPartial'
         : urlFilters.payment || undefined,
+    orderDate: urlFilters.orderDate || undefined,
   }
   const productsPage = useProductsPaginatedQuery(
     user,
@@ -345,17 +347,24 @@ export function PageRouter({
               orders={
                 ordersPage.data?.data ?? (ordersPage.isLoading ? [] : orders)
               }
+              clients={clients}
               currency={currency}
               summaryOrders={orders}
               serverFilters={{
                 search: searchInput,
+                clientId: urlFilters.clientId,
                 delivery: urlFilters.delivery,
                 payment: urlFilters.payment,
+                orderDate: urlFilters.orderDate,
                 onSearchChange: setSearchInput,
+                onClientChange: (clientId) =>
+                  updateListUrl({ clientId, page: 1 }),
                 onDeliveryChange: (delivery) =>
                   updateListUrl({ delivery, page: 1 }),
                 onPaymentChange: (payment) =>
                   updateListUrl({ payment, page: 1 }),
+                onOrderDateChange: (orderDate) =>
+                  updateListUrl({ orderDate, page: 1 }),
               }}
               serverPagination={{
                 page: ordersPage.data?.page ?? urlFilters.page,

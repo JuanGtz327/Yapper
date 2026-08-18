@@ -16,10 +16,12 @@ describe('listUrl', () => {
     ).toEqual({
       page: 3,
       search: 'PED-12',
+      clientId: '',
       categoryId: '',
       stock: '',
       delivery: 'delivered',
       payment: 'paid',
+      orderDate: '',
     })
     expect(readListUrl('/almacen?page=0&stock=invalid')).toMatchObject({
       page: 1,
@@ -34,5 +36,18 @@ describe('listUrl', () => {
         page: 1,
       }),
     ).toBe('/clientes?search=Juan')
+  })
+
+  it('writes and reads client and delivery date filters', () => {
+    const location = writeListUrl('/pedidos', {
+      clientId: 'client-1',
+      orderDate: '2026-08-20',
+    })
+
+    expect(location).toBe('/pedidos?client=client-1&date=2026-08-20')
+    expect(readListUrl(location)).toMatchObject({
+      clientId: 'client-1',
+      orderDate: '2026-08-20',
+    })
   })
 })

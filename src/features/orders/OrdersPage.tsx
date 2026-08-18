@@ -3,7 +3,7 @@ import { Plus, Search } from 'lucide-react'
 import { formatMoney } from '../../lib/format.ts'
 import { cn } from '../../lib/utils.ts'
 import { Badge } from '../../components/ui/badge.tsx'
-import type { Order } from '../../types.ts'
+import type { Client, Order } from '../../types.ts'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
 import { Input } from '../../components/ui/Input.tsx'
 import { Button } from '../../components/ui/Button.tsx'
@@ -11,6 +11,7 @@ import { PaginationControls } from '../../components/ui/PaginationControls.tsx'
 
 export function OrdersPage({
   orders,
+  clients,
   currency,
   onAdd,
   onSelectOrder,
@@ -19,19 +20,24 @@ export function OrdersPage({
   serverPagination,
 }: {
   orders: Order[]
+  clients: Client[]
   currency: string
   onAdd: () => void
   onSelectOrder: (order: Order) => void
   summaryOrders?: Order[]
   serverFilters?: {
     search: string
+    clientId: string
     delivery: '' | 'pending' | 'delivered' | 'cancelled'
     payment: '' | 'pending' | 'paid'
+    orderDate: string
     onSearchChange: (value: string) => void
+    onClientChange: (value: string) => void
     onDeliveryChange: (
       value: '' | 'pending' | 'delivered' | 'cancelled',
     ) => void
     onPaymentChange: (value: '' | 'pending' | 'paid') => void
+    onOrderDateChange: (value: string) => void
   }
   serverPagination?: {
     page: number
@@ -43,6 +49,8 @@ export function OrdersPage({
 }) {
   const [deliveryFilter, setDeliveryFilter] = useState('all')
   const [paymentFilter, setPaymentFilter] = useState('all')
+  const [clientFilter, setClientFilter] = useState('')
+  const [orderDateFilter, setOrderDateFilter] = useState('')
   const [orderSearch, setOrderSearch] = useState('')
 
   const now = new Date()
@@ -56,10 +64,17 @@ export function OrdersPage({
       orderDate.getMonth() === now.getMonth()
     )
   })
+  const receivables = active
+    .filter((order) => order.payment !== 'Pagado')
+    .reduce(
+      (sum, order) => sum + Math.max(order.total - (order.paidAmount ?? 0), 0),
+      0,
+    )
   const filteredOrders = orders.filter((order) => {
     const matchesSearch = order.id
       .toLowerCase()
       .includes(orderSearch.trim().toLowerCase())
+    const matchesClient = !clientFilter || order.clientId === clientFilter
     const matchesDelivery =
       deliveryFilter === 'all' ||
       (deliveryFilter === 'pending' && order.status === 'Pendiente') ||
@@ -73,12 +88,22 @@ export function OrdersPage({
       (paymentFilter === 'pending' &&
         order.status !== 'Cancelado' &&
         order.payment === 'Pendiente')
-    return matchesSearch && matchesDelivery && matchesPayment
+    const matchesOrderDate =
+      !orderDateFilter || order.createdAt?.slice(0, 10) === orderDateFilter
+    return (
+      matchesSearch &&
+      matchesClient &&
+      matchesDelivery &&
+      matchesPayment &&
+      matchesOrderDate
+    )
   })
   const visibleOrders = serverPagination ? orders : filteredOrders
   const activeSearch = serverFilters?.search ?? orderSearch
+  const activeClient = serverFilters?.clientId ?? clientFilter
   const activeDelivery = serverFilters?.delivery || deliveryFilter
   const activePayment = serverFilters?.payment || paymentFilter
+  const activeOrderDate = serverFilters?.orderDate ?? orderDateFilter
 
   return (
     <section className="animate-[page-in_0.25s_ease_both]">
@@ -121,12 +146,7 @@ export function OrdersPage({
             Por cobrar
           </span>
           <strong className="block mt-2 text-foreground text-[21px]">
-            {formatMoney(
-              active
-                .filter((order) => order.payment === 'Pendiente')
-                .reduce((sum, order) => sum + order.total, 0),
-              currency,
-            )}
+            {formatMoney(receivables, currency)}
           </strong>
         </div>
       </div>
@@ -153,6 +173,23 @@ export function OrdersPage({
           />
         </div>
         <CustomSelect
+          label="Cliente"
+          value={activeClient || 'all'}
+          onChange={(value) =>
+            serverFilters
+              ? serverFilters.onClientChange(value === 'all' ? '' : value)
+              : setClientFilter(value === 'all' ? '' : value)
+          }
+          ariaLabel="Filtrar por cliente"
+          options={[
+            { value: 'all', label: 'Todos los clientes' },
+            ...clients.map((client) => ({
+              value: client.id,
+              label: client.name,
+            })),
+          ]}
+        />
+        <CustomSelect
           label="Entrega"
           value={activeDelivery || 'all'}
           onChange={(value) =>
@@ -171,6 +208,16 @@ export function OrdersPage({
             { value: 'delivered', label: 'Entregados' },
             { value: 'cancelled', label: 'Cancelados' },
           ]}
+        />
+        <Input
+          type="date"
+          aria-label="Filtrar por fecha del pedido"
+          value={activeOrderDate}
+          onChange={(event) =>
+            serverFilters
+              ? serverFilters.onOrderDateChange(event.target.value)
+              : setOrderDateFilter(event.target.value)
+          }
         />
         <CustomSelect
           label="Pago"
@@ -225,6 +272,12 @@ export function OrdersPage({
                 Total
               </th>
               <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                Total pagado
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
+                Pendiente de pago
+              </th>
+              <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px]">
                 Entrega
               </th>
               <th className="px-[14px] py-[14px] text-white text-[10px] font-bold text-center uppercase tracking-[0.7px] rounded-tr-[12px]">
@@ -236,7 +289,7 @@ export function OrdersPage({
             {visibleOrders.length === 0 && (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={8}
                   className="px-[14px] py-[40px] text-center text-muted-foreground text-sm"
                 >
                   No hay pedidos para mostrar.
@@ -279,6 +332,15 @@ export function OrdersPage({
                 </td>
                 <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-ink font-bold text-right">
                   {formatMoney(order.total, currency)}
+                </td>
+                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-right">
+                  {formatMoney(order.paidAmount ?? 0, currency)}
+                </td>
+                <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle text-right">
+                  {formatMoney(
+                    Math.max(order.total - (order.paidAmount ?? 0), 0),
+                    currency,
+                  )}
                 </td>
                 <td className="px-[14px] py-[14px] border-b border-[#f0eeec] text-[#837e84] text-center align-middle">
                   {order.status === 'Cancelado' ? (

@@ -10,10 +10,12 @@ export function joinLocationSearch(pathname: string, search: string): string {
 export type ListUrlState = {
   page: number
   search: string
+  clientId: string
   categoryId: string
   stock: '' | 'available' | 'low' | 'out'
   delivery: '' | 'pending' | 'delivered' | 'cancelled'
   payment: '' | 'pending' | 'paid'
+  orderDate: string
 }
 
 function validPage(value: string | null): number {
@@ -29,6 +31,7 @@ export function readListUrl(location: string): ListUrlState {
   return {
     page: validPage(params.get('page')),
     search: params.get('search') ?? '',
+    clientId: params.get('client') ?? '',
     categoryId: params.get('category') ?? '',
     stock:
       stock === 'available' || stock === 'low' || stock === 'out' ? stock : '',
@@ -39,6 +42,7 @@ export function readListUrl(location: string): ListUrlState {
         ? delivery
         : '',
     payment: payment === 'pending' || payment === 'paid' ? payment : '',
+    orderDate: params.get('date') ?? '',
   }
 }
 
@@ -52,10 +56,12 @@ export function writeListUrl(
   const params = new URLSearchParams()
   if (next.page > 1) params.set('page', String(next.page))
   if (next.search.trim()) params.set('search', next.search.trim())
+  if (next.clientId) params.set('client', next.clientId)
   if (next.categoryId) params.set('category', next.categoryId)
   if (next.stock) params.set('stock', next.stock)
   if (next.delivery) params.set('delivery', next.delivery)
   if (next.payment) params.set('payment', next.payment)
+  if (next.orderDate) params.set('date', next.orderDate)
   const query = params.toString()
   return query ? `${pathname}?${query}` : pathname
 }

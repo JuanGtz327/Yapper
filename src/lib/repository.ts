@@ -798,6 +798,7 @@ export async function loadOrdersPage(
       `client_name_snapshot.ilike.${pattern},order_number.ilike.${pattern}`,
     )
   }
+  if (filters.clientId) query = query.eq('client_id', filters.clientId)
   if (filters.status) query = query.eq('status', filters.status)
   if (filters.paymentStatus === 'paidOrPartial')
     query = query.in('payment_status', ['paid', 'partial'])
@@ -805,6 +806,12 @@ export async function loadOrdersPage(
     query = query.eq('payment_status', filters.paymentStatus)
   if (filters.dateFrom) query = query.gte('created_at', filters.dateFrom)
   if (filters.dateTo) query = query.lt('created_at', filters.dateTo)
+  if (filters.orderDate) {
+    const start = `${filters.orderDate}T00:00:00`
+    const end = new Date(`${filters.orderDate}T00:00:00`)
+    end.setDate(end.getDate() + 1)
+    query = query.gte('created_at', start).lt('created_at', end.toISOString())
+  }
   const { data, count, error } = await query
     .order('created_at', { ascending: false })
     .range((page - 1) * pageSize, page * pageSize - 1)
