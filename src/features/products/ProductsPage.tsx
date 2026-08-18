@@ -183,10 +183,11 @@ export function ProductsPage({
       </div>
       <div className="flex items-center gap-2 mb-[14px] p-3 px-4 border border-[#e3ddd5] rounded-[10px] bg-white text-xs">
         <DollarSign size={18} className="text-primary" aria-hidden="true" />
-        <span className="text-muted-foreground">
+        <span className="font-bold text-[15px]">
           Inventario: {formatMoney(totalSaleValue, currency)}
         </span>
-        <span className="text-muted-foreground">
+        <span className='font-bold text-[15px]'> | </span>
+        <span className="font-bold text-[15px]">
           Inversión: {formatMoney(totalInvestment, currency)}
         </span>
         <strong className="ml-auto text-foreground text-[15px]">
