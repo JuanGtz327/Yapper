@@ -152,7 +152,7 @@ export function OrderCreatePage({
               : 'Completa los datos para registrar una nueva venta.'}
           </p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 flex-wrap max-[650px]:w-full">
           {onBackToDetail && (
             <Button
               variant="secondary"
@@ -207,17 +207,17 @@ export function OrderCreatePage({
               PRODUCTOS
             </span>
             <div className="grid gap-[9px]">
-              <div className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] text-[#716b72] text-[11px] font-bold max-[520px]:grid-cols-[minmax(0,1fr)_56px_76px_30px] max-[520px]:gap-[5px] max-[520px]:text-[10px]">
+              <div className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] text-[#716b72] text-[11px] font-bold max-[520px]:grid-cols-1 max-[520px]:gap-[3px]">
                 <span>Productos</span>
-                <span>Cantidad</span>
-                <span>Total</span>
+                <span className="max-[520px]:hidden">Cantidad</span>
+                <span className="max-[520px]:hidden">Total</span>
                 <span className="sr-only">Acciones</span>
               </div>
               {lines.map((line, index) => {
                 const selected = findVariant(line.variantId)
                 return (
                   <div
-                    className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] max-[520px]:grid-cols-[minmax(0,1fr)_56px_76px_30px] max-[520px]:gap-[5px]"
+                    className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] max-[520px]:grid-cols-1 max-[520px]:gap-[6px]"
                     key={`${line.variantId}-${index}`}
                   >
                     <CustomSelect
@@ -242,43 +242,47 @@ export function OrderCreatePage({
                       placeholder="Producto..."
                       ariaLabel="Producto"
                       searchable
+                      className="max-[520px]:w-full"
                     />
-                    <Input
-                      aria-label={`Cantidad ${index + 1}`}
-                      type="number"
-                      min="1"
-                      max={availableStock(line.variantId)}
-                      step="1"
-                      value={String(line.quantity)}
-                      onChange={(event) => {
-                        const val = event.target.value
-                        const num = val === '' ? 0 : Number(val)
-                        setLines((current) =>
-                          current.map((item, itemIndex) =>
-                            itemIndex === index
-                              ? { ...item, quantity: num }
-                              : item,
-                          ),
-                        )
-                      }}
-                    />
-                    <span className="text-foreground text-[13px] font-bold text-right whitespace-nowrap max-[520px]:text-xs">
-                      {money(priceFor(line) * line.quantity)}
-                    </span>
-                    <Button
-                      variant="danger"
-                      icon={<X size={16} aria-hidden="true" />}
-                      size="sm"
-                      className="justify-self-end max-[520px]:p-[6px]"
-                      onClick={() =>
-                        setLines((current) =>
-                          current.filter((_, itemIndex) => itemIndex !== index),
-                        )
-                      }
-                      aria-label="Quitar producto"
-                      type="button"
-                    />
-                    <small className="col-start-1 col-end-2 text-[#716b72] text-[10px]">
+                    <div className="flex items-center gap-[7px] max-[520px]:col-start-1 max-[520px]:col-end-1">
+                      <Input
+                        aria-label={`Cantidad ${index + 1}`}
+                        type="number"
+                        min="1"
+                        max={availableStock(line.variantId)}
+                        step="1"
+                        value={String(line.quantity)}
+                        onChange={(event) => {
+                          const val = event.target.value
+                          const num = val === '' ? 0 : Number(val)
+                          setLines((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, quantity: num }
+                                : item,
+                            ),
+                          )
+                        }}
+                        className="max-[520px]:w-[70px]"
+                      />
+                      <span className="text-foreground text-[13px] font-bold text-right whitespace-nowrap max-[520px]:text-xs">
+                        {money(priceFor(line) * line.quantity)}
+                      </span>
+                      <Button
+                        variant="danger"
+                        icon={<X size={16} aria-hidden="true" />}
+                        size="sm"
+                        className="justify-self-end max-[520px]:p-[6px]"
+                        onClick={() =>
+                          setLines((current) =>
+                            current.filter((_, itemIndex) => itemIndex !== index),
+                          )
+                        }
+                        aria-label="Quitar producto"
+                        type="button"
+                      />
+                    </div>
+                    <small className="text-[#716b72] text-[10px] max-[520px]:col-start-1 max-[520px]:col-end-1">
                       {selected
                         ? initial
                           ? `${currentStock(line.variantId)} en almacén · hasta ${availableStock(line.variantId)} en este pedido`

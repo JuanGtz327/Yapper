@@ -430,7 +430,7 @@ export function ProductDetailPage({
               Sin datos para graficar.
             </p>
           ) : (
-            <div className="h-full py-2">
+            <div className="py-2 h-[280px] max-[850px]:h-[220px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={[...priceHistory]
@@ -509,7 +509,7 @@ export function ProductDetailPage({
               Desde
               <input
                 type="date"
-                className="ml-2 max-w-full border border-[#e8e4e6] rounded-md px-2 py-1 text-xs max-[650px]:w-[calc(100%-3.5rem)]"
+                className="ml-2 max-w-full border border-[#e8e4e6] rounded-md px-2 py-1 text-xs max-[650px]:w-[calc(100%-3.5rem)] appearance-none [-webkit-appearance:none] [&::-webkit-calendar-picker-indicator]:opacity-100"
                 value={periodFrom ?? ''}
                 onChange={(e) =>
                   setPeriodRange(e.target.value || null, periodTo)
@@ -520,7 +520,7 @@ export function ProductDetailPage({
               Hasta
               <input
                 type="date"
-                className="ml-2 max-w-full border border-[#e8e4e6] rounded-md px-2 py-1 text-xs max-[650px]:w-[calc(100%-3.5rem)]"
+                className="ml-2 max-w-full border border-[#e8e4e6] rounded-md px-2 py-1 text-xs max-[650px]:w-[calc(100%-3.5rem)] appearance-none [-webkit-appearance:none] [&::-webkit-calendar-picker-indicator]:opacity-100"
                 value={periodTo ?? ''}
                 onChange={(e) =>
                   setPeriodRange(periodFrom, e.target.value || null)

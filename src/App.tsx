@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Route, Switch, useLocation } from 'wouter'
+import { Menu } from 'lucide-react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/ReactToastify.css'
 import { AuthScreen } from './features/auth/AuthScreen.tsx'
@@ -117,7 +118,16 @@ function DashboardContent({
         businessName={settings.businessName}
         accountLabel={user?.email || 'Modo demo'}
       />
-      <main className="min-w-0 min-h-0 flex-1 w-full max-w-[1200px] mx-auto overflow-y-auto px-[54px] pt-[47px] pb-[60px] max-[850px]:w-full max-[850px]:min-h-screen max-[850px]:overflow-visible max-[850px]:px-[25px] max-[850px]:pt-[35px] max-[850px]:pb-[50px] max-[650px]:px-[16px] max-[650px]:pt-[25px]">
+      <main className="min-w-0 min-h-0 flex-1 w-full max-w-[1200px] mx-auto overflow-y-auto px-[54px] pt-[47px] pb-[60px] max-[850px]:w-full max-[850px]:min-h-screen max-[850px]:overflow-visible max-[850px]:px-[25px] max-[850px]:pt-[66px] max-[850px]:pb-[50px] max-[650px]:px-[16px] max-[650px]:pt-[66px]">
+        <button
+          ref={hamburgerRef}
+          type="button"
+          className="hidden max-[850px]:flex fixed top-[14px] left-[14px] z-[15] items-center justify-center w-[42px] h-[42px] rounded-full bg-primary text-white shadow-[0_2px_12px_rgba(109,60,114,0.35)] hover:shadow-[0_4px_18px_rgba(109,60,114,0.45)] hover:scale-105 active:scale-95 transition-all duration-200"
+          onClick={() => setMobileMenuOpen(true)}
+          aria-label="Abrir menú de navegación"
+        >
+          <Menu size={20} strokeWidth={2.5} aria-hidden="true" />
+        </button>
         {isLoading ? (
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="flex flex-col items-center gap-3">

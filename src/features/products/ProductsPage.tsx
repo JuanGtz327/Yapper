@@ -162,7 +162,7 @@ export function ProductsPage({
             Administra precios, existencias y categorías.
           </p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 flex-wrap max-[650px]:w-full">
           <Button
             variant="secondary"
             onClick={onManageCategories}
@@ -181,7 +181,7 @@ export function ProductsPage({
           </Button>
         </div>
       </div>
-      <div className="flex items-center gap-2 mb-[14px] p-3 px-4 border border-[#e3ddd5] rounded-[10px] bg-white text-xs">
+      <div className="flex items-center gap-2 mb-[14px] p-3 px-4 border border-[#e3ddd5] rounded-[10px] bg-white text-xs max-[650px]:flex-wrap max-[650px]:gap-y-1">
         <DollarSign size={18} className="text-primary" aria-hidden="true" />
         <span className="font-bold text-[15px]">
           Inventario: {formatMoney(totalSaleValue, currency)}
@@ -198,7 +198,7 @@ export function ProductsPage({
         className="flex items-end gap-[10px] mb-[14px] max-[650px]:flex-col max-[650px]:items-stretch"
         aria-label="Filtros de productos"
       >
-        <div className="relative w-full max-w-[300px]">
+        <div className="relative w-full max-w-[300px] max-[650px]:max-w-none">
           <Search
             size={16}
             className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
@@ -269,7 +269,7 @@ export function ProductsPage({
           </span>
         )}
       </div>
-      <div className="overflow-auto border border-[#ebe8e4] rounded-[13px] bg-[#fffefa]">
+      <div className="overflow-auto border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] max-[650px]:hidden">
         <table className="w-full border-collapse min-w-[650px] text-xs">
           <thead>
             <tr className="bg-[#6d3c72]">
@@ -393,6 +393,85 @@ export function ProductsPage({
         {rows.length === 0 && (
           <Empty text="No encontramos productos con ese nombre." />
         )}
+      </div>
+      <div
+        className="hidden max-[650px]:grid max-[650px]:gap-3"
+        aria-label="Productos"
+      >
+        <p className="sr-only">Selecciona un producto para ver sus detalles.</p>
+        {rows.length === 0 && (
+          <p className="text-center text-muted-foreground text-sm py-8">
+            No encontramos productos con ese nombre.
+          </p>
+        )}
+        {rows.map((row) => {
+          const stock = row.variant?.stock ?? 0
+          const price = row.variant?.salePrice ?? 0
+          const label = row.variant ? variantLabel(row.variant) : ''
+          return (
+            <article
+              className="grid gap-[12px] p-[15px] border border-border rounded-[13px] bg-sidebar shadow-[0_5px_18px_rgba(48,39,46,0.03)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[#c9a3ca] focus-visible:outline-offset-2"
+              tabIndex={0}
+              key={`${row.product.id}-${row.variant?.id ?? 'none'}`}
+              onClick={() => openProduct(row.product)}
+              onKeyDown={(event) => {
+                if (
+                  (event.target as HTMLElement).closest(
+                    'button, select, input, a',
+                  )
+                )
+                  return
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  openProduct(row.product)
+                }
+              }}
+            >
+              {row.isFirst && (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div
+                      className={cn(
+                        'inline-grid place-items-center w-[30px] h-[30px] rounded-[8px] shrink-0',
+                        productDotColors[row.product.color] ?? '',
+                      )}
+                    >
+                      <Boxes size={16} aria-hidden="true" />
+                    </div>
+                    <strong className="text-foreground text-[14px] truncate">
+                      {row.product.name}
+                    </strong>
+                  </div>
+                  {row.product.category && (
+                    <span className="text-muted-foreground text-[11px] shrink-0">
+                      {row.product.category}
+                    </span>
+                  )}
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-3 pt-2 border-t border-border">
+                <span className="text-muted-foreground text-[11px]">
+                  {row.variant?.sku || 'Sin SKU'}
+                  {label && ` · ${label}`}
+                </span>
+                <span className="text-foreground font-bold text-[13px]">
+                  {formatMoney(price, currency)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3 text-[11px]">
+                <span
+                  className={
+                    stock <= threshold
+                      ? 'font-bold text-[#c5804a]'
+                      : 'font-bold text-[#5f9e7c]'
+                  }
+                >
+                  {stock} {stock === 1 ? 'unidad' : 'unidades'}
+                </span>
+              </div>
+            </article>
+          )
+        })}
       </div>
     </section>
   )

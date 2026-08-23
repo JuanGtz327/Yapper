@@ -53,8 +53,8 @@ export function ClientsPage({
           Nuevo cliente
         </Button>
       </div>
-      <div className="flex items-center justify-between mb-3 text-[#aaa5a8] text-[11px]">
-        <div className="relative w-full max-w-[300px]">
+      <div className="flex items-center justify-between gap-2 mb-3 text-[#aaa5a8] text-[11px] max-[650px]:flex-wrap">
+        <div className="relative w-full max-w-[300px] max-[650px]:max-w-none">
           <Search
             size={16}
             className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
@@ -81,7 +81,7 @@ export function ClientsPage({
         )}
         {!serverPagination && <span>{clients.length} clientes</span>}
       </div>
-      <div className="grid grid-cols-2 gap-[14px]">
+      <div className="grid grid-cols-2 gap-[14px] max-[650px]:grid-cols-1">
         {visible.map((client) => (
           <article
             className="p-[19px] border border-[#ebe8e4] rounded-[13px] bg-[#fffefa]"

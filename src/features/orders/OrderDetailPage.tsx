@@ -116,7 +116,7 @@ export function OrderDetailPage({
             {order.client} — {order.date}
           </p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 flex-wrap max-[650px]:w-full">
           <Button
             variant="secondary"
             onClick={onBack}
@@ -200,33 +200,33 @@ export function OrderDetailPage({
             {lineItems.length ? (
               <div>
                 <div
-                  className="grid grid-cols-[1fr_60px_100px_100px] gap-2 py-2 border-b border-border text-muted-foreground text-[10px] font-bold"
+                  className="grid grid-cols-[1fr_60px_100px_100px] gap-2 py-2 border-b border-border text-muted-foreground text-[10px] font-bold max-[520px]:grid-cols-[1fr_auto_auto] max-[520px]:text-[9px]"
                   aria-hidden="true"
                 >
                   <span>Producto</span>
                   <span>Cant.</span>
-                  <span>Precio</span>
+                  <span className="max-[520px]:hidden">Precio</span>
                   <span>Total</span>
                 </div>
                 <ul className="list-none m-0 p-0">
                   {lineItems.map((line, index) => (
                     <li
                       key={`${line.name}-${index}`}
-                      className="grid grid-cols-[1fr_60px_100px_100px] gap-2 items-start py-2.5 border-b border-border text-[13px] text-foreground last:border-b-0"
+                      className="grid grid-cols-[1fr_60px_100px_100px] gap-2 items-start py-2.5 border-b border-border text-[13px] text-foreground last:border-b-0 max-[520px]:grid-cols-[1fr_auto_auto]"
                     >
-                      <div className="grid gap-[2px]">
-                        <strong className="text-[13px]">{line.name}</strong>
+                      <div className="grid gap-[2px] min-w-0">
+                        <strong className="text-[13px] truncate">{line.name}</strong>
                         {line.variantLabel && (
                           <span className="text-muted-foreground text-[11px]">
                             {line.variantLabel}
                           </span>
                         )}
-                        <span>
+                        <span className="text-muted-foreground text-[11px]">
                           {formatMoney(line.unitPrice, currency)} por unidad
                         </span>
                       </div>
                       <span className="font-bold">{line.quantity}</span>
-                      <span>{formatMoney(line.unitPrice, currency)}</span>
+                      <span className="max-[520px]:hidden">{formatMoney(line.unitPrice, currency)}</span>
                       <strong>{formatMoney(line.total, currency)}</strong>
                     </li>
                   ))}

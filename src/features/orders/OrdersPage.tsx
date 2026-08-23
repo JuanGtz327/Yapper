@@ -154,7 +154,7 @@ export function OrdersPage({
         className="flex items-end gap-[10px] mb-[14px] max-[650px]:flex-col max-[650px]:items-stretch"
         aria-label="Filtros de pedidos"
       >
-        <div className="relative w-full max-w-[300px]">
+        <div className="relative w-full max-w-[300px] max-[650px]:max-w-none">
           <Search
             size={16}
             className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
@@ -209,16 +209,21 @@ export function OrdersPage({
             { value: 'cancelled', label: 'Cancelados' },
           ]}
         />
-        <Input
-          type="date"
-          aria-label="Filtrar por fecha del pedido"
-          value={activeOrderDate}
-          onChange={(event) =>
-            serverFilters
-              ? serverFilters.onOrderDateChange(event.target.value)
-              : setOrderDateFilter(event.target.value)
-          }
-        />
+        <div className="relative">
+          <Input
+            type="date"
+            aria-label="Filtrar por fecha del pedido"
+            value={activeOrderDate}
+            onChange={(event) =>
+              serverFilters
+                ? serverFilters.onOrderDateChange(event.target.value)
+                : setOrderDateFilter(event.target.value)
+            }
+          />
+          <span className="pointer-events-none absolute top-[-5px] left-2 bg-white px-1 text-[10px] font-bold text-[#716b72] rounded-2xl">
+            Fecha
+          </span>
+        </div>
         <CustomSelect
           label="Pago"
           value={activePayment || 'all'}

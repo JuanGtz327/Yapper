@@ -204,7 +204,7 @@ export function ProductCreatePage({
               : 'Completa los datos para crear un nuevo producto.'}
           </p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 flex-wrap max-[650px]:w-full">
           {initial && onRemove && (
             <Button
               variant="danger"
@@ -228,7 +228,7 @@ export function ProductCreatePage({
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(260px,1fr)] gap-4">
+      <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(260px,1fr)] gap-4 max-[850px]:grid-cols-1">
         <form
           className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] grid gap-6"
           onSubmit={submit}
