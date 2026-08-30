@@ -145,6 +145,15 @@ vi.mock('./queries/useSettingsMutation.ts', () => ({
   }),
 }))
 
+const mockHasActiveOrdersForClient = vi.fn()
+const mockHasActiveOrdersForProduct = vi.fn()
+vi.mock('../lib/repository.ts', () => ({
+  hasActiveOrdersForClient: (...args: unknown[]) =>
+    mockHasActiveOrdersForClient(...args),
+  hasActiveOrdersForProduct: (...args: unknown[]) =>
+    mockHasActiveOrdersForProduct(...args),
+}))
+
 let mockProductsData: Product[] = []
 let mockClientsData: Client[] = []
 let mockOrdersData: Order[] = []
@@ -180,6 +189,8 @@ function createFormEvent(data: Record<string, string>) {
 describe('useDashboardData', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockHasActiveOrdersForClient.mockResolvedValue(false)
+    mockHasActiveOrdersForProduct.mockResolvedValue(false)
     mockProductsData = [
       {
         id: 'p1',

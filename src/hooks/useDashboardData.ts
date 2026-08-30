@@ -24,6 +24,10 @@ import { useClientsMutations } from './queries/useClientsMutations.ts'
 import { useOrdersMutations } from './queries/useOrdersMutations.ts'
 import { useSettingsMutation } from './queries/useSettingsMutation.ts'
 import { useToast, toastMessages } from './useToast.ts'
+import {
+  hasActiveOrdersForClient,
+  hasActiveOrdersForProduct,
+} from '../lib/repository.ts'
 
 const EMPTY_PRODUCTS: Product[] = []
 const EMPTY_CLIENTS: Client[] = []
@@ -210,6 +214,20 @@ export function useDashboardData(user: User | null) {
   const removeProduct = useCallback(
     async (id: string) => {
       const product = products.find((p) => p.id === id)
+      if (user) {
+        try {
+          const hasActive = await hasActiveOrdersForProduct(user, id)
+          if (hasActive) {
+            toast.error(
+              'Este producto tiene pedidos activos. No se puede eliminar.',
+            )
+            return
+          }
+        } catch {
+          toast.error('No pudimos verificar los pedidos del producto.')
+          return
+        }
+      }
       setConfirmState({
         title: 'Eliminar producto',
         message: `¿Eliminar el producto "${product?.name ?? ''}"? Esta acción no se puede deshacer.`,
@@ -223,12 +241,26 @@ export function useDashboardData(user: User | null) {
         },
       })
     },
-    [products, productMutations, toast],
+    [user, products, productMutations, toast],
   )
 
   const removeClient = useCallback(
     async (id: string) => {
       const client = clients.find((c) => c.id === id)
+      if (user) {
+        try {
+          const hasActive = await hasActiveOrdersForClient(user, id)
+          if (hasActive) {
+            toast.error(
+              'Este cliente tiene pedidos activos. No se puede eliminar.',
+            )
+            return
+          }
+        } catch {
+          toast.error('No pudimos verificar los pedidos del cliente.')
+          return
+        }
+      }
       setConfirmState({
         title: 'Eliminar cliente',
         message: `¿Eliminar el cliente "${client?.name ?? ''}"? Esta acción no se puede deshacer.`,
@@ -242,7 +274,7 @@ export function useDashboardData(user: User | null) {
         },
       })
     },
-    [clients, clientMutations, toast],
+    [user, clients, clientMutations, toast],
   )
 
   const addOrder = useCallback(

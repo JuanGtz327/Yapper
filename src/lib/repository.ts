@@ -487,6 +487,42 @@ export async function deleteProduct(id: string) {
   if (error) throw error
 }
 
+export async function hasActiveOrdersForClient(
+  user: User,
+  clientId: string,
+): Promise<boolean> {
+  const { count, error } = await supabase
+    .from('orders')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .eq('client_id', clientId)
+    .neq('status', 'cancelled')
+  if (error) throw error
+  return (count ?? 0) > 0
+}
+
+export async function hasActiveOrdersForProduct(
+  user: User,
+  productId: string,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('order_items')
+    .select('order_id')
+    .eq('product_id', productId)
+    .limit(1)
+  if (error) throw error
+  if (!data?.length) return false
+  const orderIds = data.map((item) => item.order_id)
+  const { count, error: countError } = await supabase
+    .from('orders')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .neq('status', 'cancelled')
+    .in('id', orderIds)
+  if (countError) throw countError
+  return (count ?? 0) > 0
+}
+
 // ─── VARIANT MUTATIONS ───────────────────────────────────────
 
 export async function createVariant(
