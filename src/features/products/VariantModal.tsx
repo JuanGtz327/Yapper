@@ -136,7 +136,6 @@ export function VariantModal({
       stock,
       optionValueIds,
     })
-    toast.success(variant ? 'Variante actualizada.' : 'Variante añadida.')
     close()
   }
 
@@ -176,8 +175,8 @@ export function VariantModal({
                 type="number"
                 min="0"
                 step="1"
-                value={salePrice || ''}
-                onChange={(e) => setSalePrice(Number(e.target.value))}
+              value={salePrice}
+              onChange={(e) => setSalePrice(Number(e.target.value))}
                 placeholder="$ 0"
                 required
               />
@@ -188,7 +187,7 @@ export function VariantModal({
                 type="number"
                 min="0"
                 step="1"
-                value={inventoryCost || ''}
+                value={inventoryCost}
                 onChange={(e) => setInventoryCost(Number(e.target.value))}
                 placeholder="$ 0"
               />
@@ -200,7 +199,7 @@ export function VariantModal({
               type="number"
               min="0"
               step="1"
-              value={stock || ''}
+              value={stock}
               onChange={(e) => setStock(Number(e.target.value))}
               placeholder="0"
               required

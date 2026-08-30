@@ -217,7 +217,7 @@ export function OrderCreatePage({
                 const selected = findVariant(line.variantId)
                 return (
                   <div
-                    className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] max-[520px]:grid-cols-1 max-[520px]:gap-[6px]"
+                    className="grid grid-cols-[minmax(0,1fr)_68px_90px_30px] items-center gap-[7px] max-[520px]:grid-cols-[1fr_auto] max-[520px]:gap-x-[7px] max-[520px]:gap-y-[3px]"
                     key={`${line.variantId}-${index}`}
                   >
                     <CustomSelect
@@ -242,47 +242,45 @@ export function OrderCreatePage({
                       placeholder="Producto..."
                       ariaLabel="Producto"
                       searchable
-                      className="max-[520px]:w-full"
+                      className="max-[520px]:col-span-2"
                     />
-                    <div className="flex items-center gap-[7px] max-[520px]:col-start-1 max-[520px]:col-end-1">
-                      <Input
-                        aria-label={`Cantidad ${index + 1}`}
-                        type="number"
-                        min="1"
-                        max={availableStock(line.variantId)}
-                        step="1"
-                        value={String(line.quantity)}
-                        onChange={(event) => {
-                          const val = event.target.value
-                          const num = val === '' ? 0 : Number(val)
-                          setLines((current) =>
-                            current.map((item, itemIndex) =>
-                              itemIndex === index
-                                ? { ...item, quantity: num }
-                                : item,
-                            ),
-                          )
-                        }}
-                        className="max-[520px]:w-[70px]"
-                      />
-                      <span className="text-foreground text-[13px] font-bold text-right whitespace-nowrap max-[520px]:text-xs">
-                        {money(priceFor(line) * line.quantity)}
-                      </span>
-                      <Button
-                        variant="danger"
-                        icon={<X size={16} aria-hidden="true" />}
-                        size="sm"
-                        className="justify-self-end max-[520px]:p-[6px]"
-                        onClick={() =>
-                          setLines((current) =>
-                            current.filter((_, itemIndex) => itemIndex !== index),
-                          )
-                        }
-                        aria-label="Quitar producto"
-                        type="button"
-                      />
-                    </div>
-                    <small className="text-[#716b72] text-[10px] max-[520px]:col-start-1 max-[520px]:col-end-1">
+                    <Input
+                      aria-label={`Cantidad ${index + 1}`}
+                      type="number"
+                      min="1"
+                      max={availableStock(line.variantId)}
+                      step="1"
+                      value={String(line.quantity)}
+                      onChange={(event) => {
+                        const val = event.target.value
+                        const num = val === '' ? 0 : Number(val)
+                        setLines((current) =>
+                          current.map((item, itemIndex) =>
+                            itemIndex === index
+                              ? { ...item, quantity: num }
+                              : item,
+                          ),
+                        )
+                      }}
+                      className="max-[520px]:w-[70px]"
+                    />
+                    <span className="text-foreground text-[13px] font-bold text-right whitespace-nowrap max-[520px]:text-xs">
+                      {money(priceFor(line) * line.quantity)}
+                    </span>
+                    <Button
+                      variant="danger"
+                      icon={<X size={16} aria-hidden="true" />}
+                      size="sm"
+                      className="justify-self-end max-[520px]:p-[6px] max-[520px]:col-start-2 max-[520px]:col-end-2"
+                      onClick={() =>
+                        setLines((current) =>
+                          current.filter((_, itemIndex) => itemIndex !== index),
+                        )
+                      }
+                      aria-label="Quitar producto"
+                      type="button"
+                    />
+                    <small className="text-[#716b72] text-[10px] max-[520px]:col-span-2">
                       {selected
                         ? initial
                           ? `${currentStock(line.variantId)} en almacén · hasta ${availableStock(line.variantId)} en este pedido`
