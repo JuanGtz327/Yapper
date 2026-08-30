@@ -24,6 +24,8 @@ import type {
   ProductFilters,
   VariantPriceHistoryRow,
   VariantPriceHistory,
+  VariantRestockHistoryRow,
+  VariantRestockHistory,
 } from '../types.ts'
 import { safeImageUrl } from './security.ts'
 
@@ -550,6 +552,46 @@ export async function deleteVariant(variantId: string): Promise<void> {
     p_variant_id: variantId,
   })
   if (error) throw error
+}
+
+// ─── RESTOCK ────────────────────────────────────────────────
+
+export async function restockVariant(
+  variantId: string,
+  quantity: number,
+  unitCost: number,
+): Promise<void> {
+  const { error } = await supabase.rpc('restock_variant', {
+    p_variant_id: variantId,
+    p_quantity: quantity,
+    p_unit_cost: unitCost,
+  })
+  if (error) throw error
+}
+
+export async function loadVariantRestockHistory(
+  user: User,
+  variantId: string,
+): Promise<VariantRestockHistory[]> {
+  const { data, error } = await supabase
+    .from('variant_restock_history')
+    .select(
+      'id, variant_id, product_id, sku, variant_name, quantity, unit_cost, restocked_at',
+    )
+    .eq('user_id', user.id)
+    .eq('variant_id', variantId)
+    .order('restocked_at', { ascending: false })
+  if (error) throw error
+  return (data as VariantRestockHistoryRow[]).map((row) => ({
+    id: row.id,
+    variantId: row.variant_id,
+    productId: row.product_id,
+    sku: row.sku,
+    variantName: row.variant_name,
+    quantity: row.quantity,
+    unitCost: Number(row.unit_cost),
+    restockedAt: row.restocked_at,
+  }))
 }
 
 // ─── CLIENTS ─────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { ArrowLeft, Search } from 'lucide-react'
+import { ArrowLeft, PackagePlus, Search } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   ResponsiveContainer,
   LineChart,
@@ -14,7 +15,10 @@ import type { VariantPriceHistory } from '../../types.ts'
 import { Button } from '../../components/ui/Button.tsx'
 import { Badge } from '../../components/ui/badge.tsx'
 import { formatMoney } from '../../lib/format.ts'
+import { qk } from '../../lib/queryKeys.ts'
+import { restockVariant } from '../../lib/repository.ts'
 import { useProductDetail } from '../../hooks/queries/useProductDetail.ts'
+import { RestockModal } from './RestockModal.tsx'
 import type { User } from '@supabase/supabase-js'
 
 function formatPercent(value: number | null) {
@@ -66,6 +70,7 @@ export function ProductDetailPage({
 }) {
   const [metric, setMetric] = useState<'price' | 'cost'>('price')
   const [variantSearch, setVariantSearch] = useState('')
+  const [restockModalOpen, setRestockModalOpen] = useState(false)
 
   const {
     product,
@@ -74,10 +79,14 @@ export function ProductDetailPage({
     setSelectedVariantId,
     priceHistory,
     priceHistoryLoading,
+    restockHistory,
+    restockHistoryLoading,
     periodFrom,
     periodTo,
     setPeriodRange,
   } = useProductDetail(user, productId)
+
+  const qc = useQueryClient()
 
   if (productLoading) {
     return (
@@ -339,6 +348,17 @@ export function ProductDetailPage({
               className="w-full border border-[#e8e4e6] rounded-[10px] pl-8 pr-3 py-2 text-sm bg-white placeholder:text-muted-foreground focus:outline-none focus:border-[#6d3c72] transition-colors"
             />
           </div>
+          {selectedVariant && (
+            <Button
+              variant="secondary"
+              type="button"
+              icon={<PackagePlus size={15} aria-hidden="true" />}
+              className="mb-3 w-full"
+              onClick={() => setRestockModalOpen(true)}
+            >
+              Registrar compra
+            </Button>
+          )}
           <div className="grid gap-3 max-h-[320px] overflow-y-auto pr-1">
             {product.variants.length === 0 && (
               <p className="text-muted-foreground text-sm">
@@ -596,6 +616,90 @@ export function ProductDetailPage({
           </div>
         )}
       </div>
+
+      {/* Row 4: Histórico de compras — full width */}
+      <div className="min-w-0 border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-5 mt-4">
+        <span className="block text-[11px] font-bold uppercase tracking-[0.7px] text-[#6d3c72] mb-4">
+          HISTORIAL DE COMPRAS
+        </span>
+
+        {restockHistoryLoading ? (
+          <p className="text-sm text-muted-foreground">Cargando historial…</p>
+        ) : restockHistory.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Aún no hay compras registradas para esta variante.
+          </p>
+        ) : (
+          <div className="max-w-full overflow-x-auto border border-[#ebe8e4] rounded-[10px] bg-white">
+            <table className="w-full text-xs border-collapse min-w-[480px]">
+              <thead>
+                <tr className="bg-[#f7f2f9] text-left">
+                  <th className="px-3 py-2 font-semibold text-muted-foreground">
+                    Fecha
+                  </th>
+                  <th className="px-3 py-2 font-semibold text-muted-foreground">
+                    SKU
+                  </th>
+                  <th className="px-3 py-2 font-semibold text-muted-foreground">
+                    Variante
+                  </th>
+                  <th className="px-3 py-2 font-semibold text-muted-foreground text-right">
+                    Cantidad
+                  </th>
+                  <th className="px-3 py-2 font-semibold text-muted-foreground text-right">
+                    Costo unitario
+                  </th>
+                  <th className="px-3 py-2 font-semibold text-muted-foreground text-right">
+                    Total
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {restockHistory.map((entry) => (
+                  <tr key={entry.id} className="border-t border-[#f0eeec]">
+                    <td className="px-3 py-2 text-foreground whitespace-nowrap">
+                      {formatDateTime(entry.restockedAt)}
+                    </td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {entry.sku || '—'}
+                    </td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {entry.variantName || '—'}
+                    </td>
+                    <td className="px-3 py-2 text-foreground text-right font-medium">
+                      {entry.quantity}
+                    </td>
+                    <td className="px-3 py-2 text-foreground text-right">
+                      {formatMoney(entry.unitCost, currency)}
+                    </td>
+                    <td className="px-3 py-2 text-foreground text-right font-medium">
+                      {formatMoney(entry.quantity * entry.unitCost, currency)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {restockModalOpen && selectedVariant && (
+        <RestockModal
+          variant={selectedVariant}
+          currency={currency}
+          onClose={() => setRestockModalOpen(false)}
+          onConfirm={async (quantity, unitCost) => {
+            await restockVariant(selectedVariant.id, quantity, unitCost)
+            void qc.invalidateQueries({ queryKey: qk.products(user) })
+            void qc.invalidateQueries({
+              queryKey: qk.productDetail(user, productId),
+            })
+            void qc.invalidateQueries({
+              queryKey: qk.variantRestockHistory(user, selectedVariant.id),
+            })
+          }}
+        />
+      )}
     </section>
   )
 }

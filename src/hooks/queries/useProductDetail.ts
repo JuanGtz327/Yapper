@@ -6,8 +6,13 @@ import { qk } from '../../lib/queryKeys.ts'
 import {
   loadProductById,
   loadVariantPriceHistory,
+  loadVariantRestockHistory,
 } from '../../lib/repository.ts'
-import type { Product, VariantPriceHistory } from '../../types.ts'
+import type {
+  Product,
+  VariantPriceHistory,
+  VariantRestockHistory,
+} from '../../types.ts'
 
 type ProductDetailState = {
   product: Product | null
@@ -16,6 +21,8 @@ type ProductDetailState = {
   setSelectedVariantId: (variantId: string | null) => void
   priceHistory: VariantPriceHistory[]
   priceHistoryLoading: boolean
+  restockHistory: VariantRestockHistory[]
+  restockHistoryLoading: boolean
   periodFrom: string | null
   periodTo: string | null
   setPeriodRange: (from: string | null, to: string | null) => void
@@ -58,6 +65,13 @@ export function useProductDetail(
     staleTime: 15_000,
   })
 
+  const restockHistoryQuery = useQuery({
+    queryKey: qk.variantRestockHistory(user, activeVariantId ?? ''),
+    queryFn: () => loadVariantRestockHistory(user!, activeVariantId!),
+    enabled: isSupabaseConfigured && !!user && !!activeVariantId,
+    staleTime: 15_000,
+  })
+
   return {
     product,
     productLoading: productQuery.isLoading,
@@ -65,6 +79,8 @@ export function useProductDetail(
     setSelectedVariantId,
     priceHistory: priceHistoryQuery.data ?? [],
     priceHistoryLoading: priceHistoryQuery.isLoading,
+    restockHistory: restockHistoryQuery.data ?? [],
+    restockHistoryLoading: restockHistoryQuery.isLoading,
     periodFrom,
     periodTo,
     setPeriodRange: (from, to) => {

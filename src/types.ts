@@ -256,3 +256,25 @@ export type VariantPriceHistory = {
   inventoryCost: number
   changedAt: string
 }
+
+export type VariantRestockHistoryRow = {
+  id: string
+  variant_id: string
+  product_id: string
+  sku: string
+  variant_name: string
+  quantity: number
+  unit_cost: number
+  restocked_at: string
+}
+
+export type VariantRestockHistory = {
+  id: string
+  variantId: string
+  productId: string
+  sku: string
+  variantName: string
+  quantity: number
+  unitCost: number
+  restockedAt: string
+}

@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.5"
   }
   graphql_public: {
     Tables: {
@@ -503,6 +503,57 @@ export type Database = {
         }
         Relationships: []
       }
+      variant_restock_history: {
+        Row: {
+          id: string
+          product_id: string
+          quantity: number
+          restocked_at: string
+          sku: string
+          unit_cost: number
+          user_id: string
+          variant_id: string
+          variant_name: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          quantity: number
+          restocked_at?: string
+          sku: string
+          unit_cost: number
+          user_id: string
+          variant_id: string
+          variant_name?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          quantity?: number
+          restocked_at?: string
+          sku?: string
+          unit_cost?: number
+          user_id?: string
+          variant_id?: string
+          variant_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "variant_restock_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "variant_restock_history_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -597,6 +648,10 @@ export type Database = {
           p_reference?: string
         }
         Returns: Json
+      }
+      restock_variant: {
+        Args: { p_quantity: number; p_unit_cost: number; p_variant_id: string }
+        Returns: undefined
       }
       sales_aggregates: {
         Args: { p_period?: string }
