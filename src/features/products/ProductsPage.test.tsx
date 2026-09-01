@@ -50,7 +50,9 @@ describe('ProductsPage', () => {
       render(
         <ProductsPage {...defaultProps} products={products} search="playera" />,
       )
-      expect(screen.getAllByText('Playera Básica').length).toBeGreaterThanOrEqual(1)
+      expect(
+        screen.getAllByText('Playera Básica').length,
+      ).toBeGreaterThanOrEqual(1)
       expect(screen.queryByText('Pantalón Vaquero')).not.toBeInTheDocument()
     })
 

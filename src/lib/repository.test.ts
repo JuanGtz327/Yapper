@@ -422,13 +422,11 @@ describe('Repositorio de clientes', () => {
     })
 
     it('debería propagar errores de la consulta', async () => {
-      const rangeMock = vi
-        .fn()
-        .mockResolvedValue({
-          data: null,
-          count: 0,
-          error: { message: 'DB error' },
-        })
+      const rangeMock = vi.fn().mockResolvedValue({
+        data: null,
+        count: 0,
+        error: { message: 'DB error' },
+      })
       const orderMock = vi.fn().mockReturnValue({ range: rangeMock })
       const eqUserMock = vi.fn().mockReturnValue({ order: orderMock })
       const selectMock = vi.fn().mockReturnValue({ eq: eqUserMock })

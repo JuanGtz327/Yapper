@@ -198,31 +198,6 @@ button {
   }
 }
 
-.stats-bars {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  height: 185px;
-  padding: 0 20px;
-  gap: 22px;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 45px,
-    #f0eeec 46px
-  );
-}
-.stats-bars i {
-  display: block;
-  flex: 1;
-  max-width: 50px;
-  border-radius: 7px 7px 0 0;
-  background: #d9bfd9;
-}
-.stats-bars i:nth-child(6) {
-  background: #6d3c72;
-}
-
 @keyframes spin {
   to {
     transform: rotate(360deg);

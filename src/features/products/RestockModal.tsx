@@ -53,10 +53,7 @@ export function RestockModal({
   }
 
   return (
-    <ModalFrame
-      title="Registrar compra"
-      onClose={onClose}
-    >
+    <ModalFrame title="Registrar compra" onClose={onClose}>
       <form className="grid gap-5" onSubmit={submit}>
         <div className="border border-[#e8e4e6] rounded-[10px] p-3 bg-[#f9f6fa]">
           <span className="text-[11px] font-bold uppercase tracking-[0.6px] text-muted-foreground">

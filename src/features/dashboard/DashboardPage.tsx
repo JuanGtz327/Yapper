@@ -5,6 +5,7 @@ import type { Order, Product, SalesAggregate } from '../../types.ts'
 import { Empty } from '../../components/ui/Empty.tsx'
 import { PanelHeading } from '../../components/ui/PanelHeading.tsx'
 import { QuickAction } from '../../components/ui/QuickAction.tsx'
+import { SalesChart } from '../../components/ui/SalesChart.tsx'
 import { Stat } from '../../components/ui/Stat.tsx'
 
 export function DashboardPage({
@@ -31,7 +32,6 @@ export function DashboardPage({
   const lowStock = products.filter((product) =>
     product.variants.some((v) => v.stock <= threshold),
   ).length
-  const maxSales = Math.max(...sales.map((item) => item.total), 1)
   return (
     <>
       <section className="relative overflow-hidden flex items-center justify-between min-h-[145px] p-[30px_35px] mb-[22px] rounded-[14px] text-white bg-[#744b78] max-[650px]:p-[25px]">
@@ -83,44 +83,11 @@ export function DashboardPage({
             action="Ver estadísticas"
             onAction={() => onNavigate('Estadísticas')}
           />
-          <div className="flex h-[220px] pt-[28px]">
-            <div className="flex flex-col justify-between pb-[23px] text-muted-foreground text-[10px]">
-              <span>{formatMoney(maxSales, currency)}</span>
-              <span>{formatMoney(maxSales / 2, currency)}</span>
-              <span>$0</span>
-            </div>
-            <div className="relative flex-1 ml-[14px]">
-              <div className="absolute inset-x-0 top-0 bottom-[23px] flex flex-col justify-between">
-                <i className="block border-t border-dashed border-[#ece8e6]" />
-                <i className="block border-t border-dashed border-[#ece8e6]" />
-                <i className="block border-t border-dashed border-[#ece8e6]" />
-              </div>
-              <div
-                className="absolute inset-x-0 top-0 bottom-[23px] flex items-end gap-2 pt-2 px-[2px]"
-                aria-label="Ventas por día"
-              >
-                {sales.length ? (
-                  sales.map((item) => (
-                    <span
-                      key={item.label}
-                      title={`${item.label}: ${formatMoney(item.total, currency)}`}
-                      className="flex-1 min-w-[4px] rounded-t-[5px] bg-[#c99fca] transition-[height] duration-300"
-                      style={{
-                        height: `${Math.max((item.total / maxSales) * 100, 3)}%`,
-                      }}
-                    />
-                  ))
-                ) : (
-                  <Empty text="Aún no hay ventas en este periodo." />
-                )}
-              </div>
-              <div className="absolute inset-x-0 bottom-0 flex justify-between text-muted-foreground text-[10px]">
-                {sales.map((item) => (
-                  <span key={item.label}>{item.label}</span>
-                ))}
-              </div>
-            </div>
-          </div>
+          {sales.length ? (
+            <SalesChart data={sales} currency={currency} />
+          ) : (
+            <Empty text="Aún no hay ventas en este periodo." />
+          )}
         </article>
         <article className="border border-border rounded-[13px] bg-sidebar p-[23px_24px] max-[650px]:min-w-0">
           <PanelHeading

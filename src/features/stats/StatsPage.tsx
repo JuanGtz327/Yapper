@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { Stat } from '../../components/ui/Stat.tsx'
 import { CustomSelect } from '../../components/ui/CustomSelect.tsx'
+import { SalesChart } from '../../components/ui/SalesChart.tsx'
 import { formatMoney } from '../../lib/format.ts'
 import { useSalesQuery } from '../../hooks/queries/useSales.ts'
 
@@ -20,7 +21,6 @@ export function StatsPage({
   } = useSalesQuery(user, period)
   const total = periodSales.reduce((sum, item) => sum + item.total, 0)
   const count = periodSales.reduce((sum, item) => sum + item.orders, 0)
-  const max = Math.max(...periodSales.map((item) => item.total), 1)
   return (
     <section className="animate-[page-in_0.25s_ease_both]">
       <div className="flex items-end justify-between mb-[27px] max-[650px]:flex-col max-[650px]:items-start max-[650px]:gap-[17px]">
@@ -81,21 +81,14 @@ export function StatsPage({
       </div>
       <div className="border border-[#ebe8e4] rounded-[13px] bg-[#fffefa] p-[23px_24px] min-h-[300px]">
         <h2>Resumen de ventas</h2>
-        <div className="relative h-[220px] mt-[25px] border-b border-[#ebe8e4]">
-          <div className="stats-bars">
-            {periodSales.map((item) => (
-              <i
-                key={item.label}
-                title={`${item.label}: ${formatMoney(item.total, currency)}`}
-                style={{ height: `${Math.max((item.total / max) * 100, 3)}%` }}
-              />
-            ))}
-          </div>
-          <div className="absolute bottom-[-22px] left-0 right-0 flex justify-around px-5 text-[10px] text-muted-foreground">
-            {periodSales.map((item) => (
-              <span key={item.label}>{item.label}</span>
-            ))}
-          </div>
+        <div className="mt-[25px]">
+          {periodSales.length ? (
+            <SalesChart data={periodSales} currency={currency} />
+          ) : (
+            <p className="text-sm text-muted-foreground mt-[25px]">
+              Aún no hay ventas en este periodo.
+            </p>
+          )}
         </div>
       </div>
     </section>

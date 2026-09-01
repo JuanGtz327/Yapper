@@ -175,8 +175,8 @@ export function VariantModal({
                 type="number"
                 min="0"
                 step="1"
-              value={salePrice}
-              onChange={(e) => setSalePrice(Number(e.target.value))}
+                value={salePrice}
+                onChange={(e) => setSalePrice(Number(e.target.value))}
                 placeholder="$ 0"
                 required
               />

@@ -186,7 +186,7 @@ export function ProductsPage({
         <span className="font-bold text-[15px]">
           Inventario: {formatMoney(totalSaleValue, currency)}
         </span>
-        <span className='font-bold text-[15px]'> | </span>
+        <span className="font-bold text-[15px]"> | </span>
         <span className="font-bold text-[15px]">
           Inversión: {formatMoney(totalInvestment, currency)}
         </span>

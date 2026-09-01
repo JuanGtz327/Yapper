@@ -215,7 +215,9 @@ export function OrderDetailPage({
                       className="grid grid-cols-[1fr_60px_100px_100px] gap-2 items-start py-2.5 border-b border-border text-[13px] text-foreground last:border-b-0 max-[520px]:grid-cols-[1fr_auto_auto]"
                     >
                       <div className="grid gap-[2px] min-w-0">
-                        <strong className="text-[13px] truncate">{line.name}</strong>
+                        <strong className="text-[13px] truncate">
+                          {line.name}
+                        </strong>
                         {line.variantLabel && (
                           <span className="text-muted-foreground text-[11px]">
                             {line.variantLabel}
@@ -226,7 +228,9 @@ export function OrderDetailPage({
                         </span>
                       </div>
                       <span className="font-bold">{line.quantity}</span>
-                      <span className="max-[520px]:hidden">{formatMoney(line.unitPrice, currency)}</span>
+                      <span className="max-[520px]:hidden">
+                        {formatMoney(line.unitPrice, currency)}
+                      </span>
                       <strong>{formatMoney(line.total, currency)}</strong>
                     </li>
                   ))}
