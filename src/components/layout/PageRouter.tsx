@@ -286,6 +286,9 @@ export function PageRouter({
               onAdd={() => openModal('client')}
               onEdit={(client) => openModal('client', client)}
               onRemove={removeClient}
+              onViewOrders={(clientId) =>
+                setLocation(`/pedidos?client=${clientId}`)
+              }
             />
           )
         }

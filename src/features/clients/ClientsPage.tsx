@@ -14,6 +14,7 @@ export function ClientsPage({
   onAdd,
   onEdit,
   onRemove,
+  onViewOrders,
 }: {
   clients: Client[]
   search: string
@@ -29,6 +30,7 @@ export function ClientsPage({
   onAdd: () => void
   onEdit: (client: Client) => void
   onRemove: (id: string) => void
+  onViewOrders: (clientId: string) => void
 }) {
   const visible = serverPagination
     ? clients
@@ -115,10 +117,14 @@ export function ClientsPage({
               {client.phone}
             </p>
             <p className="text-[#928c92] text-[11px] mt-[3px]">{client.zone}</p>
-            <div className="flex items-center justify-between mt-[17px] pt-[13px] border-t border-[#ebe8e4] text-[#6d3c72] text-[11px] font-bold">
+            <button
+              type="button"
+              onClick={() => onViewOrders(client.id)}
+              className="flex items-center justify-between mt-[17px] pt-[13px] border-t border-[#ebe8e4] text-[#6d3c72] text-[11px] font-bold w-full text-left hover:opacity-70 transition-opacity"
+            >
               <span>{client.orders} pedidos</span>
               <ArrowUpRight size={16} />
-            </div>
+            </button>
           </article>
         ))}
       </div>
