@@ -4,15 +4,30 @@ import { loadSalesAggregates } from '../../lib/repository.ts'
 import { isSupabaseConfigured } from '../../lib/supabase.ts'
 import { qk } from '../../lib/queryKeys.ts'
 import type { SalesAggregate } from '../../types.ts'
-import { demoOrders } from '../../data/demo.ts'
+import { demoOrders, demoProducts } from '../../data/demo.ts'
+
+const variantCost = new Map(
+  demoProducts.flatMap((p) => p.variants.map((v) => [v.id, v.inventoryCost])),
+)
 
 const demoSales: SalesAggregate[] = demoOrders
   .filter((order) => order.payment === 'Pagado' || order.payment === 'Parcial')
-  .map((order) => ({
-    label: order.date.split(',')[0],
-    total: order.payment === 'Parcial' ? order.paidAmount : order.total,
-    orders: 1,
-  }))
+  .map((order) => {
+    const total = order.payment === 'Parcial' ? order.paidAmount : order.total
+    const cost = (order.itemLines ?? []).reduce(
+      (sum, line) =>
+        sum + (variantCost.get(line.variantId) ?? 0) * line.quantity,
+      0,
+    )
+    const proportionalCost = order.total > 0 ? (total / order.total) * cost : 0
+    return {
+      label: order.date.split(',')[0],
+      total,
+      cost: proportionalCost,
+      profit: total - proportionalCost,
+      orders: 1,
+    }
+  })
 
 export function useSalesQuery(
   user: User | null,

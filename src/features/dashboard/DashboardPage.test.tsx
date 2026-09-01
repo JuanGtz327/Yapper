@@ -41,9 +41,9 @@ const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
 })
 
 const defaultSales: SalesAggregate[] = [
-  { label: 'Lun', total: 500, orders: 3 },
-  { label: 'Mar', total: 300, orders: 2 },
-  { label: 'Mié', total: 800, orders: 5 },
+  { label: 'Lun', total: 500, cost: 200, profit: 300, orders: 3 },
+  { label: 'Mar', total: 300, cost: 120, profit: 180, orders: 2 },
+  { label: 'Mié', total: 800, cost: 350, profit: 450, orders: 5 },
 ]
 
 const defaultProps = {

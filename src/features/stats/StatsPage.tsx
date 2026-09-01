@@ -20,6 +20,8 @@ export function StatsPage({
     error,
   } = useSalesQuery(user, period)
   const total = periodSales.reduce((sum, item) => sum + item.total, 0)
+  const totalCost = periodSales.reduce((sum, item) => sum + item.cost, 0)
+  const totalProfit = periodSales.reduce((sum, item) => sum + item.profit, 0)
   const count = periodSales.reduce((sum, item) => sum + item.orders, 0)
   return (
     <section className="animate-[page-in_0.25s_ease_both]">
@@ -60,11 +62,17 @@ export function StatsPage({
           No pudimos cargar las estadísticas. Inténtalo de nuevo.
         </div>
       )}
-      <div className="grid grid-cols-3 gap-4 mb-[22px] max-[650px]:grid-cols-1">
+      <div className="grid grid-cols-4 gap-4 mb-[22px] max-[650px]:grid-cols-2 max-[400px]:grid-cols-1">
         <Stat
           label="Ingresos del periodo"
           value={formatMoney(total, currency)}
           detail={`${count} pedidos`}
+          positive
+        />
+        <Stat
+          label="Ganancia neta"
+          value={formatMoney(totalProfit, currency)}
+          detail={`${formatMoney(totalCost, currency)} invertidos`}
           positive
         />
         <Stat

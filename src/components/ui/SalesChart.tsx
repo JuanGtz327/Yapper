@@ -6,6 +6,7 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+  Legend,
 } from 'recharts'
 import type { SalesAggregate } from '../../types.ts'
 import { formatMoney } from '../../lib/format.ts'
@@ -17,7 +18,7 @@ function CustomTooltip({
   currency,
 }: {
   active?: boolean
-  payload?: Array<{ value: number }>
+  payload?: Array<{ value: number; name: string }>
   label?: string
   currency: string
 }) {
@@ -25,11 +26,18 @@ function CustomTooltip({
   return (
     <div className="rounded-lg border border-[#e8e4e6] bg-white px-3 py-2 shadow-md">
       <p className="text-[11px] text-muted-foreground mb-1">{label}</p>
-      <p className="text-sm font-semibold text-foreground">
-        {formatMoney(payload[0].value, currency)}
-      </p>
+      {payload.map((entry) => (
+        <p key={entry.name} className="text-[12px] text-foreground">
+          <span className="font-semibold">{entry.name}:</span>{' '}
+          {formatMoney(entry.value, currency)}
+        </p>
+      ))}
     </div>
   )
+}
+
+function LegendFormatter({ value }: { value: string }) {
+  return <span className="text-xs text-foreground">{value}</span>
 }
 
 export function SalesChart({
@@ -68,11 +76,31 @@ export function SalesChart({
             content={<CustomTooltip currency={currency} />}
             cursor={{ fill: 'rgba(109, 60, 114, 0.06)' }}
           />
+          <Legend
+            verticalAlign="bottom"
+            height={36}
+            formatter={LegendFormatter}
+          />
           <Bar
             dataKey="total"
+            name="Ventas"
             fill="#c99fca"
-            radius={[4, 4, 0, 0]}
-            maxBarSize={48}
+            radius={[3, 3, 0, 0]}
+            maxBarSize={28}
+          />
+          <Bar
+            dataKey="cost"
+            name="Inversión"
+            fill="#f0a87a"
+            radius={[3, 3, 0, 0]}
+            maxBarSize={28}
+          />
+          <Bar
+            dataKey="profit"
+            name="Ganancia"
+            fill="#7ac08a"
+            radius={[3, 3, 0, 0]}
+            maxBarSize={28}
           />
         </BarChart>
       </ResponsiveContainer>

@@ -1089,13 +1089,21 @@ export async function loadSalesAggregates(
     p_period: period,
   })
   if (error) throw error
-  return (data as Array<{ label: string; total: number; orders: number }>).map(
-    (row) => ({
-      label: row.label,
-      total: Number(row.total),
-      orders: Number(row.orders),
-    }),
-  )
+  return (
+    data as Array<{
+      label: string
+      total: number
+      cost: number
+      profit: number
+      orders: number
+    }>
+  ).map((row) => ({
+    label: row.label,
+    total: Number(row.total),
+    cost: Number(row.cost),
+    profit: Number(row.profit),
+    orders: Number(row.orders),
+  }))
 }
 
 // ─── INVENTORY AGGREGATES ────────────────────────────────────

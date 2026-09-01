@@ -111,6 +111,8 @@ export type PublicCatalog = {
 export type SalesAggregate = {
   label: string
   total: number
+  cost: number
+  profit: number
   orders: number
 }
 
